@@ -33,7 +33,7 @@ f1::
 	incase of webbrowser Version Matches with Webdriver Version 
 	it wiwebbrowser ask using Msgbox if press Yes it download webdrive version that matches with webbrowser Version
 */
-Page := Chrome.NewSession("chromedriver.exe")
+Page := Chrome.NewSession()
 ; navigate to url
 Page.Navigate("https://www.autohotkey.com/")
 return
