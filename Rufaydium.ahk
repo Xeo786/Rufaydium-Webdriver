@@ -751,6 +751,15 @@ class capabilities
 	)
 	static Simple := {"capabilities":{"":""}}
 	static ChromeSimple := {"capabilities":{"alwaysMatch":{"browserName":"chrome"}}}
+
+	setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+	{
+		if !userDataDir
+			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
+
+		this.ChromeProfile.capabilities.alwaysMatch["goog:chromeOptions"].args := ["--user-data-dir=" userDataDir, "--profile-directory=" profileName]
+		return this.ChromeProfile
+	}
 }
 
 Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
