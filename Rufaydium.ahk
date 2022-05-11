@@ -20,18 +20,23 @@ Class Rufaydium
 {
 	__new(DriverName:="chromedriver.exe",Parameters:="--port=9515")
 	{
+		switch DriverName
+		{
+			case "chromedriver.exe" :
+			if !FileExist(DriverName)
+				DriverName := RunDriver.GetChromeDriver() 
+			this.Options := "goog:chromeOptions"
+			
+			case "msedgedriver.exe" : 
+			if !FileExist(DriverName)
+				DriverName := RunDriver.GetEdgeDrive() 
+			this.Options := "ms:edgeOptions"
+		}
+		
 		if !FileExist(DriverName)
 		{
-			switch DriverName
-			{
-				case "chromedriver.exe" : DriverName := RunDriver.GetChromeDriver(),	this.Options := "goog:chromeOptions"
-				case "msedgedriver.exe" : DriverName := RunDriver.GetEdgeDrive(), 	this.Options := "ms:edgeOptions"
-			}
-			if !FileExist(DriverName)
-			{
-				Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
-				Exitapp
-			}
+			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
+			Exitapp
 		}
 		this.Param := Parameters
 		this.Driver := new RunDriver(DriverName,this.Param)
