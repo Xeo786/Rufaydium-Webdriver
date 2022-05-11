@@ -738,7 +738,7 @@ class capabilities
 			"browserName": "chrome",
 			"goog:chromeOptions": {
 				"w3c": json.true,
-				"args": ["--user-data-dir=C:/ChromeProfile"],
+				"args": ["--user-data-dir=C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data", "--profile-directory=Default"],
 				"excludeSwitches": ["enable-automation"]
 			}
 		},
