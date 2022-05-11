@@ -163,8 +163,9 @@ DownloadnExtract(url,zip,exe)
  therefore I came up with this trick
  Single function per single process
  */
-global WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 Request(url,Method,Payload := 0,WaitForResponse := 0) {
+	static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+	
 	WebRequest.Open(Method, url, false)
 	WebRequest.SetRequestHeader("Content-Type","application/json")
 	
