@@ -24,8 +24,8 @@ Class Rufaydium
 		{
 			switch DriverName
 			{
-				case "chromedriver.exe" : DriverName := RunDriver.GetChromeDriver()
-				case "msedgedriver.exe" : DriverName := RunDriver.GetEdgeDrive()
+				case "chromedriver.exe" : DriverName := RunDriver.GetChromeDriver(),	this.Options := "goog:chromeOptions"
+				case "msedgedriver.exe" : DriverName := RunDriver.GetEdgeDrive(), 	this.Options := "ms:edgeOptions"
 			}
 			if !FileExist(DriverName)
 			{
@@ -33,8 +33,9 @@ Class Rufaydium
 				Exitapp
 			}
 		}
-		This.Driver := new RunDriver(DriverName,Parameters)
-		This.DriverUrl := "http://127.0.0.1:" This.Driver.Port
+		this.Param := Parameters
+		this.Driver := new RunDriver(DriverName,this.Param)
+		this.DriverUrl := "http://127.0.0.1:" This.Driver.Port
 	}
 	
 	__Delete()
@@ -78,24 +79,23 @@ Class Rufaydium
 					this.driver.exit()
 					switch This.Driver.Name
 					{
-						case "chromedriver":	i := this.driver.GetChromeDriver(k.message), x := "c"
-						case "msedgedriver":	i := this.driver.GetEdgeDrive(k.message), x := "e"
-					} 
-					if i
+						case "chromedriver": i := this.driver.GetChromeDriver(k.message)
+						case "msedgedriver": i := this.driver.GetEdgeDrive(k.message)
+					}
+					if !FileExist(i)
 					{
-						Msgbox,64,Rufaydium WebDriver Support,Driver has been updated Please restart script
-						
+						Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
+						Exitapp
 					}
 				}
-				This.Driver := new RunDriver(i)
+				This.Driver := new RunDriver(i,this.Param)
 				return This.NewSession()
 			}
-			
 			msgbox, 48,Rufaydium WebDriver Support Error,% k.error "`n`n" k.message
 			return k
 		}
 		window := []
-		window.debuggerAddress := StrReplace(k.capabilities["goog:chromeOptions"].debuggerAddress,"localhost","http://127.0.0.1")
+		window.debuggerAddress := StrReplace(k.capabilities[this.Options].debuggerAddress,"localhost","http://127.0.0.1")
 		window.address := this.DriverUrl "/session/" k.SessionId
 		return new Session(window)
 	}
@@ -106,7 +106,7 @@ Class Rufaydium
 		windows := []
 		for k, se in Sessions
 		{
-			chromeOptions := Se["capabilities","goog:chromeOptions"]
+			chromeOptions := Se["capabilities",this.Options]
 			s := []
 			s.id := Se.id
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")
