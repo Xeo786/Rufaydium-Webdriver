@@ -1,4 +1,4 @@
-; Rufaydium V1.5
+; Rufaydium V1.5 
 ; Rufaydium is Webdriver Library can support any chromium based browser 
 ; It only requires Latest WebDriver, 
 ; i.e. for Chrome 100 you need to download ChromeDriver 100.0.4896.60
