@@ -155,27 +155,7 @@ class capabilities
 			"browserName": "chrome",
 			"goog:chromeOptions": {
 				"w3c": json.true,
-				"args": ["--user-data-dir=C:/ChromeProfile"],
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	static ChromeCustomUserAgent =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"platformName": "windows",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"args" :["--user-agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"],
+				"args": ["--user-data-dir=C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data", "--profile-directory=Default"],
 				"excludeSwitches": ["enable-automation"]
 			}
 		},
@@ -188,15 +168,37 @@ class capabilities
 	)
 	static Simple := {"capabilities":{"":""}}
 	static ChromeSimple := {"capabilities":{"alwaysMatch":{"browserName":"chrome"}}}
+
+	setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+	{
+		if !userDataDir
+			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
+
+		this.ChromeProfile.capabilities.alwaysMatch["goog:chromeOptions"].args := ["--user-data-dir=" userDataDir, "--profile-directory=" profileName]
+		return this.ChromeProfile
+	}
 }
 ```
-
 We can load required Capabilities by doing, 
 
 ```AutoHotkey
 Chrome.capabilities := Capabilities.ChromeDefault
 ```
-# Webdriver Sessions
+
+## Capabilities.setUserProfile(profileName:="Default", userDataDir:="")
+```AutoHotkey
+Chrome := new Rufaydium()
+Chrome.capabilities := Capabilities.ChromeDefault("default")
+DPS := Chrome.NewSession() ; will create session using default chrome profile from chrome default User Data Drirector
+
+Chrome.capabilities := Capabilities.ChromeDefault("profile 1")
+P1S := Chrome.NewSession() ; will create session using chrome profile 1 from chrome default User Data Drirector
+
+Chrome.capabilities := Capabilities.ChromeDefault(Some_profile_Name,SomeuserDataDirlocation )
+P1S := Chrome.NewSession() ; will create session using desired User Data Directory and Profile
+```
+
+# Rufaydium Sessions
 ## New Session
 We can skip capabilities, as session will load `Capabilities.simple` as default Capabilities which should work with any browser.  
 We can create session after Setting up capabilities 
