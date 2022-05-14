@@ -140,20 +140,6 @@ Class Rufaydium
 		for k, s in this.getSessions()
 			s.Quit()
 	}
-	
-	GetCurrentTab(currentURL)
-	{
-		hwndChrome := WinActive("ahk_class Chrome_WidgetWin_1")
-		AccChrome := Acc_ObjectFromWindow(hwndChrome)
-		AccAddressBar := Acc_GetElementByName(AccChrome, "Address and search bar")
-
-		if (AccAddressBar != "")
-			{
-			AccURL := AccAddressBar.accValue(0)
-			if !InStr(currentURL, AccURL) && InStr(AccURL, ".com")
-				Session.SwitchbyURL(AccURL)
-			}
-	}
 }
 
 
