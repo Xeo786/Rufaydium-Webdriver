@@ -8,19 +8,20 @@ Class RunDriver
 	{
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir
-		switch DriverName
-		{
-			case "chromedriver" :
+
+		if (DriverName ==  "chromedriver")
+			{
 			if !FileExist(Location)
 				DriverName := this.GetChromeDriver() 
 			this.Options := "goog:chromeOptions"
-			
-			case "msedgedriver" : 
+			}
+		else if (DriverName ==  "msedgedriver")
+			{
 			if !FileExist(Location)
 				DriverName := this.GetEdgeDrive() 
-			this.Options := "ms:edgeOptions"
-		}
-		
+			this.Options := "ms:edgeOptions"				
+			}
+
 		if !FileExist(Location)
 		{
 			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting

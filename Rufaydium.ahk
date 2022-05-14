@@ -58,16 +58,16 @@ Class Rufaydium
 		{
 			if(k.error = "session not created")
 			{
-				
 				MsgBox, 52,Rufaydium WebDriver Support,% k.message "`n`nPlease Press Yes to download latest driver"
 				IfMsgBox Yes
 				{
 					this.driver.exit()
-					switch This.Driver.Name
-					{
-						case "chromedriver": i := this.driver.GetChromeDriver(k.message)
-						case "msedgedriver": i := this.driver.GetEdgeDrive(k.message)
-					}
+
+					if (This.Driver.Name == "chromedriver")
+						this.driver.GetChromeDriver(k.message)
+					else if (This.Driver.Name == "msedgedriver")
+						this.driver.GetEdgeDrive(k.message)
+
 					if !FileExist(i)
 					{
 						Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
@@ -141,6 +141,19 @@ Class Rufaydium
 			s.Quit()
 	}
 	
+	GetCurrentTab(currentURL)
+	{
+		hwndChrome := WinActive("ahk_class Chrome_WidgetWin_1")
+		AccChrome := Acc_ObjectFromWindow(hwndChrome)
+		AccAddressBar := Acc_GetElementByName(AccChrome, "Address and search bar")
+
+		if (AccAddressBar != "")
+			{
+			AccURL := AccAddressBar.accValue(0)
+			if !InStr(currentURL, AccURL) && InStr(AccURL, ".com")
+				Session.SwitchbyURL(AccURL)
+			}
+	}
 }
 
 
@@ -496,14 +509,15 @@ Class Session extends Rufaydium
 	
 	Alert(Action,Text:=0)
 	{
-		switch Action
-		{
-			case "accept":		i := "/alert/accept",	m := "POST"
-			case "dismiss":	i := "/alert/dismiss",	m := "POST"
-			case "GET":    	i := "/alert/text",		m := "GET" 
-			case "Send":    	i := "/alert/text",		m := "POST" 
-		}
-		
+		if (Action == "accept")
+			i := "/alert/accept",	m := "POST"
+		else if (Action == "dismiss")
+			i := "/alert/dismiss",	m := "POST"
+		else if (Action == "GET")
+			i := "/alert/text",		m := "GET" 
+		else if (Action == "Send")
+			i := "/alert/text",		m := "POST"
+
 		if Text
 			return this.Send(this.address i,m,{"text":Text})
 		else
