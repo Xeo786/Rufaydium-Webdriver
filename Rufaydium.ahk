@@ -81,7 +81,7 @@ Class Rufaydium
 			return k
 		}
 		window := []
-		window.debuggerAddress := StrReplace(k.capabilities[this.Options].debuggerAddress,"localhost","http://127.0.0.1")
+		window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
 		window.address := this.DriverUrl "/session/" k.SessionId
 		return new Session(window)
 	}
@@ -92,7 +92,7 @@ Class Rufaydium
 		windows := []
 		for k, se in Sessions
 		{
-			chromeOptions := Se["capabilities",this.Options]
+			chromeOptions := Se["capabilities",This.driver.options]
 			s := []
 			s.id := Se.id
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")

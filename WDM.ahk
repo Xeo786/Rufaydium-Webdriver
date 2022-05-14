@@ -6,7 +6,8 @@ Class RunDriver
 {
 	__New(Location,Parameters:= "--port=9515")
 	{
-		SplitPath, Location,Name,,,DriverName
+		SplitPath, Location,Name,Dir,,DriverName
+		this.Dir := Dir
 		switch DriverName
 		{
 			case "chromedriver" :
@@ -114,17 +115,17 @@ Class RunDriver
 			return false
 		}
 		
-		if !FileExist(A_ScriptDir "\Backup")
-			FileCreateDir, % A_ScriptDir "\Backup"
+		if !FileExist(this.Dir "\Backup")
+			FileCreateDir, % this.Dir "\Backup"
 		
-		while FileExist(A_ScriptDir "\" exe)
+		while FileExist(this.Dir "\" exe)
 		{
 			Process, Close, % GetPIDbyName(exe)
-			FileMove, % A_ScriptDir "\" exe, % A_ScriptDir "\Backup\Chromedriver Version " bver1 ".exe", 1
+			FileMove, % this.Dir "\" exe, % this.Dir "\Backup\Chromedriver Version " bver1 ".exe", 1
 		}
 		
 		DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" zip
-		return DownloadnExtract(DriverUrl,zip,exe)
+		return DownloadnExtract(DriverUrl,this.dir "\" zip,exe)
 	}
 	
 	; Thanks RaptorX fixing Issues GetEdgeDrive
@@ -151,29 +152,30 @@ Class RunDriver
 		else 
 			zip := "edgedriver_win32.zip"
 		
-		if !FileExist(A_ScriptDir "\Backup")
-			FileCreateDir, % A_ScriptDir "\Backup"
+		if !FileExist(this.Dir "\Backup")
+			FileCreateDir, % this.Dir "\Backup"
 		
-		while FileExist(A_ScriptDir "\" exe)
+		while FileExist(this.Dir "\" exe)
 		{
 			Process, Close, % GetPIDbyName(exe)
-			FileMove, % A_ScriptDir "\" exe, % A_ScriptDir "\Backup\Chromedriver Version " bver1 ".exe", 1
+			FileMove, % this.Dir "\" exe, % this.Dir "\Backup\Chromedriver Version " bver1 ".exe", 1
 		}
 		DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" zip
-		return DownloadnExtract(DriverUrl,zip,exe)
+		return DownloadnExtract(DriverUrl,this.dir "\" zip,exe)
 	}
 }
 
 DownloadnExtract(url,zip,exe)
 {
-	URLDownloadToFile, % url ,  % A_ScriptDir "/" zip
+	URLDownloadToFile, % url ,  % zip
+	SplitPath, zip,,Dir
 	fso := ComObjCreate("Scripting.FileSystemObject")
 	AppObj := ComObjCreate("Shell.Application")
-	FolderObj := AppObj.Namespace(A_ScriptDir "\" zip)	
+	FolderObj := AppObj.Namespace(zip)	
 	FileObj := FolderObj.ParseName(exe)
-	AppObj.Namespace(A_ScriptDir "\").CopyHere(FileObj, 4|16)
-	FileDelete, % A_ScriptDir "\" zip
-	return A_ScriptDir "\" exe
+	AppObj.Namespace(Dir "\").CopyHere(FileObj, 4|16)
+	FileDelete, % zip
+	return Dir "\" exe
 }
 
 /*
