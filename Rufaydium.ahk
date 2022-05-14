@@ -63,11 +63,18 @@ Class Rufaydium
 				IfMsgBox Yes
 				{
 					this.driver.exit()
-					switch This.Driver.Name
-					{
-						case "chromedriver": i := this.driver.GetChromeDriver(k.message)
-						case "msedgedriver": i := this.driver.GetEdgeDrive(k.message)
-					}
+
+;					switch This.Driver.Name
+;					{
+;						case "chromedriver": i := this.driver.GetChromeDriver(k.message)
+;						case "msedgedriver": i := this.driver.GetEdgeDrive(k.message)
+;					}
+
+					if (This.Driver.Name == "chromedriver")
+						this.driver.GetChromeDriver(k.message)
+					else if (This.Driver.Name == "msedgedriver")
+						this.driver.GetEdgeDrive(k.message)
+
 					if !FileExist(i)
 					{
 						Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
@@ -140,7 +147,6 @@ Class Rufaydium
 		for k, s in this.getSessions()
 			s.Quit()
 	}
-	
 }
 
 
@@ -496,14 +502,23 @@ Class Session extends Rufaydium
 	
 	Alert(Action,Text:=0)
 	{
-		switch Action
-		{
-			case "accept":		i := "/alert/accept",	m := "POST"
-			case "dismiss":	i := "/alert/dismiss",	m := "POST"
-			case "GET":    	i := "/alert/text",		m := "GET" 
-			case "Send":    	i := "/alert/text",		m := "POST" 
-		}
-		
+;		switch Action
+;		{
+;			case "accept":		i := "/alert/accept",	m := "POST"
+;			case "dismiss":	i := "/alert/dismiss",	m := "POST"
+;			case "GET":    	i := "/alert/text",		m := "GET" 
+;			case "Send":    	i := "/alert/text",		m := "POST" 
+;		}
+
+		if (Action == "accept")
+			i := "/alert/accept",	m := "POST"
+		else if (Action == "dismiss")
+			i := "/alert/dismiss",	m := "POST"
+		else if (Action == "GET")
+			i := "/alert/text",		m := "GET" 
+		else if (Action == "Send")
+			i := "/alert/text",		m := "POST"
+
 		if Text
 			return this.Send(this.address i,m,{"text":Text})
 		else
