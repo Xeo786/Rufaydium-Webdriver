@@ -20,26 +20,7 @@ Class Rufaydium
 {
 	__new(DriverName:="chromedriver.exe",Parameters:="--port=9515")
 	{
-		switch DriverName
-		{
-			case "chromedriver.exe" :
-			if !FileExist(DriverName)
-				DriverName := RunDriver.GetChromeDriver() 
-			this.Options := "goog:chromeOptions"
-			
-			case "msedgedriver.exe" : 
-			if !FileExist(DriverName)
-				DriverName := RunDriver.GetEdgeDrive() 
-			this.Options := "ms:edgeOptions"
-		}
-		
-		if !FileExist(DriverName)
-		{
-			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
-			Exitapp
-		}
-		this.Param := Parameters
-		this.Driver := new RunDriver(DriverName,this.Param)
+		this.Driver := new RunDriver(DriverName,Parameters)
 		this.DriverUrl := "http://127.0.0.1:" This.Driver.Port
 	}
 	
@@ -93,7 +74,7 @@ Class Rufaydium
 						Exitapp
 					}
 				}
-				This.Driver := new RunDriver(i,this.Param)
+				This.Driver := new RunDriver(i,This.Driver.Param)
 				return This.NewSession()
 			}
 			msgbox, 48,Rufaydium WebDriver Support Error,% k.error "`n`n" k.message
@@ -760,6 +741,27 @@ class capabilities
 		this.ChromeProfile.capabilities.alwaysMatch["goog:chromeOptions"].args := ["--user-data-dir=" userDataDir, "--profile-directory=" profileName]
 		return this.ChromeProfile
 	}
+	; Brave-Browser is Chrome Based and required Chrome Driver
+	static BraveDefault =
+	( LTrim Join
+	{
+	"capabilities": {
+		"alwaysMatch": {
+			"browserName": "Brave",
+			"platformName": "windows",
+			"goog:chromeOptions": {
+				"w3c": json.true,
+				"binary": "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+				"excludeSwitches": ["enable-automation"]
+			}
+		},
+		"firstMatch": [{}]
+		},
+	"desiredCapabilities": {
+		"browserName": "Brave"
+		}
+	}
+	)
 }
 
 Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
