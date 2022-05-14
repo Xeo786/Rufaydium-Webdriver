@@ -7,9 +7,28 @@ Class RunDriver
 	__New(Location,Parameters:= "--port=9515")
 	{
 		SplitPath, Location,Name,,,DriverName
+		switch DriverName
+		{
+			case "chromedriver" :
+			if !FileExist(Location)
+				DriverName := this.GetChromeDriver() 
+			this.Options := "goog:chromeOptions"
+			
+			case "msedgedriver" : 
+			if !FileExist(Location)
+				DriverName := this.GetEdgeDrive() 
+			this.Options := "ms:edgeOptions"
+		}
+		
+		if !FileExist(Location)
+		{
+			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
+			Exitapp
+		}
+		this.param := Parameters
 		This.Target := Location " " chr(34) Parameters chr(34)
 		this.Name := DriverName
-		if RegExMatch(Parameters,"--port=(\d+)",port)
+		if RegExMatch(this.param,"--port=(\d+)",port)
 			This.Port := Port1
 		else
 		{
