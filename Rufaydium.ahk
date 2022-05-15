@@ -175,7 +175,13 @@ Class Session extends Rufaydium
 		This.currentTab := this.Send("window/new","POST",{"type":"tab"}).handle
 		This.Switch(This.currentTab)
 	}
-	
+
+	NewWindow()
+	{
+		This.currentTab := this.Send("window/new","POST",{"type":"window"}).handle
+		This.Switch(This.currentTab)
+	}	
+
 	Detail()
 	{
 		return Json.load(Request(this.debuggerAddress "/json","GET"))
