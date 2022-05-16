@@ -467,7 +467,7 @@ Class Session extends Rufaydium
 					return 0
 				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
-				e[k] := New WDElement(address)
+				e[k-1] := New WDElement(address)
 			}
 		}
 		return e

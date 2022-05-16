@@ -102,7 +102,7 @@ class CDP extends Rufaydium
 		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":path}).nodeIDs
 		for i, NodeID in NodeIDs
 		{
-			e[i] := New CDPElement(NodeID,this.address)
+			e[i-1] := New CDPElement(NodeID,this.address)
 		}
 		return e
 	}
@@ -114,7 +114,7 @@ class CDP extends Rufaydium
 		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":Class}).nodeIDs
 		for i, NodeID in NodeIDs
 		{
-			e[i] := New CDPElement(NodeID,this.address)
+			e[i-1] := New CDPElement(NodeID,this.address)
 		}
 		return e
 	}
@@ -148,7 +148,7 @@ class CDP extends Rufaydium
 					if (v.subtype = "Node")
 					{
 						nodeId := this.call("DOM.requestNode",{"objectId":v.Objectid}).nodeId
-						e[++i] := New CDPElement(nodeId,this.address)
+						e[i++] := New CDPElement(nodeId,this.address)
 					}
 				}
 				
