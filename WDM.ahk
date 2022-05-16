@@ -69,12 +69,12 @@ Class RunDriver
 	help(Location)
 	{
 		Run % comspec " /k " chr(34) Location chr(34) " --help > dir.txt",,Hide,PID
-		while !FileExist(A_ScriptDir "\dir.txt")
+		while !FileExist(this.Dir "\dir.txt")
 			sleep, 200
 		sleep, 200
-		FileRead, Content, dir.txt
-		while FileExist(A_ScriptDir "\dir.txt")
-			FileDelete, % A_ScriptDir "\dir.txt"
+		FileRead, Content, % this.Dir "dir.txt"
+		while FileExist(this.Dir "\dir.txt")
+			FileDelete, % this.Dir "\dir.txt"
 		Process, Close, % PID
 		return Content
 	}
@@ -107,7 +107,7 @@ Class RunDriver
 		switch this.Name
 		{
 			case "chromedriver" :
-				this.zip := this.dir "chromedriver_win32.zip"
+				this.zip := "chromedriver_win32.zip"
 				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
 					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
 				else
@@ -118,9 +118,9 @@ Class RunDriver
 			
 			case "msedgedriver" :
 				if instr(bit,"64")
-					this.zip := this.dir "edgedriver_win64.zip"
+					this.zip := "edgedriver_win64.zip"
 				else 
-					this.zip := this.dir "edgedriver_win32.zip" 
+					this.zip := "edgedriver_win32.zip" 
 
 				if RegExMatch(Version,"version ([\d.]+).*\n.*browser version is (\d+)",bver)
 					uri := "https://msedgedriver.azureedge.net/LATEST_" "RELEASE_" bver2
@@ -145,8 +145,8 @@ Class RunDriver
 			Process, Close, % this.GetPIDbyName(this.exe)
 			FileMove, % this.Dir "\" this.exe, % this.Dir "\Backup\" this.name " Version " bver1 ".exe", 1
 		}
-		if this.dir
-			this.zip := this.dir "\" this.zip
+		
+		this.zip := this.dir "\" this.zip
 		this.DownloadnExtract()
 	}
 	
@@ -175,10 +175,7 @@ Class RunDriver
 		FileObj := FolderObj.ParseName(this.exe)
 		AppObj.Namespace(this.Dir "\").CopyHere(FileObj, 4|16)
 		FileDelete, % this.zip
-		if this.Dir
 			return this.Dir "\" this.exe
-		else
-			return this.exe
 	}
 
 	GetPIDbyName(name) 
