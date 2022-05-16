@@ -220,10 +220,11 @@ Session2 := Rufaydium.getSessionByTitle(Title)
 
 Note: above methods are based on Rufaydium.getSessions() which is not W3C standred and only supports Chrome or chrome Based browser, does not support firefox's geckodriver.exe, I am thinking about saving all session IDs created from geckodriver and saving them into some ini and implemenet `getSessionByUrl()` & `getSessionByTitle()`.
 
-## Session.NewTab()
-Creates and switch to new tab
+## Session.NewTab() & Session.NewWindow()
+Creates and switch to new tab or New Window
 ```AutoHotkey
 Session.NewTab()
+Session.NewWindow()
 ```
 
 ## Session.Title
@@ -475,8 +476,8 @@ Session.Alert("Send","some text")  ; sending a Alert / pop up msg
 
 ## Tacking Screen Shots accept only png file format
 ```AutoHotkey
-Session.Screenshot("picture location") ; will save PNG to location
-Element.Screenshot("picture location") ; will save PNG to location
+Session.Screenshot("picture location.png") ; will save PNG to A_ScriptDir
+Element.Screenshot(a_desktop "\picture location.pnd") ; will save PNG to a_desktop
 ```
 
 ## PDF printing 
