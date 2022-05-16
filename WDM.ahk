@@ -8,38 +8,39 @@ Class RunDriver
 	{
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir
-		switch DriverName
+		this.exe := Name
+		this.param := Parameters
+		This.Target := Location " " chr(34) Parameters chr(34)
+		this.Name := DriverName
+		switch this.Name
 		{
 			case "chromedriver" :
-			if !FileExist(Location)
-				DriverName := this.GetChromeDriver() 
-			this.Options := "goog:chromeOptions"
-			this.browser := "chrome"
+				this.Options := "goog:chromeOptions"
+				this.browser := "chrome"
 
 			case "msedgedriver" : 
-			if !FileExist(Location)
-				DriverName := this.GetEdgeDrive() 
-			this.Options := "ms:edgeOptions"
-			this.browser := "msedge"
+				this.Options := "ms:edgeOptions"
+				this.browser := "msedge"
 		}
 		
+		if !FileExist(Location)
+			Location := this.GetDriver()
+
 		if !FileExist(Location)
 		{
 			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
 			Exitapp
 		}
-		this.param := Parameters
-		This.Target := Location " " chr(34) Parameters chr(34)
-		this.Name := DriverName
+
 		if RegExMatch(this.param,"--port=(\d+)",port)
 			This.Port := Port1
 		else
 		{
-			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
+			Msgbox,64,"Rufaydium WebDriver Support,Unable to download driver from`nURL :" this.DriverUrl "`nRufaydium exitting"
 			exitapp
 		}
 		
-		PID := GetPIDbyName(Name)
+		PID := this.GetPIDbyName(Name)
 		if PID
 		{
 			this.PID := PID
@@ -100,19 +101,38 @@ Class RunDriver
 		}
 	}
 	
-	; supports for edge and other driver will soon be added 
 	; thanks for AHK_user for driver auto-download suggestion and his code https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=60#p460812
-	GetChromeDriver(Version="")
+	GetDriver(Version="STABLE",bit="32")
 	{
-		exe := "chromedriver.exe"
-		zip := "chromedriver_win32.zip"
-		if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
-			Version := "_" bver2
-		else
-			bver1 := "unkown"
-		uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"  Version
-		DriverVersion := Request(uri,"GET")
-		if InStr(DriverVersion, "NoSuchKey"){
+		switch this.Name
+		{
+			case "chromedriver" :
+				this.zip := this.dir "chromedriver_win32.zip"
+				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
+					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
+				else
+					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
+				
+				DriverVersion := this.GetVersion(uri)
+				this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
+			
+			case "msedgedriver" :
+				if instr(bit,"64")
+					this.zip := this.dir "edgedriver_win64.zip"
+				else 
+					this.zip := this.dir "edgedriver_win32.zip" 
+
+				if RegExMatch(Version,"version ([\d.]+).*\n.*browser version is (\d+)",bver)
+					uri := "https://msedgedriver.azureedge.net/LATEST_" "RELEASE_" bver2
+				else if(Version != "STABLE")
+					uri := "https://msedgedriver.azureedge.net/LATEST_RELEASE_" Version
+				else
+					uri := "https://msedgedriver.azureedge.net/LATEST_" Version, bver1 := "unknown"
+
+				DriverVersion := this.GetVersion(uri) ; Thanks RaptorX fixing Issues GetEdgeDrive
+				this.DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" this.zip
+		} 
+		if InStr(this.DriverVersion, "NoSuchKey"){
 			MsgBox,16,Testing,Error`nDriverVersion
 			return false
 		}
@@ -120,107 +140,54 @@ Class RunDriver
 		if !FileExist(this.Dir "\Backup")
 			FileCreateDir, % this.Dir "\Backup"
 		
-		while FileExist(this.Dir "\" exe)
+		while FileExist(this.Dir "\" this.exe)
 		{
-			Process, Close, % GetPIDbyName(exe)
-			FileMove, % this.Dir "\" exe, % this.Dir "\Backup\Chromedriver Version " bver1 ".exe", 1
+			Process, Close, % this.GetPIDbyName(this.exe)
+			FileMove, % this.Dir "\" this.exe, % this.Dir "\Backup\" this.name " Version " bver1 ".exe", 1
 		}
-		
-		DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" zip
-		return DownloadnExtract(DriverUrl,this.dir "\" zip,exe)
+		if this.dir
+			this.zip := this.dir "\" this.zip
+		this.DownloadnExtract()
 	}
 	
-	; Thanks RaptorX fixing Issues GetEdgeDrive
-	GetEdgeDrive(Version="STABLE",bit="32")
+	GetVersion(uri)
 	{
-		exe := "msedgedriver.exe"
-		if RegExMatch(Version,"version ([\d.]+).*\n.*browser version is (\d+)",bver)
-			Version := "RELEASE_" bver2
-		else if(Version != "STABLE")
-		 	Version := "RELEASE_" Version
-		else
-			bver1 := "unkown"
-		uri := "https://msedgedriver.azureedge.net/LATEST_" Version
-		DriverVersion := Request(uri,"GET")
-		
-		if InStr(DriverVersion, "BlobNotFound") or InStr(DriverVersion, "error")
-		{
-			MsgBox,16,Testing,Error`nDriverVersion
-			return false
-		}
-		
-		if instr(bit,"64")
-			zip := "edgedriver_win64.zip"
-		else 
-			zip := "edgedriver_win32.zip"
-		
-		if !FileExist(this.Dir "\Backup")
-			FileCreateDir, % this.Dir "\Backup"
-		
-		while FileExist(this.Dir "\" exe)
-		{
-			Process, Close, % GetPIDbyName(exe)
-			FileMove, % this.Dir "\" exe, % this.Dir "\Backup\Chromedriver Version " bver1 ".exe", 1
-		}
-		DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" zip
-		return DownloadnExtract(DriverUrl,this.dir "\" zip,exe)
-	}
-}
-
-DownloadnExtract(url,zip,exe)
-{
-	URLDownloadToFile, % url ,  % zip
-	SplitPath, zip,,Dir
-	fso := ComObjCreate("Scripting.FileSystemObject")
-	AppObj := ComObjCreate("Shell.Application")
-	FolderObj := AppObj.Namespace(zip)	
-	FileObj := FolderObj.ParseName(exe)
-	AppObj.Namespace(Dir "\").CopyHere(FileObj, 4|16)
-	FileDelete, % zip
-	return Dir "\" exe
-}
-
-/*
- Rufaydium totally depends on Rest API (HTTP) calls and 
- I would have created so many Winhttp com objects
- therefore I came up with this trick
- Single function per single process
- */
-Request(url,Method,Payload := 0,WaitForResponse := 0) {
-	static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	
-	WebRequest.Open(Method, url, false)
-	WebRequest.SetRequestHeader("Content-Type","application/json")
-	
-	if Payload
-		WebRequest.Send(Payloadfix(Payload))
-	else
+		WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		WebRequest.Open("GET", uri, false)
+		WebRequest.SetRequestHeader("Content-Type","application/json")
 		WebRequest.Send()
-	if WaitForResponse
-		WebRequest.WaitForResponse()
-	
-	if url ~= "msedge"
-		return SubStr(ConvertResponseBody(WebRequest), 3)
-	else
-		return WebRequest.responseText
+		if url ~= "msedge"
+		{
+			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
+				text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
+			return SubStr(text, 3)
+		}	
+		else
+			return WebRequest.responseText
+	}
+
+	DownloadnExtract()
+	{
+		static fso := ComObjCreate("Scripting.FileSystemObject")
+		URLDownloadToFile, % this.DriverUrl,  % this.zip
+		AppObj := ComObjCreate("Shell.Application")
+		FolderObj := AppObj.Namespace(this.zip)	
+		FileObj := FolderObj.ParseName(this.exe)
+		AppObj.Namespace(this.Dir "\").CopyHere(FileObj, 4|16)
+		FileDelete, % this.zip
+		if this.Dir
+			return this.Dir "\" this.exe
+		else
+			return this.exe
+	}
+
+	GetPIDbyName(name) 
+	{
+		static wmi := ComObjGet("winmgmts:\\.\root\cimv2")
+		for Process in wmi.ExecQuery("SELECT * FROM Win32_Process WHERE Name = '" name "'")
+			return Process.processId
+	}
 }
 
-ConvertResponseBody(oHTTP){
-	bytes:=oHTTP.Responsebody ;Responsebody has an array of bytes.  Single characters.
-	loop, % oHTTP.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
-		text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
-	return text
-}
 
-Payloadfix(p)
-{
-	p := StrReplace(json.dump(p),"[[]]","[{}]") ; why using StrReplace() >> https://www.autohotkey.com/boards/viewtopic.php?f=6&p=450824#p450824
-	p := RegExReplace(p,"\\\\uE(\d+)","\uE$1")  ; fixing Keys turn '\\uE000' into '\uE000'
-	return p
-}
 
-GetPIDbyName(name) {
-	static wmi := ComObjGet("winmgmts:\\.\root\cimv2")
-	for Process in wmi.ExecQuery("SELECT * FROM Win32_Process WHERE Name = '" name "'")
-		return Process.processId
-}

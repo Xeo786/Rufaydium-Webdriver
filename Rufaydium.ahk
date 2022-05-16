@@ -40,11 +40,38 @@ Class Rufaydium
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
-		r := Json.load(Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
-		if r 
+		r := Json.load(x := this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
+		if r
 			return r
 	}
 	
+	Request(url,Method,p:=0,w:=0) 
+	{
+		static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+		WebRequest.Open(Method, url, false)
+		WebRequest.SetRequestHeader("Content-Type","application/json")
+		
+		if p
+		{
+			p := StrReplace(json.dump(p),"[[]]","[{}]") ; why using StrReplace() >> https://www.autohotkey.com/boards/viewtopic.php?f=6&p=450824#p450824
+			p := RegExReplace(p,"\\\\uE(\d+)","\uE$1")  ; fixing Keys turn '\\uE000' into '\uE000'
+			WebRequest.Send(p)
+		}	
+		else
+			WebRequest.Send()
+		if w
+			WebRequest.WaitForResponse()
+		
+		if url ~= "msedge"
+		{
+			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
+				text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
+			return SubStr(text, 3)
+		}	
+		else
+			return WebRequest.responseText
+	}
+
 	SessionParameters(Parameters)
 	{
 		if !IsObject(Parameters)
@@ -72,11 +99,7 @@ Class Rufaydium
 				IfMsgBox Yes
 				{
 					this.driver.exit()
-					switch This.Driver.Name
-					{
-						case "chromedriver": i := this.driver.GetChromeDriver(k.message)
-						case "msedgedriver": i := this.driver.GetEdgeDrive(k.message)
-					}
+					i := this.driver.GetDriver(k.message)
 					if !FileExist(i)
 					{
 						Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
@@ -200,7 +223,7 @@ Class Session extends Rufaydium
 
 	Detail()
 	{
-		return Json.load(Request(this.debuggerAddress "/json","GET"))
+		return Json.load(this.Request(this.debuggerAddress "/json","GET"))
 	}
 	
 	GetTabs()
