@@ -524,9 +524,12 @@ Shadow elements can easily be accessed using `element.shadow()`
 Following example will navigates to Chrome extensions page and enables Developer mode
 ```autohotkey
 Chrome := new Rufaydium()
-Chrome.Driver.visible := true
-Chrome.capabilities := Capabilities.Abeerium
 Page := Chrome.getSessionByUrl("chrome://extensions")
+if !isobject(page)
+{
+	Page := Chrome.NewSession()
+	Page.Navigate("chrome://extensions")
+}
 page.QuerySelector("extensions-manager").shadow().QuerySelector("extensions-toolbar").shadow().getelementbyid("devMode").click()
 ```
 
