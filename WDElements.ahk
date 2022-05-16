@@ -115,12 +115,6 @@ Class WDElement extends Session
 		return this.Send("css/" Name,"GET")
 	}
 	
-	
-	shadow()
-	{
-		return this.Send("shadow","GET")
-	}
-	
 	ComputedRole() ; https://www.w3.org/TR/wai-aria-1.1/#usage_intro
 	{
 		return this.Send("computedrole","GET")
