@@ -147,7 +147,7 @@ Class RunDriver
 		}
 		
 		this.zip := this.dir "\" this.zip
-		this.DownloadnExtract()
+		return this.DownloadnExtract()
 	}
 	
 	GetVersion(uri)
