@@ -63,10 +63,11 @@ Class Rufaydium
 				{
 					this.driver.exit()
 
-					if (This.Driver.Name == "chromedriver")
-						this.driver.GetChromeDriver(k.message)
-					else if (This.Driver.Name == "msedgedriver")
-						this.driver.GetEdgeDrive(k.message)
+					switch This.Driver.Name
+					{
+						case "chromedriver": i := this.driver.GetChromeDriver(k.message)
+						case "msedgedriver": i := this.driver.GetEdgeDrive(k.message)
+					}
 
 					if !FileExist(i)
 					{
