@@ -7,7 +7,7 @@ Class RunDriver
 	__New(Location,Parameters:= "--port=9515")
 	{
 		SplitPath, Location,Name,Dir,,DriverName
-		this.Dir := Dir
+		this.Dir := Dir ? Dir : A_ScriptDir
 		this.exe := Name
 		this.param := Parameters
 		This.Target := Location " " chr(34) Parameters chr(34)
