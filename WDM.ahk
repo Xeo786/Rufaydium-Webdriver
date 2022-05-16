@@ -9,18 +9,18 @@ Class RunDriver
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir
 
-		if (DriverName ==  "chromedriver")
-			{
+		switch DriverName
+		{
+			case "chromedriver" :
 			if !FileExist(Location)
 				DriverName := this.GetChromeDriver() 
 			this.Options := "goog:chromeOptions"
-			}
-		else if (DriverName ==  "msedgedriver")
-			{
+			
+			case "msedgedriver" : 
 			if !FileExist(Location)
 				DriverName := this.GetEdgeDrive() 
-			this.Options := "ms:edgeOptions"				
-			}
+			this.Options := "ms:edgeOptions"
+		}
 
 		if !FileExist(Location)
 		{
