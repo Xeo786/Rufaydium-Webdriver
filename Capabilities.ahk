@@ -1,6 +1,7 @@
 
 class capabilities
 {
+    static _ucof := false
     static Simple := {"capabilities":{"":""}}
     __new(browser,Options,platform:="windows",notify:=false)
     {
@@ -17,6 +18,23 @@ class capabilities
         this.cap.desiredCapabilities.browserName := browser
     }
 
+    useCrossOriginFrame[]
+    {
+        set {
+            if value
+            {
+                this.addArg("-- --")
+                capabilities._ucof := true
+            }
+            else
+                capabilities._ucof := false
+        }
+
+        get
+        {
+            return capabilities._ucof
+        }
+    }
     Setbinary(location)
     {
         this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
