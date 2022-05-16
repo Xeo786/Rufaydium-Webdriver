@@ -65,11 +65,16 @@ class CDP extends Rufaydium
 		return this.ObjectID := this.call("DOM.resolveNode",{"nodeId":this.nodeId}).object.objectId
 	}
 	
-	navigate(url)
+	Navigate(url)
 	{
 		this.call("Page.navigate",{"url":url})
 	}
 	
+	Reload() ; by https://github.com/hotcheesesoup
+	{
+		this.call("Page.reload")
+	}
+
 	WaitForLoad(DesiredState:="complete", Interval:=100)
 	{
 		while this.Evaluate("document.readyState").value != DesiredState

@@ -177,6 +177,12 @@ Class Session extends Rufaydium
 		This.Switch(This.currentTab)
 	}
 	
+	NewWindow() ; by https://github.com/hotcheesesoup 
+	{
+		This.currentTab := this.Send("window/new","POST",{"type":"window"}).handle
+		This.Switch(This.currentTab)
+	}
+
 	Detail()
 	{
 		return Json.load(Request(this.debuggerAddress "/json","GET"))
