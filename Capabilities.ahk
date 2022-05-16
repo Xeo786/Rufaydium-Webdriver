@@ -37,7 +37,7 @@ class capabilities
         this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
     }
 
-    DebugPort(Port:=9515)
+    DebugPort(Port:=9222)
     {
         this.cap.capabilities.alwaysMatch[this.Options].debuggerAddress := "http://127.0.0.1:" Port
     }
