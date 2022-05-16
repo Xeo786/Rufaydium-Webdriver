@@ -14,11 +14,13 @@ Class RunDriver
 			if !FileExist(Location)
 				DriverName := this.GetChromeDriver() 
 			this.Options := "goog:chromeOptions"
-			
+			this.browser := "chrome"
+
 			case "msedgedriver" : 
 			if !FileExist(Location)
 				DriverName := this.GetEdgeDrive() 
 			this.Options := "ms:edgeOptions"
+			this.browser := "msedge"
 		}
 		
 		if !FileExist(Location)

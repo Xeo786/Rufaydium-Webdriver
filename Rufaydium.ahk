@@ -9,12 +9,14 @@
 ; 
 ; Note: no need to install /setup selenium, Rufaydium is AHK's Selenium
 ; Link : https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&p=456008#p456008
+; Git : https://github.com/Xeo786/Rufaydium-Webdriver
 ; By Xeo786
 
 #Include WDM.ahk
 #Include CDP.ahk
 #Include JSON.ahk
 #include WDElements.ahk
+#Include Capabilities.ahk
 
 Class Rufaydium
 {
@@ -22,6 +24,10 @@ Class Rufaydium
 	{
 		this.Driver := new RunDriver(DriverName,Parameters)
 		this.DriverUrl := "http://127.0.0.1:" This.Driver.Port
+		if this.Driver.Options
+			this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+		else 
+			this.capabilities := capabilities.Simple
 	}
 	
 	__Delete()
@@ -49,10 +55,13 @@ Class Rufaydium
 	
 	NewSession()
 	{
-		if !this.capabilities
-			this.capabilities := capabilities.Simple
-		
-		k := this.Send( this.DriverUrl "/session","POST",this.capabilities,1)
+		if !this.capabilities.options
+		{
+			Msgbox,64,Rufaydium WebDriver Support, % "Unknown Driver Loaded`nplease read readme and manualy set capabilities for " this.Driver.Name ".exe"
+			return
+		}
+		this.Driver.Options := this.capabilities.options ; in case someone use custom driver and want to change capabilities manually
+		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
 		
 		if k.error
 		{
@@ -88,6 +97,12 @@ Class Rufaydium
 	
 	getSessions() ; get all windows
 	{
+		if !this.capabilities.options
+		{
+			Msgbox,64,Rufaydium WebDriver Support, % "Unknown Driver Loaded`nplease read readme and manualy set capabilities for " this.Driver.Name ".exe"
+			return
+		}
+		this.Driver.Options := this.capabilities.options
 		Sessions := this.send(this.DriverUrl "/sessions","GET")
 		windows := []
 		for k, se in Sessions
@@ -672,102 +687,6 @@ Class by
 	static Plinktext := "partial link text"
 	static TagName := "tag name"
 	static XPath	:= "xpath"
-}
-
-; here you one can make Capabilities profile as per requirement
-class capabilities
-{
-	static ChromeDefault =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"platformName": "windows",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	; --user-data-dir example &  args links https://peter.sh/experiments/chromium-command-line-switches/
-	static headless =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"platformName": "windows",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"args": ["--headless"],
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	static ChromeProfile =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"args": ["--user-data-dir=C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data", "--profile-directory=Default"],
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	static Simple := {"capabilities":{"":""}}
-	static ChromeSimple := {"capabilities":{"alwaysMatch":{"browserName":"chrome"}}}
-
-	setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
-	{
-		if !userDataDir
-			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
-
-		this.ChromeProfile.capabilities.alwaysMatch["goog:chromeOptions"].args := ["--user-data-dir=" userDataDir, "--profile-directory=" profileName]
-		return this.ChromeProfile
-	}
-	; Brave-Browser is Chrome Based and required Chrome Driver
-	static BraveDefault =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "Brave",
-			"platformName": "windows",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"binary": "C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "Brave"
-		}
-	}
-	)
 }
 
 Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print

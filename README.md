@@ -95,113 +95,54 @@ Chrome := new Rufaydium("chromedriver.exe")
 Chrome.Driver.Exit() 
 ```
 
-# Capabilities Class
-
-Following class can be used to make required capabilities Custom profile for specific need that support concerned WebDriver. 
-
-* capabilities.ChromeDefault is just Custom profile that will help run chrome with no info-bar alert which says "chrome is being controlled by blah blah blah",
-* capabilities.Headless made for PDF printing Session.print 
-* capabilities.ChromeProfile explains how to use chrome CMD switches aka "args"
-* capabilities.Simple should work with any chromium WebDriver
+# Capabilities Class 
+One can access and use Capabilities after 'New Rufaydium()'
+Rufaydium will load Driver Capibilities according to Driver. but one make changes to capabilities before creating session
 
 ```AutoHotkey
-class capabilities
-{
-	static ChromeDefault =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"platformName": "windows",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	; --user-data-dir example &  args links https://peter.sh/experiments/chromium-command-line-switches/
-	static headless =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"platformName": "windows",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"args": ["--headless"],
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	static ChromeProfile =
-	( LTrim Join
-	{
-	"capabilities": {
-		"alwaysMatch": {
-			"browserName": "chrome",
-			"goog:chromeOptions": {
-				"w3c": json.true,
-				"args": ["--user-data-dir=C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data", "--profile-directory=Default"],
-				"excludeSwitches": ["enable-automation"]
-			}
-		},
-		"firstMatch": [{}]
-		},
-	"desiredCapabilities": {
-		"browserName": "chrome"
-		}
-	}
-	)
-	static Simple := {"capabilities":{"":""}}
-	static ChromeSimple := {"capabilities":{"alwaysMatch":{"browserName":"chrome"}}}
+Chrome := new Rufaydium() ; will load chrome driver with default Capabilities
+Chrome.capabilities.setUserProfile("Default") ; can use Default user 
+;Chrome.capabilities.setUserProfile("Profile 1") ; can change user profile
 
-	setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
-	{
-		if !userDataDir
-			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
-
-		this.ChromeProfile.capabilities.alwaysMatch["goog:chromeOptions"].args := ["--user-data-dir=" userDataDir, "--profile-directory=" profileName]
-		return this.ChromeProfile
-	}
-}
+; New Session will be created according to above Capabilities settings
+Session := Chrome.NewSession()
 ```
-We can load required Capabilities by doing, 
-
+Capabilities can also be setted manually 
 ```AutoHotkey
-Chrome.capabilities := Capabilities.ChromeDefault
+Browser := new Rufaydium()
+Browser.capabilities := new (Browser,BrowserOptions,"windows",true) 
+; Browser.capabilities..... other methods
 ```
 
-## Capabilities.setUserProfile(profileName:="Default", userDataDir:="")
+## setting Args
+command-line arguments to use when starting Chrome. See [here](http://peter.sh/experiments/chromium-command-line-switches/)
 ```AutoHotkey
 Chrome := new Rufaydium()
-Chrome.capabilities := Capabilities.ChromeDefault("default")
-DPS := Chrome.NewSession() ; will create session using default chrome profile from chrome default User Data Drirector
+Chrome.capabilities.addArg(""--headless"") ; will run session in headless mode 
+```
+## Binary
+We can also load Chrome based browser for example Brave browser its chrome based and can be controlled using ChromeDriver, 
 
-Chrome.capabilities := Capabilities.ChromeDefault("profile 1")
-P1S := Chrome.NewSession() ; will create session using chrome profile 1 from chrome default User Data Drirector
-
-Chrome.capabilities := Capabilities.ChromeDefault(Some_profile_Name,SomeuserDataDirlocation )
-P1S := Chrome.NewSession() ; will create session using desired User Data Directory and Profile
+```AutoHotkey
+Chrome := new Rufaydium() ; Brave browser support chromedriver.exe
+; setting Brave browser 
+Chrome.capabilities.Setbinary("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") 
+; New Session will be created using Brave browser, 
+Session := Chrome.NewSession()
+```
+## other methods
+```AutoHotkey
+Chrome := new Rufaydium()
+; most of option that are included as capabilities method are defined here https://chromedriver.chromium.org/capabilities#h.p_ID_106
+Chrome.capabilities.Addextensions(extensionloaction) ; will load extensions
+Chrome.capabilities.AddexcludeSwitches("enable-automation") ; will load chrome without default args
+Chrome.capabilities.DebugPort(9255) ; will change port for debuggerAddress
 ```
 
 # Rufaydium Sessions
 ## New Session
-We can skip capabilities, as session will load `Capabilities.simple` as default Capabilities which should work with any browser.  
 We can create session after Setting up capabilities 
+We can skip capabilities, as session will load default Capabilities according to Driver, which should work with any Driver.  
 
 Note: Incase of webdriver version mismatched with browser version Rufaydium will ask to update driver and it will update webdriver automatically and load new driver and create session, this ability supported for Chome and MS Edge Webbrowser for now
 
