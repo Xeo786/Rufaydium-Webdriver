@@ -57,15 +57,21 @@ class CDP extends Rufaydium
 		root := this.call("DOM.getDocument",{"depth": -1,"pierce":json.true})
 		i := 0
 		frames := []
-		i := 0, Pos := 1
-		k = "nodeName":"HTML"\S+"documentURL":("https:\S+),"localName"\S+"nodeId":(\d+),"nodeName":"#document","nodeType":9
-		While (Pos := RegExMatch(Json.dump(root),k,z, Pos + StrLen(z)))
+		param = "frameId": "\w+", "localName": "html", "nodeId": (\d+), "nodeName": "HTML"
+		;param = "nodeId":\s(\d+),\s"nodeName":\s"[html]*?[HTML]*?"
+		;param = "nodeId":\s(\d+),\s"nodeName":\s"#document[-fragment]*?"
+		;param = "nodeId":\s(\d+),\s"nodeName":\s"[html]*?[HTML]*?"
+		;param = "nodeId":\s(\d+),\s"nodeName":\s"#document[-fragment]*?"
+		;param = "iframe",\s"nodeId":\s(\d+)
+		Pos := 1, f := 0, i := 0
+		While (Pos := RegExMatch(json.dump(root),param,f, Pos + StrLen(f)))
 		{
-			if z1
-			{
-				frames[++i] := New Element(z2,StrReplace(z1,"\/","\"))
-			}
+			++i
+			frames.push(f1-1)
 		}
+		
+		for k, v in Frames
+			frames[k] := New CDPElement(v,this.address)
 		return frames
 	}
 	
@@ -135,7 +141,7 @@ class CDP extends Rufaydium
 		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":path}).nodeIDs
 		for i, NodeID in NodeIDs
 		{
-			e[i-1] := New CDPElement(NodeID,this.address)
+			e[i -1] := New CDPElement(NodeID,this.address)
 		}
 		return e
 	}
@@ -147,7 +153,7 @@ class CDP extends Rufaydium
 		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":Class}).nodeIDs
 		for i, NodeID in NodeIDs
 		{
-			e[i-1] := New CDPElement(NodeID,this.address)
+			e[i -1] := New CDPElement(NodeID,this.address)
 		}
 		return e
 	}
@@ -159,7 +165,7 @@ class CDP extends Rufaydium
 		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":Name}).nodeIDs
 		for i, NodeID in NodeIDs
 		{
-			e[i] := New CDPElement(NodeID,this.address)
+			e[i -1] := New CDPElement(NodeID,this.address)
 		}
 		return e
 	}
