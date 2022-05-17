@@ -50,7 +50,9 @@ Rundriver Class intigrated into Rufaydium.ahk that launches driver in background
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
 MSEdge := new Rufaydium("msedgedriver.exe","--port=9516") ; will Download/Load MS Edge driver comunication port will be 9516
 ```
-Note: Driver will be download into A_ScriptDir and old driver will be move to A_ScriptDir "\Backup"
+Note: 
+1)Driver will be download into A_ScriptDir and old driver will be move to A_ScriptDir "\Backup"
+2)Driver will not run if Port is occupied different, Make sure not run different drivers with same port. i.e. trying to run Chromedriver and Edgedriver with same port
 
 ## Driver Parameters
 parameters are WebDriver.exe CMD arguments option can vary according to different drivers
