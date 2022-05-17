@@ -23,11 +23,17 @@ class capabilities
         set {
             if value
             {
-                this.addArg("-- --")
+                this.addArg("--disable-site-isolation-trials")
+		this.addArg("--disable-web-security")
                 capabilities._ucof := true
             }
             else
-                capabilities._ucof := false
+            {
+	    	capabilities._ucof := false
+		for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+			if (arg = "--disable-site-isolation-trials") or (arg = "--disable-web-security")
+				this.RemoveArg(arg)
+	    }	
         }
 
         get
@@ -35,6 +41,7 @@ class capabilities
             return capabilities._ucof
         }
     }
+    
     Setbinary(location)
     {
         this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
@@ -47,6 +54,15 @@ class capabilities
         this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
     }
 
+    RemoveArg(arg)
+    {
+	for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+	{
+	    if (argtbr = arg)
+		this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+	}
+    }
+ 
     Addextensions(crxlocation)
     {
         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
