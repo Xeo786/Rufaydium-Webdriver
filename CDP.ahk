@@ -44,16 +44,49 @@ class CDP extends Rufaydium
 		return response.result
 	}
 	
+	Activate
+	{
+		set
+		{
+			Page.Call("Page.bringToFront")
+		}
+	}
+
 	GetDOCwithframe()
 	{
-		FrmNodeids := this.call("DOM.getDocument",{"depth": -1,"pierce":json.true()})
+		root := this.call("DOM.getDocument",{"depth": -1,"pierce":json.true})
 		i := 0
 		frames := []
-		for k, v in FrmNodeids
-			frames[++i] := New Element(v,this.address)
+		i := 0, Pos := 1
+		k = "nodeName":"HTML"\S+"documentURL":("https:\S+),"localName"\S+"nodeId":(\d+),"nodeName":"#document","nodeType":9
+		While (Pos := RegExMatch(Json.dump(root),k,z, Pos + StrLen(z)))
+		{
+			if z1
+			{
+				frames[++i] := New Element(z2,StrReplace(z1,"\/","\"))
+			}
+		}
 		return frames
 	}
 	
+	GetlocalStorage(url)
+	{
+		LocalStoarge :=  this.call("DOMStorage.getDOMStorageItems",{"storageId":{"securityOrigin":url,"isLocalStorage":json.true}}).entries
+		enrties := {}
+		for k, v in LocalStoarge
+		{
+			key := "", Value := ""
+			for i, j in v
+			{
+				if i = 1
+					key := j
+				else if i = 2
+					Value := j
+			}
+			enrties[key] := Value
+		}
+		return enrties
+	}
 	
 	requestNode(Objectid)
 	{

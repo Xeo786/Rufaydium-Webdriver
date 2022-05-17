@@ -292,6 +292,10 @@ Class Session extends Rufaydium
 		
 		set
 		{
+			if instr(Value,"www.") and !instr(Value,"https://")
+				Value := "https://" Value
+			else if !instr(Value,"https://www.")
+				Value := "https://www." Value
 			return this.Send("url","POST",{"url":value})
 		}
 	}
