@@ -666,13 +666,8 @@ for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with t
 }
 ```
 # CDP.Document()
-CDP support DOM and we can access any element using getelement with same method and syntax as Session.methods() but in order to access DOM we need to call method `DOM.getDocument` from CDP apis which is crucial, it Assigns NodeId to elements by these nodeIds we can Session.CDP access DOM, `CDP.Document()` calls `DOM.getDocument` which tyhen provide Session.CDP to use getelement(s)
-https://chromedevtools.github.io/devtools-protocol/tot/DOM/
-```AutoHotkey
-Session.CDP.Document()
-; Now we can access any element
-Session.CDP.querySelectorAll(selector)
-```
+CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP have developed reliable access to frame
+
 # CDP functionalities
 ```AutoHotkey
 Session.CDP.navigate(url) ; navigate to url
@@ -760,6 +755,14 @@ return found
 )
 Session.CDP.evaluate(js)
 Session.CDP.evaluate("findByTextContent('" btnName "').childNodes[0].click()")
+```
+
+# CDP.Frames
+We can switch to frame using CDP methoed Just like Basic
+```AutoHotkey
+msgbox, % Page.CDP.FramesLength() ; will return child frame length
+Page.CDP.Frame(0) ; sitched to Frame 1
+Page.CDP.ParentFrame() ; sitched back to Main page / frame
 ```
 # CDP Call
 Call is `sendCommand call` for Chrome Devtools protocols, https://chromedevtools.github.io/devtools-protocol/ 

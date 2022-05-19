@@ -8,15 +8,38 @@ class CDP extends Rufaydium
 	__new(Address)
 	{
 		this.address := Address
+		root := this.call("DOM.getDocument",{"depth": 0})  ;this.call("DOM.getDocument",{"":""}) 
+		this.nodeId := root.root.nodeId
+		FrameData := this.call("Page.getFrameTree").frametree
+		if FrameData.frame
+			this.framedetail := FrameData.frame
+		if FrameData.childFrames
+			this.childFrames := FrameData.childFrames
 	}
 	
-	Document()
+	FramesLength()
 	{
-		; this.call("DOM.getDocument",{"depth": -1,"pierce":json.true()}) ; its slow, this will get all frame nodeid if cross origin enabled
-		root := this.call("DOM.getDocument",{"":""}) 
-		this.nodeId := root.root.nodeId	
+		return this.childFrames.length()
 	}
 	
+	Frame(i)
+	{
+		frameId := this.childFrames[i +1].frame.id
+		this.ParentNodeID := this.Nodeid
+		if frameId
+		{
+			nodeid := this.call("DOM.getFrameOwner",{"frameId":frameId}).nodeid
+			backendNodeId := this.call("DOM.describeNode",{"nodeId":nodeid}).node.contentDocument.backendNodeId
+			contentDocObject := this.call("DOM.resolveNode",{"backendNodeId":backendNodeId}).object.objectId
+			this.nodeid := this.call("DOM.requestNode",{"objectId":contentDocObject}).nodeId
+		}	
+	}
+	
+	ParentFrame()
+	{
+		this.Nodeid := this.ParentNodeID
+	}
+
 	Call(DomainAndMethod, Params:="") ;https://stackoverflow.com/questions/70654898/selenium-4-x-trying-to-post-cdp-unsupportedcommandexception
 	{
 		Payload := { "params": Params ? Params : {"":""}, "cmd": DomainAndMethod}
@@ -52,23 +75,6 @@ class CDP extends Rufaydium
 		}
 	}
 
-	Getframes() ; with will return with main Document as frame and all frames without considering frame tree
-	{
-		root := this.call("DOM.getDocument",{"depth": -1,"pierce":json.true})
-		i := 0
-		frames := []
-		i := 0, Pos := 1
-		k = documentURL":\s"[\D\/]+":\s(\d+)
-		While (Pos := RegExMatch(json.dump(root),k,z, Pos + StrLen(z)))
-		{
-			if z1
-			{
-				frames[++i] := New CDPElement(z1,this.address)
-			}
-		}
-		return frames
-	}
-	
 	GetlocalStorage(url)
 	{
 		LocalStoarge :=  this.call("DOMStorage.getDOMStorageItems",{"storageId":{"securityOrigin":url,"isLocalStorage":json.true}}).entries
@@ -424,65 +430,8 @@ class CDP extends Rufaydium
 		MouseEvent := {"type":"mouseReleased","button":"left","x":x,"y":y,"clickCount":1}
 		this.call("Input.dispatchMouseEvent",MouseEvent)
 	}
-	
-	getFrameElement(frameID)
-	{
-		if !frameID
-		{
-			msgbox, no frame id found
-			return
-		}
-		
-		nodeId := this.call("DOM.getFrameOwner",{"frameId":frameID}).nodeId
-		if nodeId 
-			return New CDPElement(nodeId,this.Address)
-	}
-	
-	GetFrame(i:="")
-	{
-		Frames := {}
-		Getchildframe(this.call("Page.getFrameTree").frametree,Frames)
-		if(i = "")
-		{
-			return Frames
-		}
-		
-		for k, frame in Frames
-			for n, p in frame
-				if(i = p)
-					return frame
-	}
 }
 
-Getchildframe(childframes,Frames)
-{
-	bkchildframes := []
-	for k, cf in childframes
-	{
-		
-		if(k = "frame")
-		{
-			if CF.name
-				Frames.push({"Name":cf.name,"id":cf.id})
-		}
-		else if(k = "childFrames")
-			bkchildframes.push(cf)
-			
-		if isobject(cf) and jee_IsNumeric(k)
-			Getchildframe(cf,Frames)
-	}
-	
-	if( bkchildframes.length() > 0)
-		for j, l in bkchildframes
-			Getchildframe(l,Frames)
-}
-
-jee_IsNumeric(var){
-	static number := "number"
-	if var is number
-		return true
-	return false
-}
 
 Class CDPElement extends CDP
 {
