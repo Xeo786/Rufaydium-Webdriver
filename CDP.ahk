@@ -52,26 +52,20 @@ class CDP extends Rufaydium
 		}
 	}
 
-	GetDOCwithframe()
+	Getframes() ; with will return with main Document as frame and all frames without considering frame tree
 	{
 		root := this.call("DOM.getDocument",{"depth": -1,"pierce":json.true})
 		i := 0
 		frames := []
-		param = "frameId": "\w+", "localName": "html", "nodeId": (\d+), "nodeName": "HTML"
-		;param = "nodeId":\s(\d+),\s"nodeName":\s"[html]*?[HTML]*?"
-		;param = "nodeId":\s(\d+),\s"nodeName":\s"#document[-fragment]*?"
-		;param = "nodeId":\s(\d+),\s"nodeName":\s"[html]*?[HTML]*?"
-		;param = "nodeId":\s(\d+),\s"nodeName":\s"#document[-fragment]*?"
-		;param = "iframe",\s"nodeId":\s(\d+)
-		Pos := 1, f := 0, i := 0
-		While (Pos := RegExMatch(json.dump(root),param,f, Pos + StrLen(f)))
+		i := 0, Pos := 1
+		k = documentURL":\s"[\D\/]+":\s(\d+)
+		While (Pos := RegExMatch(json.dump(root),k,z, Pos + StrLen(z)))
 		{
-			++i
-			frames.push(f1-1)
+			if z1
+			{
+				frames[++i] := New CDPElement(z1,this.address)
+			}
 		}
-		
-		for k, v in Frames
-			frames[k] := New CDPElement(v,this.address)
 		return frames
 	}
 	
