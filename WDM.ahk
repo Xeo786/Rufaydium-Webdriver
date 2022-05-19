@@ -10,7 +10,6 @@ Class RunDriver
 		this.Dir := Dir ? Dir : A_ScriptDir
 		this.exe := Name
 		this.param := Parameters
-		This.Target := Location " " chr(34) Parameters chr(34)
 		this.Name := DriverName
 		switch this.Name
 		{
@@ -23,9 +22,9 @@ Class RunDriver
 				this.browser := "msedge"
 		}
 		
-		if !FileExist(Location)
+		if !FileExist(Location) and this.browser
 			Location := this.GetDriver()
-
+		This.Target := Location " " chr(34) Parameters chr(34)
 		if !FileExist(Location)
 		{
 			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
