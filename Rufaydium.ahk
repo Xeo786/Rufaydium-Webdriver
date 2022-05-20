@@ -63,14 +63,6 @@ Class Rufaydium
 			Rufaydium.WebRequest.WaitForResponse()
 		return Rufaydium.WebRequest.responseText
 	}
-
-	SessionParameters(Parameters)
-	{
-		if !IsObject(Parameters)
-			return
-		else
-			this.capabilities := Parameters
-	}
 	
 	NewSession()
 	{
