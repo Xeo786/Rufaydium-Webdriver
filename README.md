@@ -115,13 +115,26 @@ Browser := new Rufaydium()
 Browser.capabilities := new (Browser,BrowserOptions,"windows",true) 
 ; Browser.capabilities..... other methods
 ```
-
-## setting Args
+## Enable HeadlessMode
+This will Set and GET HeadlessMode
+```AutoHotkey
+Browser.capabilities.HeadlessMode := true
+msgbox, % Browser.capabilities.HeadlessMode
+```
+## Eable CrossOriginFrame
+This will Set and Get CrossOriginFrame access
+```AutoHotkey
+Browser.capabilities.useCrossOriginFrame := true
+msgbox, % Browser.capabilities.useCrossOriginFrame
+```
+## Setting / Removing Args
 command-line arguments to use when starting Chrome. See [here](http://peter.sh/experiments/chromium-command-line-switches/)
 ```AutoHotkey
 Chrome := new Rufaydium()
-Chrome.capabilities.addArg(""--headless"") ; will run session in headless mode 
+Chrome.capabilities.addArg("--headless")
+Chrome.capabilities.RemoveArg("--headless")
 ```
+
 ## Binary
 We can also load Chrome based browser for example Brave browser its chrome based and can be controlled using ChromeDriver, 
 
