@@ -2,6 +2,8 @@
 class capabilities
 {
     static Simple := {"capabilities":{"":""}}
+    static _ucof := false
+    static _hmode := false
     __new(browser,Options,platform:="windows",notify:=false)
     {
         this.options := Options
@@ -22,11 +24,68 @@ class capabilities
         this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
     }
 
+    useCrossOriginFrame[]
+    {
+        set {
+            if value
+            {
+                this.addArg("--disable-site-isolation-trials")
+		        this.addArg("--disable-web-security")
+                capabilities._ucof := true
+            }
+            else
+            {
+                capabilities._ucof := false
+                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+                    if (arg = "--disable-site-isolation-trials") or (arg = "--disable-web-security")
+                        this.RemoveArg(arg)
+	        }	
+        }
+
+        get
+        {
+            return capabilities._ucof
+        }
+    }
+
+    HeadlessMode[]
+    {
+        set 
+        {
+            if value
+            {
+                this.addArg("--headless")
+                capabilities._hmode := true
+            }
+            else
+            {
+                capabilities._hmode := false
+                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+                    if (arg = "--headless")
+                        this.RemoveArg(arg)
+	        }	
+        }
+
+        get
+        {
+            return capabilities._hmode
+        }
+    }
+
     addArg(arg) ; args links https://peter.sh/experiments/chromium-command-line-switches/
     {
         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
             this.cap.capabilities.alwaysMatch[this.Options].args := []
         this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
+    }
+
+    RemoveArg(arg)
+    {
+	    for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+	    {
+	        if (argtbr = arg)
+		    this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+	    }
     }
 
     Addextensions(crxlocation)

@@ -81,6 +81,7 @@ Class WDElement extends Session
 		
 		Set
 		{
+			this.Clear()
 			return this.Send("value","POST", {"text":Value})
 		}
 	}
@@ -95,7 +96,7 @@ Class WDElement extends Session
 	
 	Clear()
 	{
-		;json.Load(this.Send(this.address "/ClearValue","POST")).value ; not working for me
+		;this.Send("ClearValue","POST"); not working for me
 		obj :=  {"text": key.ctrl "a" key.delete}
 		return this.Send("value","POST", obj)
 	}

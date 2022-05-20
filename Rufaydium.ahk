@@ -20,6 +20,7 @@
 
 Class Rufaydium
 {
+	static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 	__new(DriverName:="chromedriver.exe",Parameters:="--port=9515")
 	{
 		this.Driver := new RunDriver(DriverName,Parameters)
@@ -47,29 +48,20 @@ Class Rufaydium
 	
 	Request(url,Method,p:=0,w:=0) 
 	{
-		static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		WebRequest.Open(Method, url, false)
-		WebRequest.SetRequestHeader("Content-Type","application/json")
+		Rufaydium.WebRequest.Open(Method, url, false)
+		Rufaydium.WebRequest.SetRequestHeader("Content-Type","application/json")
 		
 		if p
 		{
 			p := StrReplace(json.dump(p),"[[]]","[{}]") ; why using StrReplace() >> https://www.autohotkey.com/boards/viewtopic.php?f=6&p=450824#p450824
 			p := RegExReplace(p,"\\\\uE(\d+)","\uE$1")  ; fixing Keys turn '\\uE000' into '\uE000'
-			WebRequest.Send(p)
+			Rufaydium.WebRequest.Send(p)
 		}	
 		else
-			WebRequest.Send()
+			Rufaydium.WebRequest.Send()
 		if w
-			WebRequest.WaitForResponse()
-		
-		if url ~= "msedge"
-		{
-			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
-				text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
-			return SubStr(text, 3)
-		}	
-		else
-			return WebRequest.responseText
+			Rufaydium.WebRequest.WaitForResponse()
+		return Rufaydium.WebRequest.responseText
 	}
 
 	SessionParameters(Parameters)
