@@ -114,7 +114,7 @@ Session := Chrome.NewSession()
 Capabilities can also be setted manually 
 ```AutoHotkey
 Browser := new Rufaydium()
-Browser.capabilities := new (Browser,BrowserOptions,"windows",true) 
+Browser.capabilities := new capabilities(Browser,BrowserOptions,"windows",true) 
 ; Browser.capabilities..... other methods
 ```
 ## Enable HeadlessMode
@@ -138,7 +138,7 @@ Chrome.capabilities.RemoveArg("--headless")
 ```
 
 ## Binary
-We can also load Chrome based browser for example Brave browser its chrome based and can be controlled using ChromeDriver, 
+We can also load Chrome based browser for example Brave browser its chrome based and can be controlled using ChromeDriver, SetBinary has been Merged into `NewSession(binarylocation)` method
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; Brave browser support chromedriver.exe
@@ -167,6 +167,20 @@ Note: Incase of webdriver version mismatched with browser version Rufaydium will
 Chrome := new Rufaydium("chromedriver.exe")
 Session := Chrome.NewSession()
 ```
+
+## Using WebDriver with different Browsers
+Brave uses chromedriver, by simply passing Browser.exe (referred as binary) into NewSession() method
+```autohotkey
+Brave := new Rufaydium() ; Brave browser support chromedriver.exe
+; New Session will be created using Brave browser, 
+Session := Brave.NewSession("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")
+Brave.Session() ; will always open new brave session untill we reset 
+Brave.Capabilities.Resetbinary() ; reset binary to driver default
+Brave.Session() ; will create chrome session as we have loaded chrome driver
+```
+this way we can load All chrome Based browsers
+
+## Getting Existing Sessions
 We can also access previously created session with title or URL, 
  
 ```AutoHotkey
@@ -176,7 +190,8 @@ Session := Chrome.getSessionByUrl(URL)
 Session2 := Chrome.getSessionByTitle(Title)
 ```
 
-Note: above methods are based on `httpserver\sessions` command which is not W3C standred, but rufaydium uses ahk's functions readini, writeini & deleteini, to store and parse Session IDs therfore `getSessionByUrl()` & `getSessionByTitle()` now support firefox session, this way Rufadium has the ability to continue geckodriver Sessions, or multiple AHK scripts can contorl firefox by sharing `ActiveSessions.ini` which records/delete sessionids at `A_ScriptDir`, hence that ini should be shared in such way in case scripts are being run from different folder, in future update sharing ActiveSessions.ini will be no issue as I just had an idea.
+Note: above methods are based on `httpserver\sessions` command which is not W3C standred, but rufaydium uses ahk's functions readini, writeini & deleteini, to store and parse Session IDs by creating`ActiveSessions.ini` at `GeckoDriver location`, therefore `getSessionByUrl()` & `getSessionByTitle()` now support firefox sessions too, this way Rufadium has the ability to continue geckodriver Sessions, or multiple AHK scripts can contorl firefox.
+
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switch to new tab or New Window
