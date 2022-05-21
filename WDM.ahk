@@ -20,6 +20,9 @@ Class RunDriver
 			case "msedgedriver" : 
 				this.Options := "ms:edgeOptions"
 				this.browser := "msedge"
+			case "geckodriver" : 
+				this.Options := "moz:firefoxOptions"
+				this.browser := "firefox"
 		}
 		
 		if !FileExist(Location) and this.browser
@@ -130,7 +133,25 @@ Class RunDriver
 
 				DriverVersion := this.GetVersion(uri) ; Thanks RaptorX fixing Issues GetEdgeDrive
 				this.DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" this.zip
+			case "geckodriver" :
+				return 0 ; under construction.....
+				uri := "https://api.github.com/repos/mozilla/geckodriver/releases/tags/v0.31.0"
+				uri := "https://api.github.com/repos/mozilla/geckodriver/releases/latest"
+				for i, asset in json.load(this.GetVersion(uri)).assets
+				{
+					if instr(asset.name,"win64.ZIP") and instr(bit,"64")
+					{
+						this.DriverUrl := asset.browser_download_url
+						this.zip := asset.name
+					}
+					else if instr(asset.name,"win32.zip") 
+					{
+						this.DriverUrl := asset.browser_download_url
+						this.zip := asset.name
+					}
+				}
 		} 
+
 		if InStr(this.DriverVersion, "NoSuchKey"){
 			MsgBox,16,Testing,Error`nDriverVersion
 			return false
@@ -153,8 +174,9 @@ Class RunDriver
 	{
 		WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 		WebRequest.Open("GET", uri, false)
-		WebRequest.SetRequestHeader("Content-Type","application/json")
-		WebRequest.Send()
+		;WebRequest.SetRequestHeader("Content-Type","application/json")
+		WebRequest.SetRequestHeader("Accept","application/vnd.github.v3+json")
+		;WebRequest.Send()
 		if url ~= "msedge"
 		{
 			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time

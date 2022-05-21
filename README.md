@@ -168,13 +168,13 @@ Session := Chrome.NewSession()
 We can also access previously created session with title or URL, 
  
 ```AutoHotkey
-Session := Rufaydium.getSession(1) ; this will return with Session by number sequencing from first created to latest created
-Session := Rufaydium.getSession(1,2) ; this will return with first session and switch Second tab, Tabs count from left to right
-Session := Rufaydium.getSessionByUrl(URL)
-Session2 := Rufaydium.getSessionByTitle(Title)
+Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created
+Session := Chrome.getSession(1,2) ; this will return with first session and switch Second tab, Tabs count from left to right
+Session := Chrome.getSessionByUrl(URL)
+Session2 := Chrome.getSessionByTitle(Title)
 ```
 
-Note: above methods are based on Rufaydium.getSessions() which is not W3C standred and only supports Chrome or chrome Based browser, does not support firefox's geckodriver.exe, I am thinking about saving all session IDs created from geckodriver and saving them into some ini and implemenet `getSessionByUrl()` & `getSessionByTitle()`.
+Note: above methods are based on Chrome.getSessions() which is not W3C standred and only supports Chrome or chrome Based browser, does not support firefox's geckodriver.exe, I am thinking about saving all session IDs created from geckodriver and saving them into some ini and implemenet `getSessionByUrl()` & `getSessionByTitle()`.
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switch to new tab or New Window
