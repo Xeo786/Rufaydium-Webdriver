@@ -1,7 +1,7 @@
 
 class Capabilities
 {
-    static Simple := {"capabilities":{"":""}}
+    static Simple := {"cap":{"capabilities":{"":""}}}
     static _ucof := false
     static _hmode := false
     __new(browser,Options,platform:="windows",notify:=false)

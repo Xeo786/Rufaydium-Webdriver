@@ -24,7 +24,7 @@ Class RunDriver
 				this.Options := "moz:firefoxOptions"
 				this.browser := "firefox"
 			case "operadriver" :
-				this.Options := "operaOptions"
+				this.Options := "goog:chromeOptions"
 				this.browser := "opera"
 		}
 		
