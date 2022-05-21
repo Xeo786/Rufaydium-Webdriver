@@ -4,7 +4,7 @@
 
 Class RunDriver
 {
-	__New(Location,Parameters:= "--port=9515")
+	__New(Location,Parameters:= "--port=0000")
 	{
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir ? Dir : A_ScriptDir
@@ -16,15 +16,21 @@ Class RunDriver
 			case "chromedriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "chrome"
+				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9515")
 			case "msedgedriver" : 
 				this.Options := "ms:edgeOptions"
 				this.browser := "msedge"
+				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9516")
 			case "geckodriver" : 
 				this.Options := "moz:firefoxOptions"
 				this.browser := "firefox"
+				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9517")
 			case "operadriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "opera"
+				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9518")
+			Default:
+				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9519")
 		}
 		
 		if !FileExist(Location) and this.browser
@@ -156,10 +162,20 @@ Class RunDriver
 					}
 				}
 			case "operadriver" :
-				; idk have opera therefore 
-				; uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases/tags/v0.31.0"
-				; that just delete operadriver.exe if you thing its old Rufaydium will download latest
-				uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest"
+				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
+				{
+					uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases"
+					for i, asset in json.load(this.GetVersion(uri)).assets
+					{
+						if instr(asset.name,bver1)
+						{
+							uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases/tags/" asset.tag_name
+						}
+					}
+				}	
+				else
+					uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest", bver1 := "unknown"
+				
 				for i, asset in json.load(this.GetVersion(uri)).assets
 				{
 					if instr(asset.name,"win64.zip") and instr(bit,"64")

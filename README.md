@@ -56,8 +56,18 @@ Note:
 1)Driver will be download into A_ScriptDir and old driver will be move to A_ScriptDir "\Backup"
 2)Driver will not run if Port is occupied different, Make sure not run different drivers with same port. i.e. trying to run Chromedriver and Edgedriver with same port
 
+# Driver Default port
+Rufaydium now supports 4 Web drivers and has one default port; it will not run if the Port is occupied. We need to run the driver with a separate port using Driver Parameters, or we need to exit the already running driver and run a different driver if we are up to using the same port. Rufaydium now has default ports for every driver to resolve this conflict
+
+>***Driver Name		:  Ports*** \
+>chromedriver	:  9515 \
+>msedgedriver	:  9516 \
+>geckodriver	:  9517 \
+>operadriver	:  9518 \
+>unkownDriver	:  9519
+
 ## Driver Parameters
-parameters are WebDriver.exe CMD arguments option can vary according to different drivers
+Parameters are WebDriver.exe CMD arguments option can vary according to different drivers
 and we can also check these arguments
 
 ```AutoHotkey
