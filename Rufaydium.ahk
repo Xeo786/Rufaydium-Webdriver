@@ -82,7 +82,6 @@ Class Rufaydium
 		}
 		this.Driver.Options := this.capabilities.options ; in case someone use custom driver and want to change capabilities manually
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
-		msgbox, % k.error
 		if k.error
 		{
 			
