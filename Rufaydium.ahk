@@ -43,9 +43,14 @@ Class Rufaydium
 	__Delete()
 	{
 		;this.QuitAllSessions()
-		;this.Driver.Exit()
+		;this.Exit()
 	}
 	
+	Exit()
+	{
+		this.Driver.Exit()
+	}
+
 	send(url,Method,Payload:= 0,WaitForResponse:=1)
 	{
 		if !instr(url,"HTTP")
@@ -73,13 +78,15 @@ Class Rufaydium
 		return Rufaydium.WebRequest.responseText
 	}
 	
-	NewSession()
+	NewSession(Binary:="")
 	{
 		if !this.capabilities.options
 		{
 			Msgbox,64,Rufaydium WebDriver Support, % "Unknown Driver Loaded`nplease read readme and manualy set capabilities for " this.Driver.Name ".exe"
 			return
 		}
+		if Binary
+			this.capabilities.Setbinary(Binary)
 		this.Driver.Options := this.capabilities.options ; in case someone use custom driver and want to change capabilities manually
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
 		if k.error
@@ -111,7 +118,7 @@ Class Rufaydium
 		window.address := this.DriverUrl "/session/" k.SessionId
 		if This.driver.Name = "geckodriver"
 		{
-			IniWrite, % k.SessionId, % A_ScriptDir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
+			IniWrite, % k.SessionId, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
 		}
 		
 		return new Session(window)
@@ -128,14 +135,14 @@ Class Rufaydium
 
 		if This.driver.Name = "geckodriver"
 		{
-			IniRead, SessionList, % A_ScriptDir "/ActiveSessions.ini", % This.driver.Name
+			IniRead, SessionList, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name
 			Windows := []
 			for k, se in StrSplit(SessionList,"`n")
 			{
 				se := RegExReplace(se, "(.*)=(.*)", "$1")
 				r :=  this.Send(this.DriverUrl "/session/" se "/url","GET")
 				if r.error
-					IniDelete, % A_ScriptDir "/ActiveSessions.ini", % This.driver.Name, % se
+					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % se
 				else
 				{
 					s := []
