@@ -24,6 +24,11 @@ class Capabilities
         this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
     }
 
+    Resetbinary()
+    {
+        this.cap.capabilities.alwaysMatch[this.Options].Delete("binary")
+    }
+
     useCrossOriginFrame[]
     {
         set {
@@ -84,7 +89,7 @@ class Capabilities
 	    for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
 	    {
 	        if (argtbr = arg)
-		    this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+		    this.cap.capabilities.alwaysMatch[this.Options].args.RemoveAt(i)
 	    }
     }
 
