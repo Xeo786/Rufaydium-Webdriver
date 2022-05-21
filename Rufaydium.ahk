@@ -36,10 +36,9 @@ Class Rufaydium
 			case "operadriver" :
 				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
 		}
-
-			
-		;if !isobject(cap := this.capabilities)
-		;	this.capabilities := capabilities.Simple
+		msgbox, % isobject(cap := this.capabilities.cap)
+		if !isobject(cap := this.capabilities.cap)
+			this.capabilities := capabilities.Simple
 	}
 	
 	__Delete()
@@ -52,8 +51,7 @@ Class Rufaydium
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
-		try r := Json.load(x := this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
-		msgbox, % x "`n" url
+		try r := Json.load(this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
 		if r
 			return r
 	}
