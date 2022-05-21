@@ -23,6 +23,9 @@ Class RunDriver
 			case "geckodriver" : 
 				this.Options := "moz:firefoxOptions"
 				this.browser := "firefox"
+			case "operadriver" :
+				this.Options := "operaOptions"
+				this.browser := "opera"
 		}
 		
 		if !FileExist(Location) and this.browser
@@ -134,12 +137,33 @@ Class RunDriver
 				DriverVersion := this.GetVersion(uri) ; Thanks RaptorX fixing Issues GetEdgeDrive
 				this.DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" this.zip
 			case "geckodriver" :
-				return 0 ; under construction.....
-				uri := "https://api.github.com/repos/mozilla/geckodriver/releases/tags/v0.31.0"
+				; haven't received any error msg from previous driver tell about driver version 
+				; therefor unable to figure out which driver to version to dowload as v0.028 support latest fireforx
+				; this will be uri in case driver suggest version for firefox
+				; uri := "https://api.github.com/repos/mozilla/geckodriver/releases/tags/v0.31.0"
+				; till that just delete geckodriver.exe if you thing its old Rufaydium will download latest
 				uri := "https://api.github.com/repos/mozilla/geckodriver/releases/latest"
 				for i, asset in json.load(this.GetVersion(uri)).assets
 				{
-					if instr(asset.name,"win64.ZIP") and instr(bit,"64")
+					if instr(asset.name,"win64.zip") and instr(bit,"64")
+					{
+						this.DriverUrl := asset.browser_download_url
+						this.zip := asset.name
+					}
+					else if instr(asset.name,"win32.zip") 
+					{
+						this.DriverUrl := asset.browser_download_url
+						this.zip := asset.name
+					}
+				}
+			case "operadriver" :
+				; idk have opera therefore 
+				; uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases/tags/v0.31.0"
+				; that just delete operadriver.exe if you thing its old Rufaydium will download latest
+				uri := "https://api.github.com/repos/operasoftware/operachromiumdriver/releases/latest"
+				for i, asset in json.load(this.GetVersion(uri)).assets
+				{
+					if instr(asset.name,"win64.zip") and instr(bit,"64")
 					{
 						this.DriverUrl := asset.browser_download_url
 						this.zip := asset.name
@@ -172,19 +196,21 @@ Class RunDriver
 	
 	GetVersion(uri)
 	{
-		WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-		WebRequest.Open("GET", uri, false)
-		WebRequest.SetRequestHeader("Content-Type","application/json")
-		;WebRequest.SetRequestHeader("Accept","application/vnd.github.v3+json")
-		WebRequest.Send()
-		if url ~= "msedge"
+		if(this.Name = "msedgedriver")
 		{
+			WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+			WebRequest.Open("GET", uri, false)
+			WebRequest.SetRequestHeader("Content-Type","application/json")
+			WebRequest.Send()
 			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
-				text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
+					text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
 			return SubStr(text, 3)
-		}	
-		else
-			return WebRequest.responseText
+		}
+		WebRequest := ComObjCreate("Msxml2.XMLHTTP")
+		WebRequest.open("GET", uri, False)
+		WebRequest.SetRequestHeader("Content-Type","application/json")
+		WebRequest.Send()
+		return WebRequest.responseText
 	}
 
 	DownloadnExtract()
@@ -194,6 +220,13 @@ Class RunDriver
 		AppObj := ComObjCreate("Shell.Application")
 		FolderObj := AppObj.Namespace(this.zip)	
 		FileObj := FolderObj.ParseName(this.exe)
+		if !isobject(FileObj)
+			For Item in FolderObj.Items
+			{
+				FileObj := FolderObj.ParseName(Item.Name "\" this.exe)
+				if isobject(FileObj) 
+					break
+			}	
 		AppObj.Namespace(this.Dir "\").CopyHere(FileObj, 4|16)
 		FileDelete, % this.zip
 			return this.Dir "\" this.exe

@@ -1,5 +1,5 @@
 
-class capabilities
+class Capabilities
 {
     static Simple := {"capabilities":{"":""}}
     static _ucof := false
@@ -130,4 +130,46 @@ class capabilities
     windowTypes
     */
 
+}
+
+class FireFoxCapabilities extends Capabilities
+{
+    __new(browser,Options,platform:="windows",notify:=false)
+    {
+        this.options := Options
+        this.cap := {}
+        this.cap.capabilities := {}
+        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{ "dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}}}
+        this.cap.capabilities.alwaysMatch.browserName := browser
+        this.cap.capabilities.alwaysMatch.platformName := platform
+        this.cap.capabilities.log := {}
+        this.cap.capabilities.log.level := "trace"
+        this.cap.capabilities.env := {}
+        ;this.cap.desiredCapabilities := {}
+        ;this.cap.desiredCapabilities.browserName := browser
+    }
+
+    DebugPort(Port:=9222)
+    {
+        ;this.cap.capabilities.alwaysMatch[this.Options].debuggerAddress := "http://127.0.0.1:" Port
+        msgbox, debuggerAddress is not support for FireFoxCapabilities
+    }
+
+    addArg(arg) ; idk args list
+    {
+        arg := strreplace(arg,"--","-")
+        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
+            this.cap.capabilities.alwaysMatch[this.Options].args := []
+        this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
+    }
+
+    RemoveArg(arg)
+    {
+        arg := strreplace(arg,"--","-")
+	    for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+	    {
+	        if (argtbr = arg)
+		    this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+	    }
+    }
 }

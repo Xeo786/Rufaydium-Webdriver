@@ -25,10 +25,21 @@ Class Rufaydium
 	{
 		this.Driver := new RunDriver(DriverName,Parameters)
 		this.DriverUrl := "http://127.0.0.1:" This.Driver.Port
-		if this.Driver.Options
-			this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
-		else 
-			this.capabilities := capabilities.Simple
+		Switch this.Driver.Name
+		{
+			case "chromedriver" :
+				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+			case "msedgedriver" : 
+				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+			case "geckodriver" : 
+				this.capabilities := new FireFoxCapabilities(this.Driver.browser,this.Driver.Options)
+			case "operadriver" :
+				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+		}
+
+			
+		;if !isobject(cap := this.capabilities)
+		;	this.capabilities := capabilities.Simple
 	}
 	
 	__Delete()
@@ -41,7 +52,8 @@ Class Rufaydium
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
-		r := Json.load(x := this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
+		try r := Json.load(x := this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
+		msgbox, % x "`n" url
 		if r
 			return r
 	}
@@ -73,9 +85,10 @@ Class Rufaydium
 		}
 		this.Driver.Options := this.capabilities.options ; in case someone use custom driver and want to change capabilities manually
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
-		
+		msgbox, % k.error
 		if k.error
 		{
+			
 			if(k.error = "session not created")
 			{
 				
@@ -97,8 +110,14 @@ Class Rufaydium
 			return k
 		}
 		window := []
+		window.Name := This.driver.Name
 		window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
 		window.address := this.DriverUrl "/session/" k.SessionId
+		if This.driver.Name = "geckodriver"
+		{
+			IniWrite, % k.SessionId, % A_ScriptDir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
+		}
+		
 		return new Session(window)
 	}
 	
@@ -110,6 +129,29 @@ Class Rufaydium
 			return
 		}
 		this.Driver.Options := this.capabilities.options
+
+		if This.driver.Name = "geckodriver"
+		{
+			IniRead, SessionList, % A_ScriptDir "/ActiveSessions.ini", % This.driver.Name
+			Windows := []
+			for k, se in StrSplit(SessionList,"`n")
+			{
+				se := RegExReplace(se, "(.*)=(.*)", "$1")
+				r :=  this.Send(this.DriverUrl "/session/" se "/url","GET")
+				if r.error
+					IniDelete, % A_ScriptDir "/ActiveSessions.ini", % This.driver.Name, % se
+				else
+				{
+					s := []
+					s.id := Se
+					s.Name := This.driver.Name
+					s.address := this.DriverUrl "/session/" s.id
+					windows[k] := new Session(s)
+				}
+			}
+			return windows
+		}
+
 		Sessions := this.send(this.DriverUrl "/sessions","GET")
 		windows := []
 		for k, se in Sessions
@@ -117,6 +159,7 @@ Class Rufaydium
 			chromeOptions := Se["capabilities",This.driver.options]
 			s := []
 			s.id := Se.id
+			s.Name := This.driver.Name
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")
 			s.address := this.DriverUrl "/session/" s.id
 			windows[k] := new Session(s)
@@ -162,7 +205,6 @@ Class Rufaydium
 		for k, s in this.getSessions()
 			s.Quit()
 	}
-	
 }
 
 
@@ -175,7 +217,17 @@ Class Session extends Rufaydium
 		this.Address := i.address
 		this.debuggerAddress := i.debuggerAddress
 		this.currentTab := this.Send("window","GET")
-		this.CDP := new CDP(this.Address)
+		switch this.name
+		{
+			case "chromedriver" :
+				this.CDP := new CDP(this.Address)
+			case "msedgedriver" : 
+				this.CDP := new CDP(this.Address)
+			case "geckodriver" : 
+				
+			case "operadriver" :
+
+		}	
 	}
 	
 	__Delete()
