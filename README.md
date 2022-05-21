@@ -50,7 +50,7 @@ Rundriver Class intigrated into Rufaydium.ahk that launches driver in background
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
 MSEdge := new Rufaydium("msedgedriver.exe","--port=9516") ; will Download/Load MS Edge driver comunication port will be 9516
 FireFox := new Rufaydium("geckodriver.exe") ; will Download/Load geckodriver for FireFox
-opera := new Rufaydium("operadriver.exe") ; will Download/Load geckodriver for FireFox
+opera := new Rufaydium("operadriver.exe") ; will Download/Load operadriver
 ```
 Note: 
 1)Driver will be download into A_ScriptDir and old driver will be move to A_ScriptDir "\Backup"
