@@ -49,6 +49,8 @@ Rundriver Class intigrated into Rufaydium.ahk that launches driver in background
 ```AutoHotkey
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
 MSEdge := new Rufaydium("msedgedriver.exe","--port=9516") ; will Download/Load MS Edge driver comunication port will be 9516
+FireFox := new Rufaydium("geckodriver.exe") ; will Download/Load geckodriver for FireFox
+opera := new Rufaydium("operadriver.exe") ; will Download/Load geckodriver for FireFox
 ```
 Note: 
 1)Driver will be download into A_ScriptDir and old driver will be move to A_ScriptDir "\Backup"
@@ -174,7 +176,7 @@ Session := Chrome.getSessionByUrl(URL)
 Session2 := Chrome.getSessionByTitle(Title)
 ```
 
-Note: above methods are based on Chrome.getSessions() which is not W3C standred and only supports Chrome or chrome Based browser, does not support firefox's geckodriver.exe, I am thinking about saving all session IDs created from geckodriver and saving them into some ini and implemenet `getSessionByUrl()` & `getSessionByTitle()`.
+Note: above methods are based on `httpserver\sessions` command which is not W3C standred, but rufaydium uses ahk's functions readini, writeini & deleteini, to store and parse Session IDs therfore `getSessionByUrl()` & `getSessionByTitle()` now support firefox session, this way Rufadium has the ability to continue geckodriver Sessions, or multiple AHK scripts can contorl firefox by sharing `ActiveSessions.ini` which records/delete sessionids at `A_ScriptDir`, hence that ini should be shared in such way in case scripts are being run from different folder, in future update sharing ActiveSessions.ini will be no issue as I just had an idea.
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switch to new tab or New Window
@@ -670,7 +672,7 @@ if !isobject(Page)
 	return
 }
 
-Page.CDP.Document()	; initialize Document
+; Page.CDP.Document()	; no longer needed
 input := Page.CDP.QuerySelector(".mb-2")
 msgbox, % input.innerText
 for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with their ids
@@ -678,6 +680,8 @@ for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with t
 	tag.sendKey(tag.id)
 }
 ```
+Note: FireFox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as FireFox has it own Remote protocols which will be add as Session.FRP, Firefox Remote Protocols
+
 # CDP.Document()
 CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP have developed reliable access to frame
 
