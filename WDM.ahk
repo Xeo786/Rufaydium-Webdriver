@@ -174,9 +174,9 @@ Class RunDriver
 	{
 		WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
 		WebRequest.Open("GET", uri, false)
-		;WebRequest.SetRequestHeader("Content-Type","application/json")
-		WebRequest.SetRequestHeader("Accept","application/vnd.github.v3+json")
-		;WebRequest.Send()
+		WebRequest.SetRequestHeader("Content-Type","application/json")
+		;WebRequest.SetRequestHeader("Accept","application/vnd.github.v3+json")
+		WebRequest.Send()
 		if url ~= "msedge"
 		{
 			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
