@@ -36,7 +36,6 @@ Class Rufaydium
 			case "operadriver" :
 				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
 		}
-		msgbox, % isobject(cap := this.capabilities.cap)
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple
 	}
