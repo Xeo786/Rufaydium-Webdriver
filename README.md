@@ -191,7 +191,7 @@ Brave.Session() ; will create chrome session as we have loaded chrome driver
 this way we can load All chrome Based browsers
 
 ## Getting Existing Sessions
-We can also access sessions created previously using title or url.
+We can also access sessions created previously using the title or URL.
  
 ```AutoHotkey
 Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created
@@ -200,7 +200,7 @@ Session := Chrome.getSessionByUrl(URL)
 Session2 := Chrome.getSessionByTitle(Title)
 ```
 
-Note: above methods are based on `httpserver\sessions` command which is not W3C standred, but rufaydium uses ahk's functions readini, writeini & deleteini, to store and parse Session IDs by creating`ActiveSessions.ini` at `GeckoDriver location`, therefore `getSessionByUrl()` & `getSessionByTitle()` now support firefox sessions too, this way Rufadium has the ability to continue geckodriver Sessions, or multiple AHK scripts can contorl firefox.
+Note: above methods are based on `httpserver\sessions` command which is not W3C standred, but rufaydium uses ahk's functions readini, writeini & deleteini, to store and parse Session IDs by creating`ActiveSessions.ini` at `GeckoDriver location`, therefore `getSessionByUrl()` & `getSessionByTitle()` now support firefox sessions too, this way Rufadium can continue geckodriver Sessions, or multiple AHK scripts can contorl firefox.
 
 
 ## Session.NewTab() & Session.NewWindow()
