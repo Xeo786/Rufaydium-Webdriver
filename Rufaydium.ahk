@@ -28,7 +28,7 @@ Class Rufaydium
 		Switch this.Driver.Name
 		{
 			case "chromedriver" :
-				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+				this.capabilities := new ChromeCapabilities(this.Driver.browser,this.Driver.Options)
 			case "msedgedriver" : 
 				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
 			case "geckodriver" : 
