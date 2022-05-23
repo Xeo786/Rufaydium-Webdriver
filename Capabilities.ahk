@@ -152,6 +152,9 @@ class FireFoxCapabilities extends Capabilities
         this.cap.capabilities.log := {}
         this.cap.capabilities.log.level := "trace"
         this.cap.capabilities.env := {}
+
+        ; ; reg read binary location
+        ; this.cap.capabilities.Setbinary("")
         ;this.cap.desiredCapabilities := {}
         ;this.cap.desiredCapabilities.browserName := browser
     }
@@ -178,5 +181,22 @@ class FireFoxCapabilities extends Capabilities
 	        if (argtbr = arg)
 		    this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
 	    }
+    }
+
+    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+	{
+		if !userDataDir
+			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
+        ; userDataDir := StrReplace(userDataDir, "\", "/")
+        ; this.addArg("--user-data-dir=" userDataDir)
+        ; this.addArg("--profile-directory=" profileName)
+	}
+
+    Addextensions(crxlocation)
+    {
+        ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+        ;     this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        ; crxlocation := StrReplace(crxlocation, "\", "/")
+        ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
     }
 }
