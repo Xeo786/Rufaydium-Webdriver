@@ -19,64 +19,6 @@ class Capabilities
         this.cap.desiredCapabilities.browserName := browser
     }
 
-    useCrossOriginFrame[]
-    {
-        set {
-            if value
-            {
-                this.addArg("--disable-site-isolation-trials")
-		this.addArg("--disable-web-security")
-                capabilities._ucof := true
-            }
-            else
-            {
-	    	capabilities._ucof := false
-		for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
-			if (arg = "--disable-site-isolation-trials") or (arg = "--disable-web-security")
-				this.RemoveArg(arg)
-	    }	
-        }
-
-        get
-        {
-            return capabilities._ucof
-        }
-    }
-    
-    Setbinary(location)
-    {
-        this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
-    }
-
-    Resetbinary()
-    {
-        this.cap.capabilities.alwaysMatch[this.Options].Delete("binary")
-    }
-
-    useCrossOriginFrame[]
-    {
-        set {
-            if value
-            {
-                this.addArg("--disable-site-isolation-trials")
-		        this.addArg("--disable-web-security")
-                capabilities._ucof := true
-            }
-            else
-            {
-                capabilities._ucof := false
-                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
-                    if (arg = "--disable-site-isolation-trials") or (arg = "--disable-web-security")
-                        this.RemoveArg(arg)
-	        }	
-        }
-
-        get
-        {
-            return capabilities._ucof
-        }
-    }
-
     HeadlessMode[]
     {
         set 
@@ -100,44 +42,8 @@ class Capabilities
             return capabilities._hmode
         }
     }
-
-    addArg(arg) ; args links https://peter.sh/experiments/chromium-command-line-switches/
-    {
-        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
-            this.cap.capabilities.alwaysMatch[this.Options].args := []
-        this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
-    }
-
-    RemoveArg(arg)
-    {
-	    for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
-	    {
-	        if (argtbr = arg)
-		    this.cap.capabilities.alwaysMatch[this.Options].args.RemoveAt(i)
-	    }
-    }
-
-    Addextensions(crxlocation)
-    {
-        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
-            this.cap.capabilities.alwaysMatch[this.Options].extensions := []
-        crxlocation := StrReplace(crxlocation, "\", "/")
-        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
-    }
-
-    DebugPort(Port:=9222)
-    {
-        this.cap.capabilities.alwaysMatch[this.Options].debuggerAddress := "http://127.0.0.1:" Port
-    }
-
-    AddexcludeSwitches(switch)
-    {
-        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].excludeSwitches)
-            this.cap.capabilities.alwaysMatch[this.Options].excludeSwitches := []
-        this.cap.capabilities.alwaysMatch[this.Options].excludeSwitches.push(switch)
-    }
-
-	setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+    
+    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
 	{
 		if !userDataDir
 			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
@@ -145,6 +51,16 @@ class Capabilities
         this.addArg("--user-data-dir=" userDataDir)
         this.addArg("--profile-directory=" profileName)
 	}
+
+    Setbinary(location)
+    {
+        this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
+    }
+
+    Resetbinary()
+    {
+        this.cap.capabilities.alwaysMatch[this.Options].Delete("binary")
+    }
 
     /*
     Following methods can manually be added as I haven't used them and do not know their parameters and also I don't see the need to add
@@ -161,6 +77,68 @@ class Capabilities
 
 }
 
+class ChromeCapabilities extends Capabilities
+{
+    useCrossOriginFrame[]
+    {
+        set {
+            if value
+            {
+                this.addArg("--disable-site-isolation-trials")
+		        this.addArg("--disable-web-security")
+                capabilities._ucof := true
+            }
+            else
+            {
+                capabilities._ucof := false
+                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+                    if (arg = "--disable-site-isolation-trials") or (arg = "--disable-web-security")
+                        this.RemoveArg(arg)
+	        }	
+        }
+
+        get
+        {
+            return capabilities._ucof
+        }
+    }
+    addArg(arg) ; args links https://peter.sh/experiments/chromium-command-line-switches/
+    {
+        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
+            this.cap.capabilities.alwaysMatch[this.Options].args := []
+        this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
+    }
+
+    Addextensions(crxlocation)
+    {
+        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+            this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        crxlocation := StrReplace(crxlocation, "\", "/")
+        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+    }
+
+    RemoveArg(arg)
+    {
+	    for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+	    {
+	        if (argtbr = arg)
+		    this.cap.capabilities.alwaysMatch[this.Options].args.RemoveAt(i)
+	    }
+    }
+
+    DebugPort(Port:=9222)
+    {
+        this.cap.capabilities.alwaysMatch[this.Options].debuggerAddress := "http://127.0.0.1:" Port
+    }
+
+    AddexcludeSwitches(switch)
+    {
+        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].excludeSwitches)
+            this.cap.capabilities.alwaysMatch[this.Options].excludeSwitches := []
+        this.cap.capabilities.alwaysMatch[this.Options].excludeSwitches.push(switch)
+    }
+}
+
 class FireFoxCapabilities extends Capabilities
 {
     __new(browser,Options,platform:="windows",notify:=false)
@@ -174,6 +152,9 @@ class FireFoxCapabilities extends Capabilities
         this.cap.capabilities.log := {}
         this.cap.capabilities.log.level := "trace"
         this.cap.capabilities.env := {}
+
+        ; ; reg read binary location
+        ; this.cap.capabilities.Setbinary("")
         ;this.cap.desiredCapabilities := {}
         ;this.cap.desiredCapabilities.browserName := browser
     }
@@ -200,5 +181,44 @@ class FireFoxCapabilities extends Capabilities
 	        if (argtbr = arg)
 		    this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
 	    }
+    }
+
+    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+	{
+		if !userDataDir
+			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
+        ; userDataDir := StrReplace(userDataDir, "\", "/")
+        ; this.addArg("--user-data-dir=" userDataDir)
+        ; this.addArg("--profile-directory=" profileName)
+	}
+
+    Addextensions(crxlocation)
+    {
+        ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+        ;     this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        ; crxlocation := StrReplace(crxlocation, "\", "/")
+        ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+    }
+}
+
+class EdgeCapabilities extends ChromeCapabilities
+{
+    Addextensions(crxlocation)
+    {
+        ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+        ;     this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        ; crxlocation := StrReplace(crxlocation, "\", "/")
+        ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+    }
+}
+
+class OperaCapabilities extends ChromeCapabilities
+{
+    Addextensions(crxlocation)
+    {
+        ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+        ;     this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        ; crxlocation := StrReplace(crxlocation, "\", "/")
+        ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
     }
 }
