@@ -30,7 +30,7 @@ Class Rufaydium
 			case "chromedriver" :
 				this.capabilities := new ChromeCapabilities(this.Driver.browser,this.Driver.Options)
 			case "msedgedriver" : 
-				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+				this.capabilities := new EdgeCapabilities(this.Driver.browser,this.Driver.Options)
 			case "geckodriver" : 
 				this.capabilities := new FireFoxCapabilities(this.Driver.browser,this.Driver.Options)
 			case "operadriver" :

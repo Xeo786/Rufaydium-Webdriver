@@ -200,3 +200,14 @@ class FireFoxCapabilities extends Capabilities
         ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
     }
 }
+
+class EdgeCapabilities extends ChromeCapabilities
+{
+    Addextensions(crxlocation)
+    {
+        ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+        ;     this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        ; crxlocation := StrReplace(crxlocation, "\", "/")
+        ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+    }
+}
