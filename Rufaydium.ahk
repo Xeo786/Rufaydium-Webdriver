@@ -91,10 +91,21 @@ Class Rufaydium
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
 		if k.error
 		{
-			
-			if(k.error = "session not created")
+			if(k.message = "binary is not a Firefox executable")
 			{
-				
+				ffbinary := A_ProgramFiles "\Mozilla Firefox\firefox.exe"
+				if A_Is64bitOS
+					ffbinary := RegExReplace(ffbinary, " (x86)")
+				if fileexist(ffbinary)
+				{
+					msgbox,48,Rufaydium WebDriver Support,% k.message "`n`nDriver is unable to locate firefox binary and, Rufaydium is also unabel to detect FF default location`n`n if you see this msg in loop please report bug" 
+					return
+				} 
+				this.capabilities.Setbinary(ffbinary)
+				return This.NewSession()
+			}
+			else if RegExMatch(k.message,"version ([\d.]+).*\n.*version is (\d+.\d+.\d+)")
+			{
 				MsgBox, 52,Rufaydium WebDriver Support,% k.message "`n`nPlease Press Yes to download latest driver"
 				IfMsgBox Yes
 				{
@@ -105,12 +116,15 @@ Class Rufaydium
 						Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
 						Exitapp
 					}
+					This.Driver := new RunDriver(i,This.Driver.Param)
+					return This.NewSession()
 				}
-				This.Driver := new RunDriver(i,This.Driver.Param)
-				return This.NewSession()
 			}
-			msgbox, 48,Rufaydium WebDriver Support Error,% k.error "`n`n" k.message
-			return k
+			else
+			{
+				msgbox, 48,Rufaydium WebDriver Support Error,% k.error "`n`n" k.message
+				return k
+			} 
 		}
 		window := []
 		window.Name := This.driver.Name
