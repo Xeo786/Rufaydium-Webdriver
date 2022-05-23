@@ -102,31 +102,6 @@ class ChromeCapabilities extends Capabilities
             return capabilities._ucof
         }
     }
-
-    HeadlessMode[]
-    {
-        set 
-        {
-            if value
-            {
-                this.addArg("--headless")
-                capabilities._hmode := true
-            }
-            else
-            {
-                capabilities._hmode := false
-                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
-                    if (arg = "--headless")
-                        this.RemoveArg(arg)
-	        }	
-        }
-
-        get
-        {
-            return capabilities._hmode
-        }
-    }
-
     addArg(arg) ; args links https://peter.sh/experiments/chromium-command-line-switches/
     {
         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
