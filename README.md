@@ -2,9 +2,9 @@
 
 # Rufaydium
 
-Rufaydium is a WebDriver Library for AutoHotkey to support any Chromium based browser using WebDriver,
-it will downlaod latest driver and update driver according to webbrowsers version, 
-this ability is available for Chrome and MS Edge webbrowsers for now
+Rufaydium is a WebDriver Library for AutoHotkey to support any Chromium-based browser using WebDriver,
+it will download the latest driver and update according to the Web-browser version, 
+this ability is available for Chrome and MS Edge web-browsers for now
 
 Forum: https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
 It utilizes Rest API from W3C https://www.w3.org/TR/webdriver2/
@@ -13,7 +13,7 @@ Rufaydium also supports Chrome Devtools Protocols, same as [chrome.ahk](https://
 
 ## Note: 
 
-No need to install / setup selenium, Rufaydium is AHK's Selenium and is more flexible than selenium.
+No need to install/set up selenium, Rufaydium is AHK's Selenium and is more flexible than selenium.
 
 ## How to use
 
@@ -44,7 +44,7 @@ Chrome.Driver.Exit() ; then exits driver
 return
 ```
 # New Rufaydium(DriverName,Parameters)
-Rundriver Class intigrated into Rufaydium.ahk that launches driver in background where port 9515 set to default, 
+Rundriver() Class integrated into Rufaydium.ahk that launches driver in the background where port 9515 set to default, 
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
@@ -53,8 +53,8 @@ FireFox := new Rufaydium("geckodriver.exe") ; will Download/Load geckodriver for
 opera := new Rufaydium("operadriver.exe") ; will Download/Load operadriver
 ```
 Note: 
-1)Driver will be download into A_ScriptDir and old driver will be move to A_ScriptDir "\Backup"
-2)Driver will not run if Port is occupied different, Make sure not run different drivers with same port. i.e. trying to run Chromedriver and Edgedriver with same port
+1)Driver will be downloaded into A_ScriptDir and old driver will be moved to A_ScriptDir "\Backup"
+2)Driver will not run if Port is occupied different, Make sure not run different drivers with the same port. i.e. trying to run Chromedriver and Edgedriver with the same port
 
 # Driver Default port
 Rufaydium now supports 4 Web drivers and has one default port; it will not run if the Port is occupied. We need to run the driver with a separate port using Driver Parameters, or we need to exit the already running driver and run a different driver if we are up to using the same port. Rufaydium now has default ports for every driver to resolve this conflict
@@ -101,7 +101,7 @@ Chrome.Driver.visible := false ; will hide
 ```
 ## Script reloading
 
-We can reload script as many time as we want but driver will be active in process so we can have control over all the session created through WebDriver so far and we can also Close Driver process this will cause issue that we can no longer access any session created through WebDriver. its better to `Session.exit()` then `Chrome.Driver.Exit()`
+We can reload the script as many times as we want but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far and we can also close the  Driver process this will cause issues that we can no longer access any session created through WebDriver. its better to `Session.exit()` then `Chrome.Driver.Exit()`.
 
 ```AutoHotkey
 Chrome := new Rufaydium("chromedriver.exe")
@@ -111,7 +111,7 @@ Chrome.Driver.Exit()
 
 # Capabilities Class 
 One can access and use Capabilities after 'New Rufaydium()'
-Rufaydium will load Driver Capibilities according to Driver. but one make changes to capabilities before creating session
+Rufaydium will load Driver Capabilities according to Driver. but one makes changes to capabilities before creating a session.
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; will load chrome driver with default Capabilities
@@ -121,7 +121,7 @@ Chrome.capabilities.setUserProfile("Default") ; can use Default user
 ; New Session will be created according to above Capabilities settings
 Session := Chrome.NewSession()
 ```
-Capabilities can also be setted manually 
+Capabilities can also be set manually 
 ```AutoHotkey
 Browser := new Rufaydium()
 Browser.capabilities := new capabilities(Browser,BrowserOptions,"windows",true) 
@@ -133,7 +133,7 @@ This will Set and GET HeadlessMode
 Browser.capabilities.HeadlessMode := true
 msgbox, % Browser.capabilities.HeadlessMode
 ```
-## Eable CrossOriginFrame
+## Enble CrossOriginFrame
 This will Set and Get CrossOriginFrame access
 ```AutoHotkey
 Browser.capabilities.useCrossOriginFrame := true
@@ -148,7 +148,7 @@ Chrome.capabilities.RemoveArg("--headless")
 ```
 
 ## Binary
-We can also load Chrome based browser for example Brave browser its chrome based and can be controlled using ChromeDriver, SetBinary has been Merged into `NewSession(binarylocation)` method
+We can also load Chrome-based browsers, for example, the Brave browser it's chrome based and can be controlled using ChromeDriver, SetBinary has been Merged into `NewSession(binary_location)` method
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; Brave browser support chromedriver.exe
@@ -168,10 +168,10 @@ Chrome.capabilities.DebugPort(9255) ; will change port for debuggerAddress
 
 # Rufaydium Sessions
 ## New Session
-We can create session after Setting up capabilities 
-We can skip capabilities, as session will load default Capabilities according to Driver, which should work with any Driver.  
+We can create a session after Setting up capabilities 
+We can skip capabilities, as the session will load default Capabilities according to Driver, which should work with any Driver.  
 
-Note: Incase of webdriver version mismatched with browser version Rufaydium will ask to update driver and it will update webdriver automatically and load new driver and create session, this ability supported for Chome and MS Edge Webbrowser for now
+Note: In case of the web driver version is mismatched with the browser version Rufaydium will ask to update the driver and it will update the web driver automatically and load the new driver and create a session, this ability is supported for Chome and MS Edge Webbrowser for now
 
 ```AutoHotkey
 Chrome := new Rufaydium("chromedriver.exe")
@@ -179,7 +179,7 @@ Session := Chrome.NewSession()
 ```
 
 ## Using WebDriver with different Browsers
-Brave uses chromedriver, by simply passing Browser.exe (referred as binary) into NewSession() method
+Brave uses chromedriver.exe, by simply passing Browser.exe (referred binary) into NewSession() method
 ```autohotkey
 Brave := new Rufaydium() ; Brave browser support chromedriver.exe
 ; New Session will be created using Brave browser, 
@@ -191,7 +191,7 @@ Brave.Session() ; will create chrome session as we have loaded chrome driver
 this way we can load All chrome Based browsers
 
 ## Getting Existing Sessions
-We can also access previously created session with title or URL, 
+We can also access sessions created previously using title or url.
  
 ```AutoHotkey
 Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created
@@ -204,7 +204,7 @@ Note: above methods are based on `httpserver\sessions` command which is not W3C 
 
 
 ## Session.NewTab() & Session.NewWindow()
-Creates and switch to new tab or New Window
+Creates and switches to a new tab or New Window
 ```AutoHotkey
 Session.NewTab()
 Session.NewWindow()
@@ -229,28 +229,28 @@ Session.url := "https://www.autohotkey.com/boards/posting.php?mode=edit&f=6&p=45
 ```
 
 ## Session.Refresh()
-Refresh page and wait untill page get refreshed
+Refresh the web page and wait until it gets refreshed.
 ```AutoHotkey
 Session.Refresh()
 msgbox, Page refresh complete
 ```
 
 ## Session.IsLoading
-Tells page is ready or not by Returning with true fales status, this will be helpful for chrome 
-note: this function is not w3c standred will worl only with Chromedriver
+Tells if the page is ready or not by Returning a boolean, this will be helpful for [Session.CDP()](https://github.com/Xeo786/Rufaydium-Webdriver#cdp-call)
+>note: this function is not w3c standard will work only with Chromedriver
 ```AutoHotkey
 msgbox, % Session.IsLoading()
 ```
 ## Session.Navigate(url)
-Navigates to requested URL
+Navigates to the requested URL
 ```AutoHotkey
 Session.Navigate("https://www.autohotkey.com/")
 ```
 ## Session.Back() & Session.Forward()
-helps navigate to prevous and from previous to recent page acting like browser bank and forward button, 
+helps navigate to previous or from previous to recent the page acting like browser back and forward buttons. 
 
 ## SwitchTab(), SwitchbyTitle() & SwitchbyURL()
-Help switching between Tabs
+Help to switch between tabs.
 ```AutoHotkey
 Session.SwitchTab(2) ; will switch tab by number, counted from left to right
 Session.SwitchbyTitle(Title)
@@ -291,7 +291,8 @@ Session.Maximize()
 
 
 ## Session.Close() and Session.Exit()
-Difference between Session.Close() and Session.Exit()
+Session.Close() Close Session window
+Session.Exit() terminate Session by closing all windows.
 
 ```AutoHotkey
 Chrome := new Rufaydium()
@@ -304,15 +305,14 @@ Page1.exit() ; will close all windows / tabs will end up closing whole session
 ```
 
 ## Switching Between Window Tabs & Frame
+One can Switch tabs using `Session.SwitchbyTitle(Title)` or `Session.SwitchbyURL(url="")`
+but Session remains the same If you check out[above examples](https://github.com/Xeo786/Rufaydium-Webdriver#sessionnewtab--sessionnewwindow), I posted you would easily understand how switching Tab works.
 
-We Switch Tabs using `Session.SwitchbyTitle(Title)` or `Session.SwitchbyURL(url="")`
-but Session remain the same If you check out examples I posted you would easily understand how switching Tab works.
-
-Just like Switch Tabs one can Switch Frames as well and pointer session will remain same.
+Just like Switching tabs, one can Switch to any Frame but the session pointer will remain the same.
 
 ![alt text](https://i.ibb.co/PW2P9ZG/Rufaydium-Frames-Example.png)
 
-According to above image we have 1 session having three tabs
+According to the above image, we have 1 session having three tabs
 
 Example for TAB 1
 
@@ -353,46 +353,39 @@ Example for TAB 3
 Session.SwitchbyURL(tab3url) ; to switch to TAB 3
 MsgBox, % Session.FramesLength() ; this will return Frame quantity which is Zero because TAB 3 has no frame
 ```
-
-Switching frame would also Switch CDP of that Frame
+>Note: Switching frame would not work for [Session.CDP](https://github.com/Xeo786/Rufaydium-Webdriver#cdpframes)
 
 ## Error Handling
+error Handling works with all methods, except methods that return Element pointer Few common functionalities
 
+## Accessing Element / Elements
+Following methods return with element pointer if fail return empty and do not support error handling
 ```AutoHotkey
-; error Handling works with all methods, except methods that return Element pointer 
-response :=  Session.method()
-if response.error
-	MsgBox, % "error:" response.error "`nDetail:`n" json.dump(response)
-response :=  Element.method()
-
-if response.error
-	MsgBox, % "error:" response.error "`nDetail:`n" json.dump(response)	
+Element := Session.getElementByID(id)
+Element := Session.QuerySelector(Path)
+Element := Session.QuerySelectorAll(Path)
+Element := Session.getElementsbyClassName(Class)
+Element := Session.getElementsbyName(TagName) : same as getElementsbyTagName(TagName)
+Element := Session.getElementsbyXpath(xPath)
 ```
-
-# Few common functionality
-
+Getting element(s) from the element Just like DOM
 ```AutoHotkey
-; this is will tell you is page loading I suspect it will be useful while working with Session.CDP...()
-; I and not sure if this supports other than chrome browser
-Session.IsLoading()
-; Accessing Element / Elements
-; Following method return with element pointer if fail return empty and do not support error handling till now
-Session.getElementByID(id)
-Session.QuerySelector(Path)
-Session.QuerySelectorAll(Path)
-Session.getElementsbyClassName(Class)
-Session.getElementsbyName(TagName) ; same as getElementsbyTagName(TagName)
-Session.getElementsbyXpath(xPath)
-
-; element.getelement 
-element := Session.QuerySelector(Path)[1]       ; unlike IE COM index starts from [1] not [0] `zero` 
-subelement := element.QuerySelector(Path)[1]    ; check out accessing table
-
-; above function are simply based on 
+element := Session.QuerySelector(Path)[0]       
+subelements := element.QuerySelector(Path)[0]
+```
+Above function are simply based on findelement()/ findelements()
+```AutoHotkey
 Session.findelement(by.selector,"selectorparameter") 
 Session.findelements(by.selector,"selectorparameter") 
-; you can see by class
 ```
+We can check the element's length
+```autohotey
+elements := Session.QuerySelector(Path)
+msgbox, % elements.count()
+```
+
+See [accessing table](https://github.com/Xeo786/Rufaydium-Webdriver#accessing-tables)
+
 ## by Class
 
 ```AutoHotkey
@@ -408,30 +401,21 @@ Class by
 
 ## Accessing Tables
 
-There are many ways to access table you can use Java Script function to extract `Session.ExecuteSync(JS)` or `Session.CDP.Evaluate(JS)`
-but easy and simple ways is to utilize AHK for loops, 
+There are many ways to access the table you can use the JavaScript function to extract `Session.ExecuteSync(JS)` or `Session.CDP.Evaluate(JS)`
+but easy and simple way is to utilize AHK for loops, looping through the whole table is a little bit slow because one Rufaydium step consists 3 steps
 
+1) `Json.Dump()` 
+2) `WinHTTP Request` 
+3) `Json.load()` 
+
+looping through tables takes lots of steps it's better to use `Session.ExecuteSync(JS)` to read huge tables and we can do make it much faster if we just want to extract table data and do not have to interact with tables 
+
+>Note: Following method will only works when InnerText return with tabs and line breaks
 ```AutoHotkey
-Table := Session.QuerySelectorAll("table")[1]
-for i, row in Table.QuerySelectorAll("tr")
-{
-  MsgBox, % "Row number " i "has text: " row.innerText
-  for c, td in row.QuerySelectorAll("td")
-  {
-    MsgBox, % "Row " i " Column: " c " has text: " td.innerText
-  }
-}
-```
-
-looping though whole table is little bid slow because one Rufaydium step consist on 3 steps
-
-1) `Json.Dump()` 2) `WinHTTP Request` 3) `Json.load()` and lopping through tables takes lots of steps its better to use `Session.ExecuteSync(JS)` to read huge table 
-but we can do make it much faster if we just want to extract table data and do not have to interact with table 
-
-```AutoHotkey
-Table := Session.QuerySelectorAll("table")[1].innerText ; reading thousand rows lighting fast
+; reading thousand rows lighting fast
+Table := Session.QuerySelectorAll("table")[1].innerText
 Tablearray := []
-for r, row in StrSplit(Table,"`n")
+for r, row in StrSplit(Table,"`n") 
 {
 	for c, cell in StrSplit(row,"`t")
 	{
@@ -443,7 +427,7 @@ MsgBox, % Tablearray[1,5]
 ```
 
 ## Session.ActiveElement()
-returns handle for focused / active elment, this function can also act as a bridge between Session.CDP and Session.Basic
+returns handle for focused/active element, this function can also act as a bridge between Session.CDP and Session.Basic
 ```AutoHotkey
 CDPelement.focus()
 element := Session.ActiveElement() ; now we have access of element which we previously focused using CDP
@@ -562,8 +546,8 @@ Element.Sendkey(StrReplace(filelocation,"\","/")) ; if Element is input element 
 ```
 
 ## Shadow Elements
-Shadow elements can easily be accessed using `element.shadow()`
-Following example will navigates to Chrome extensions page and enables Developer mode
+Shadow elements can easily be accessed using `element.shadow()`.
+The following example will navigate to the Chrome extensions page and enables Developer mode
 ```autohotkey
 Chrome := new Rufaydium()
 Page := Chrome.getSessionByUrl("chrome://extensions")
@@ -574,7 +558,6 @@ if !isobject(page)
 }
 page.QuerySelector("extensions-manager").shadow().QuerySelector("extensions-toolbar").shadow().getelementbyid("devMode").click()
 ```
-
 ## Key.Class
 
 ```AutoHotkey
@@ -622,8 +605,8 @@ Class Key
 }
 ```
 # Session.Actions()
-We can interact with page using `Actions()` these inertaction can be are define as pointer a pointer can be mouse, touch or keyboard
-Following Example will try to draw a pantagon for working example see https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=40#p458272
+We can interact with page using `Actions()` these interactions, which can be define as `pointer`, a `pointer` can be mouse, touch or keyboard
+Following Example will try to draw a pentagon for working example see https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=40#p458272
 
 ```autohotkey
 ; defining Actionobject
@@ -655,14 +638,12 @@ return
 
 # Await
 
-Rufaydium Basic will wait for any task/change to get completed, and then execute next line 
-but task executed through CDP `Session.CDP` would wait, therefore we need to use `Session.CDP.WaitForLoad()`
+Rufaydium Basic will wait for any task/change to get completed, and then execute the next line but any task executed through CDP `Session.CDP` would wait, therefore we need to use `Session.CDP.WaitForLoad()`
 
-Waiting of webpage is based of document ready state https://www.w3schools.com/jsref/prop_doc_readystate.asp
-but there are web pages they keep loading and unload elements and stuff while their ready state remain `complete` 
-In this kind of situationn Rufaydium Basic and Rufaydium CDP would simply wait through error or if element in question is not available or element visibility or enable state element.displayed(), element.enabled(), we can use these tricks to make AutoHotkey wait, 
-for example:
-We have click button and this would load element with tagname button
+Waiting of webpage is based on document ready state https://www.w3schools.com/jsref/prop_doc_readystate.asp
+but there are web pages that keep loading and unloading elements and stuff while their ready state remains `complete`, 
+In this kind of situation Rufaydium Basic and Rufaydium CDP would simply wait through error or if an element in question is not available or element visibility or displayed/enabled stats element, displayed(), element.enabled(), we can use these tricks to make AutoHotkey wait, 
+for example, We have click button and this would load element with tag name button.
 
 ```Authotkey
 while !IsObject(button) ; 
@@ -681,7 +662,7 @@ Msgbox, % "innerText" h ; otherwise h has innertext
 Button.click()
 ```
 ## Session.CDP
-Session.Methods act like Human interactions with Webpage, Where Session.CDP has access to Chrome Devtools protocols, which has the power to Modify DOM
+`Session.Methods()` act like Human interactions with Webpage, Where Session.CDP has access to Chrome Devtools protocols, which have the power to Modify DOM.
 
 Example
 ```AutoHotkey
@@ -705,10 +686,10 @@ for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with t
 	tag.sendKey(tag.id)
 }
 ```
-Note: FireFox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as FireFox has it own Remote protocols which will be add as Session.FRP, Firefox Remote Protocols
+Note: FireFox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
 
 # CDP.Document()
-CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP have developed reliable access to frame
+CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP has developed reliable access to frame
 
 # CDP functionalities
 ```AutoHotkey
@@ -744,7 +725,7 @@ element := Session.CDP.GetelementbyJS("JSfunc()") ; JS funct
 element := Session.CDP.getelementbyLocation(x,y)
 ```
 # CDP.Element
-Following methods only applicable of element return from CDP 
+Following methods only applicable to element(s) return from CDP 
 ```AutoHotkey
 CDP_element.getBoxModel()	; with Json array of element coord margins and paddings detail
 CDP_element.getNodeQuads()	; quads are x immediately followed by y for each point, points clock-wise
@@ -778,7 +759,7 @@ CDP_element.SendKey("1234`n") ; send 1 2 3 4 enter
 ```
 
 # CDP Evaluate(JS)
-`Session.CDP.Evaluate()` simply execute Javascript which we send to `chrome.console` in order to debug
+`Session.CDP.Evaluate()` executes Javascript, just like we use chrome console.
 ```AutoHotkey
 js = 
 (
@@ -800,7 +781,7 @@ Session.CDP.evaluate("findByTextContent('" btnName "').childNodes[0].click()")
 ```
 
 # CDP.Frames
-We can switch to frame using CDP methoed Just like Basic
+We can switch to the frame using CDP methods Just like Basic.
 ```AutoHotkey
 msgbox, % Page.CDP.FramesLength() ; will return child frame length
 Page.CDP.Frame(0) ; sitched to Frame 1
