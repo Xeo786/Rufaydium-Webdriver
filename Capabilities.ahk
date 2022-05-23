@@ -211,3 +211,14 @@ class EdgeCapabilities extends ChromeCapabilities
         ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
     }
 }
+
+class OperaCapabilities extends ChromeCapabilities
+{
+    Addextensions(crxlocation)
+    {
+        ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+        ;     this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        ; crxlocation := StrReplace(crxlocation, "\", "/")
+        ; this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+    }
+}

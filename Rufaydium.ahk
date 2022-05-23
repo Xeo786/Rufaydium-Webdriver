@@ -34,7 +34,7 @@ Class Rufaydium
 			case "geckodriver" : 
 				this.capabilities := new FireFoxCapabilities(this.Driver.browser,this.Driver.Options)
 			case "operadriver" :
-				this.capabilities := new capabilities(this.Driver.browser,this.Driver.Options)
+				this.capabilities := new OperaCapabilities(this.Driver.browser,this.Driver.Options)
 		}
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple
