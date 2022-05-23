@@ -19,6 +19,30 @@ class Capabilities
         this.cap.desiredCapabilities.browserName := browser
     }
 
+    useCrossOriginFrame[]
+    {
+        set {
+            if value
+            {
+                this.addArg("--disable-site-isolation-trials")
+		this.addArg("--disable-web-security")
+                capabilities._ucof := true
+            }
+            else
+            {
+	    	capabilities._ucof := false
+		for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+			if (arg = "--disable-site-isolation-trials") or (arg = "--disable-web-security")
+				this.RemoveArg(arg)
+	    }	
+        }
+
+        get
+        {
+            return capabilities._ucof
+        }
+    }
+    
     Setbinary(location)
     {
         this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
