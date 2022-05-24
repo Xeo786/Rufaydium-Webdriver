@@ -91,10 +91,24 @@ Class Rufaydium
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
 		if k.error
 		{
-			
-			if(k.error = "session not created")
+			if(k.message = "binary is not a Firefox executable")  
 			{
-				
+				; its all in my mind not tested, 32/64ahk 64OS 32/64ff broken down in simple three step logic
+				ffbinary := A_ProgramFiles "\Mozilla Firefox\firefox.exe" ; check ff in default location, cover all 32AHKFFOS, 64AHKFFOS
+				if !FileExist(ffbinary)
+					ffbinary := RegExReplace(ffbinary, " (x86)") ; in case 64OS 32AHK 64FF checking 64ff loc
+				else if !FileExist(ffbinary)
+					ffbinary := A_ProgramFiles " (x86)\Mozilla Firefox\firefox.exe" ; in case 64OS has 64ahk checking 32ff loc
+				else
+				{
+					msgbox,48,Rufaydium WebDriver Support,% k.message "`n`nDriver is unable to locate firefox binary and, Rufaydium is also unabel to detect FF default location`n`n if you see this msg in loop please report bug" 
+					return
+				} 
+				this.capabilities.Setbinary(ffbinary)
+				return This.NewSession()
+			}
+			else if RegExMatch(k.message,"version ([\d.]+).*\n.*version is (\d+.\d+.\d+)")
+			{
 				MsgBox, 52,Rufaydium WebDriver Support,% k.message "`n`nPlease Press Yes to download latest driver"
 				IfMsgBox Yes
 				{
@@ -105,12 +119,15 @@ Class Rufaydium
 						Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
 						Exitapp
 					}
+					This.Driver := new RunDriver(i,This.Driver.Param)
+					return This.NewSession()
 				}
-				This.Driver := new RunDriver(i,This.Driver.Param)
-				return This.NewSession()
 			}
-			msgbox, 48,Rufaydium WebDriver Support Error,% k.error "`n`n" k.message
-			return k
+			else
+			{
+				msgbox, 48,Rufaydium WebDriver Support Error,% k.error "`n`n" k.message
+				return k
+			} 
 		}
 		window := []
 		window.Name := This.driver.Name
