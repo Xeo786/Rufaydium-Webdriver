@@ -91,12 +91,15 @@ Class Rufaydium
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
 		if k.error
 		{
-			if(k.message = "binary is not a Firefox executable")
+			if(k.message = "binary is not a Firefox executable")  
 			{
-				ffbinary := A_ProgramFiles "\Mozilla Firefox\firefox.exe"
-				if A_Is64bitOS
-					ffbinary := RegExReplace(ffbinary, " (x86)")
-				if fileexist(ffbinary)
+				; its all in my mind not tested, 32/64ahk 64OS 32/64ff broken down in simple three step logic
+				ffbinary := A_ProgramFiles "\Mozilla Firefox\firefox.exe" ; check ff in default location, cover all 32AHKFFOS, 64AHKFFOS
+				if !FileExist(ffbinary)
+					ffbinary := RegExReplace(ffbinary, " (x86)") ; in case 64OS 32AHK 64FF checking 64ff loc
+				else if !FileExist(ffbinary)
+					ffbinary := A_ProgramFiles " (x86)\Mozilla Firefox\firefox.exe" ; in case 64OS has 64ahk checking 32ff loc
+				else
 				{
 					msgbox,48,Rufaydium WebDriver Support,% k.message "`n`nDriver is unable to locate firefox binary and, Rufaydium is also unabel to detect FF default location`n`n if you see this msg in loop please report bug" 
 					return
