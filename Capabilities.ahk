@@ -48,6 +48,12 @@ class Capabilities
 		if !userDataDir
 			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
         userDataDir := StrReplace(userDataDir, "\", "/")
+
+        for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+        {
+            if instr(argtbr,"--user-data-dir=") or instr(argtbr,"--profile-directory=") ; remove if arg already has profile
+                this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+        }
         this.addArg("--user-data-dir=" userDataDir)
         this.addArg("--profile-directory=" profileName)
 	}
@@ -151,7 +157,7 @@ class FireFoxCapabilities extends Capabilities
         this.cap.capabilities.alwaysMatch.platformName := platform
         this.cap.capabilities.log := {}
         this.cap.capabilities.log.level := "trace"
-        this.cap.capabilities.env := {}
+        ;this.cap.capabilities.env := {}
 
         ; ; reg read binary location
         ; this.cap.capabilities.Setbinary("")
@@ -183,13 +189,29 @@ class FireFoxCapabilities extends Capabilities
 	    }
     }
 
-    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+    setUserProfile(profileName:="Default") ; user data dir doesnt change often, use the default
 	{
-		if !userDataDir
-			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
-        ; userDataDir := StrReplace(userDataDir, "\", "/")
-        ; this.addArg("--user-data-dir=" userDataDir)
-        ; this.addArg("--profile-directory=" profileName)
+        userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
+        profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
+        IniRead, Sections , % profileini
+        for i, s in StrSplit(Sections, "`n") 
+        {
+            IniRead, Name , % profileini, % s, Name
+            if(name = profileName )
+            {
+                IniRead, profilePath , % profileini, % s, Path
+                break
+            }
+        }
+
+        for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+        {
+            if (argtbr = "-profile") or instr(argtbr,"\Mozilla\Firefox\Profiles\")
+                this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+        }
+
+        this.addArg("-profile")
+        this.addArg(StrReplace(A_AppData "\Mozilla\Firefox\" profilePath, "\", "/"))
 	}
 
     Addextensions(crxlocation)
