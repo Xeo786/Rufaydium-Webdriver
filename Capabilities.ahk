@@ -152,12 +152,12 @@ class FireFoxCapabilities extends Capabilities
         this.options := Options
         this.cap := {}
         this.cap.capabilities := {}
-        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{ "dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}}}
+        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{"dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}}}
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
         this.cap.capabilities.log := {}
         this.cap.capabilities.log.level := "trace"
-        ;this.cap.capabilities.env := {}
+        this.cap.capabilities.env := {}
 
         ; ; reg read binary location
         ; this.cap.capabilities.Setbinary("")
@@ -189,27 +189,16 @@ class FireFoxCapabilities extends Capabilities
 	    }
     }
 
-    setUserProfile(profileName:="Default") ; user data dir doesnt change often, use the default
+    setUserProfile(profileName:="Profile1") ; user data dir doesnt change often, use the default
 	{
         userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
         profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
-        IniRead, Sections , % profileini
-        for i, s in StrSplit(Sections, "`n") 
-        {
-            IniRead, Name , % profileini, % s, Name
-            if(name = profileName )
-            {
-                IniRead, profilePath , % profileini, % s, Path
-                break
-            }
-        }
-
+        IniRead, profilePath , % profileini, % profileName, Path
         for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
         {
             if (argtbr = "-profile") or instr(argtbr,"\Mozilla\Firefox\Profiles\")
                 this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
         }
-
         this.addArg("-profile")
         this.addArg(StrReplace(A_AppData "\Mozilla\Firefox\" profilePath, "\", "/"))
 	}
