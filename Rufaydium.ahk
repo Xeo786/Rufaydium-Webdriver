@@ -220,7 +220,7 @@ Class Session extends Rufaydium
 		this.Address := i.address
 		this.debuggerAddress := i.debuggerAddress
 		this.currentTab := this.Send("window","GET")
-		switch this.name
+		switch i.name
 		{
 			case "chromedriver" :
 				this.CDP := new CDP(this.Address)
@@ -229,7 +229,7 @@ Class Session extends Rufaydium
 			case "geckodriver" : 
 				
 			case "operadriver" :
-
+				this.CDP := new CDP(this.Address)
 		}	
 	}
 	
