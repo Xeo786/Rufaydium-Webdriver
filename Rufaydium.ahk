@@ -12,6 +12,7 @@
 ; Git : https://github.com/Xeo786/Rufaydium-Webdriver
 ; By Xeo786
 
+#include %A_linefile%\..\
 #Include WDM.ahk
 #Include CDP.ahk
 #Include JSON.ahk
