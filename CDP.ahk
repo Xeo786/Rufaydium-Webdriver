@@ -121,25 +121,31 @@ class CDP extends Rufaydium
 			Sleep, Interval
 		}
 	}
-	
+
+	FindElement(Path)
+	{
+		return this.call("DOM.querySelector",{"nodeId":this.nodeId,"selector":path})
+	}
+
+	FindElements(Path)
+	{
+		return this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":path})
+	}
+
 	querySelector(Path)
 	{
-		nodeId := this.call("DOM.querySelector",{"nodeId":this.nodeId,"selector":path}).nodeId
-		return New CDPElement(nodeId,this.address)
+		return New CDPElement(xx:=this.FindElement(Path).nodeId,this.address)
 	}
 	
 	getElementByID(ID)
 	{
-		ID := "#" ID
-		nodeId := this.call("DOM.querySelector",{"nodeId":this.nodeId,"selector":ID}).nodeId
-		return New CDPElement(nodeId,this.address)
+		return New CDPElement(this.FindElement("#" ID).nodeId,this.address)
 	}
 	
 	querySelectorAll(path)
 	{
 		e := []
-		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":path}).nodeIDs
-		for i, NodeID in NodeIDs
+		for i, NodeID in this.FindElements(Path).nodeIDs
 		{
 			e[i -1] := New CDPElement(NodeID,this.address)
 		}
@@ -149,25 +155,15 @@ class CDP extends Rufaydium
 	getElementsbyClassName(Class)
 	{
 		e := []
-		Class = [class='%Class%']
-		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":Class}).nodeIDs
-		for i, NodeID in NodeIDs
-		{
-			e[i -1] := New CDPElement(NodeID,this.address)
-		}
-		return e
+		path = [class='%Class%']
+		return this.querySelectorAll(path)
 	}
 	
 	getElementsbyName(Name)
 	{
 		e := []
-		Name = [Name='%Name%']
-		NodeIDs := this.call("DOM.querySelectorAll",{"nodeId":this.nodeId,"selector":Name}).nodeIDs
-		for i, NodeID in NodeIDs
-		{
-			e[i -1] := New CDPElement(NodeID,this.address)
-		}
-		return e
+		path = [Name='%Name%']
+		return this.querySelectorAll(path)
 	}
 	
 	GetelementbyJS(JS) 
@@ -438,7 +434,13 @@ Class CDPElement extends CDP
 	__new(nodeId,address)
 	{
 		this.address := address
+		Node := this.call("DOM.describeNode",{"nodeId":nodeId}).node
 		this.nodeId := nodeId
+		this.Name := node.nodeName
+		this.localName := node.localName
+		this.parentId := node.parentId
+		this.backendNodeId := node.backendNodeId
+		this.nodeType := node.nodeType
 	}
 	
 	Value
