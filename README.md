@@ -444,7 +444,7 @@ Session.Alert("Send","some text")  ; sending a Alert / pop up msg
 ## Tacking Screen Shots accept only png file format
 ```AutoHotkey
 Session.Screenshot("picture location.png") ; will save PNG to A_ScriptDir
-Element.Screenshot(a_desktop "\picture location.pnd") ; will save PNG to a_desktop
+Session.Screenshot(a_desktop "\picture location.png") ; will save PNG to a_desktop
 ```
 
 ## PDF printing 
