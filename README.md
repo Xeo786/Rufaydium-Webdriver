@@ -133,6 +133,12 @@ This will Set and GET HeadlessMode
 Browser.capabilities.HeadlessMode := true
 msgbox, % Browser.capabilities.HeadlessMode
 ```
+## Enable Incognito Mode
+This will Set and GET Incognito mode
+```AutoHotkey
+Browser.capabilities.IncognitoMode := true
+msgbox, % Browser.capabilities.IncognitoMode
+```
 ## Enble CrossOriginFrame
 This will Set and Get CrossOriginFrame access
 ```AutoHotkey
