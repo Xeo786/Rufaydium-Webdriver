@@ -70,6 +70,8 @@ class Capabilities
 
     setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
 	{
+        if this.IncognitoMode
+            return
 		if !userDataDir
 			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
         userDataDir := StrReplace(userDataDir, "\", "/")
@@ -230,6 +232,8 @@ class FireFoxCapabilities extends Capabilities
 
     setUserProfile(profileName:="Profile1") ; user data dir doesnt change often, use the default
 	{
+        if this.IncognitoMode
+            return
         userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
         profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
         IniRead, profilePath , % profileini, % profileName, Path
