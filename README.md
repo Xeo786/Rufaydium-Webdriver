@@ -139,6 +139,7 @@ This will Set and GET Incognito mode
 Browser.capabilities.IncognitoMode := true
 msgbox, % Browser.capabilities.IncognitoMode
 ```
+>Note after setting ```IncognitoMode := true``` .setUserProfile() would not work
 ## Enble CrossOriginFrame
 This will Set and Get CrossOriginFrame access
 ```AutoHotkey
