@@ -96,22 +96,28 @@ class CDP extends Rufaydium
 	
 	requestNode(Objectid)
 	{
-		return this.nodeId := this.call("DOM.requestNode",{"objectId":Objectid}).nodeId
+		obj := this.call("DOM.requestNode",{"objectId":Objectid})
+		if obj.nodeId
+			this.nodeId := obj.nodeId
+		return obj
 	}
 	
 	resolveNode()
 	{
-		return this.ObjectID := this.call("DOM.resolveNode",{"nodeId":this.nodeId}).object.objectId
+		Obj := this.call("DOM.resolveNode",{"nodeId":this.nodeId}).ObjectID
+		if Obj.objectId
+			this.ObjectID  := Obj.objectId
+		return obj	
 	}
 	
 	Navigate(url)
 	{
-		this.call("Page.navigate",{"url":url})
+		return this.call("Page.navigate",{"url":url})
 	}
 	
 	Reload() ; by https://github.com/hotcheesesoup
 	{
-		this.call("Page.reload")
+		return this.call("Page.reload")
 	}
 
 	WaitForLoad(DesiredState:="complete", Interval:=100)
