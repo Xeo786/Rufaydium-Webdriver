@@ -1,5 +1,5 @@
-; WDM aka Web Driver management Class for Rufaydium.ahk 
-; I am upto/will add support update auto download supporting Webdriver when browser gets update
+; WDM aka WebDriver management Class for Rufaydium.ahk 
+; incl. Auto download supporting WebDriver when browser gets update
 ; By Xeo786
 
 Class RunDriver
@@ -38,16 +38,16 @@ Class RunDriver
 		This.Target := Location " " chr(34) Parameters chr(34)
 		if !FileExist(Location)
 		{
-			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exitting
-			Exitapp
+			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exiting
+			ExitApp
 		}
 
 		if RegExMatch(this.param,"--port=(\d+)",port)
 			This.Port := Port1
 		else
 		{
-			Msgbox,64,"Rufaydium WebDriver Support,Unable to download driver from`nURL :" this.DriverUrl "`nRufaydium exitting"
-			exitapp
+			Msgbox,64,"Rufaydium WebDriver Support,Unable to download driver from`nURL :" this.DriverUrl "`nRufaydium exiting"
+			ExitApp
 		}
 		
 		PID := this.GetPIDbyName(Name)
@@ -100,12 +100,12 @@ Class RunDriver
 		{
 			if(value = 1) and !this.visibility
 			{
-				winshow, % "ahk_pid " this.pid
+				WinShow, % "ahk_pid " this.pid
 				this.visibility := 1
 			}
 			else
 			{
-				winhide, % "ahk_pid " this.pid
+				WinHide, % "ahk_pid " this.pid
 				this.visibility := 0
 			}
 		}
@@ -143,7 +143,7 @@ Class RunDriver
 				this.DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" this.zip
 			case "geckodriver" :
 				; haven't received any error msg from previous driver tell about driver version 
-				; therefor unable to figure out which driver to version to dowload as v0.028 support latest fireforx
+				; therefor unable to figure out which driver to version to download as v0.028 support latest Firefox
 				; this will be uri in case driver suggest version for firefox
 				; uri := "https://api.github.com/repos/mozilla/geckodriver/releases/tags/v0.31.0"
 				; till that just delete geckodriver.exe if you thing its old Rufaydium will download latest
@@ -217,7 +217,7 @@ Class RunDriver
 			WebRequest.Open("GET", uri, false)
 			WebRequest.SetRequestHeader("Content-Type","application/json")
 			WebRequest.Send()
-			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over  responsbody 1 byte at a time
+			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over responsebody 1 byte at a time
 					text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
 			return SubStr(text, 3)
 		}

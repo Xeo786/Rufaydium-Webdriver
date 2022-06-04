@@ -2,36 +2,35 @@
 
 # Rufaydium
 
-Rufaydium is a WebDriver Library for AutoHotkey to support any Chromium-based browser using WebDriver,
-it will download the latest driver and update according to the Web-browser version, 
-this ability is available for Chrome and MS Edge web-browsers for now
+AutoHotkey WebDriver Library to interact with browsers.  
+Rufaydium will automatically try to download the correct version.  
+Supported browsers: Chrome, MS Edge, Firefox, Opera.
 
-Forum: https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
-It utilizes Rest API from W3C https://www.w3.org/TR/webdriver2/
+**Forum:** https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
 
-Rufaydium also supports Chrome Devtools Protocols, same as [chrome.ahk](https://github.com/G33kDude/Chrome.ahk)
+Rufaydium utilizes Rest API of W3C from https://www.w3.org/TR/webdriver2/
+and also supports Chrome Devtools Protocols same as [chrome.ahk](https://github.com/G33kDude/Chrome.ahk)
 
 ## Note: 
 
-No need to install/set up selenium, Rufaydium is AHK's Selenium and is more flexible than selenium.
+No need to install / setup Selenium, Rufaydium is AHK's Selenium and is more flexible than selenium.
 
 ## How to use
 
 ```AutoHotkey
 #Include Rufaydium.ahk
 /*
-	Following will load "chromedriver.exe" from "A_ScriptDir"
-	in case driver not available there it will Download "chromedriver.exe" into "A_ScriptDir"  
-	then it will load Driver 
+	Load "chromedriver.exe" from "A_ScriptDir"
+	In case Driver is not yet available, it will Download "chromedriver.exe" into "A_ScriptDir"
+	before starting the Driver.
 */
 Chrome := new Rufaydium("chromedriver.exe")
 
 
 f1::
 /*
-	following line will create new session 
-	incase of webbrowser Version Matches with Webdriver Version 
-	it wiwebbrowser ask using Msgbox if press Yes it download webdrive version that matches with webbrowser Version
+	Create new session if WebBrowser Version Matches the Webdriver Version.
+	It will ask to download the compatible WebDriver if not present.
 */
 Page := Chrome.NewSession()
 ; navigate to url
@@ -48,32 +47,35 @@ Rundriver() Class integrated into Rufaydium.ahk that launches driver in the back
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
-MSEdge := new Rufaydium("msedgedriver.exe","--port=9516") ; will Download/Load MS Edge driver comunication port will be 9516
-FireFox := new Rufaydium("geckodriver.exe") ; will Download/Load geckodriver for FireFox
-opera := new Rufaydium("operadriver.exe") ; will Download/Load operadriver
+MSEdge := new Rufaydium("msedgedriver.exe","--port=9516") ; will Download/Load MS Edge driver communication port will be 9516
+Firefox := new Rufaydium("geckodriver.exe") ; will Download/Load geckodriver for Firefox
+Opera := new Rufaydium("operadriver.exe") ; will Download/Load operadriver
 ```
 Note: 
-1)Driver will be downloaded into A_ScriptDir and old driver will be moved to A_ScriptDir "\Backup"
-2)Driver will not run if Port is occupied different, Make sure not run different drivers with the same port. i.e. trying to run Chromedriver and Edgedriver with the same port
+
+1. Driver will be downloaded into A_ScriptDir and old driver will be moved to A_ScriptDir "\Backup"
+2. Driver will not run if Port is occupied. Make sure to not run different drivers with the same port. i.e. trying to run Chromedriver and Edgedriver with the same port.
 
 # Driver Default port
-Rufaydium now supports 4 Web drivers and has one default port; it will not run if the Port is occupied. We need to run the driver with a separate port using Driver Parameters, or we need to exit the already running driver and run a different driver if we are up to using the same port. Rufaydium now has default ports for every driver to resolve this conflict
+Rufaydium now supports 4 WebDrivers and has one default port; it will not run if the Port is already in use. We need to run the driver with a separate port using Driver Parameters, or we need to exit the already running driver and run a different driver if we want to use the same port.  
+Rufaydium has default ports for every driver to resolve this conflict:
 
->***Driver Name		:  Ports*** \
->chromedriver	:  9515 \
->msedgedriver	:  9516 \
->geckodriver	:  9517 \
->operadriver	:  9518 \
->unkownDriver	:  9519
+|Driver Name  | Ports |
+|-------------|-------|
+|chromedriver | 9515  |
+|msedgedriver | 9516  |
+|geckodriver  | 9517  |
+|operadriver  | 9518  |
+|unknownDriver | 9519  |
 
 ## Driver Parameters
-Parameters are WebDriver.exe CMD arguments option can vary according to different drivers
-and we can also check these arguments
+Parameters are WebDriver.exe CMD arguments.  
+Options can vary according to different drivers and we can also check these arguments
 
 ```AutoHotkey
 MsgBox, % Clipboard := RunDriver.help(Driverexelocation)
 
-; Above MsgBox would return following option if using chromedriver
+; Above MsgBox returns the following information if using chromedriver:
 /*
 Usage: chromedriver.exe [OPTIONS]
 Options
@@ -93,7 +95,7 @@ Options
   --allowed-origins=LIST          comma-separated allowlist of request origins which are allowed to connect to ChromeDriver. Using `*` to allow any host origin is dangerous!
 */
 ```
-Driver Hide unhide Driver CMD window
+Hide / UnHide Driver CMD window
 ```AutoHotKey
 Chrome := new Rufaydium()
 Chrome.Driver.visible := true ; will unhide
@@ -101,20 +103,21 @@ Chrome.Driver.visible := false ; will hide
 ```
 ## Script reloading
 
-We can reload the script as many times as we want but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far and we can also close the  Driver process this will cause issues that we can no longer access any session created through WebDriver. its better to `Session.exit()` then `Chrome.Driver.Exit()`.
+We can reload the script as many times as we want, but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far. We can also close the Driver process, but this will cause issues as we can no longer access any session created through WebDriver. its better to use `Session.exit()` followed by `Chrome.Driver.Exit()`.
 
 ```AutoHotkey
 Chrome := new Rufaydium("chromedriver.exe")
-; use this to close driver (after quiting all session) when you finished using Rufaydium class
+; use this to close driver (after quiting all sessions) when you finished using Rufaydium
 Chrome.Driver.Exit() 
 ```
 
 # Capabilities Class 
-One can access and use Capabilities after 'New Rufaydium()'
-Rufaydium will load Driver Capabilities according to Driver. but one makes changes to capabilities before creating a session.
+One can access and use Capabilities after 'New Rufaydium()'  
+Rufaydium will load Driver Capabilities according to the specified Driver.  
+Makes changes to capabilities before creating a session.
 
 ```AutoHotkey
-Chrome := new Rufaydium() ; will load chrome driver with default Capabilities
+Chrome := new Rufaydium() ; will load Chrome driver with default Capabilities
 Chrome.capabilities.setUserProfile("Default") ; can use Default user 
 ;Chrome.capabilities.setUserProfile("Profile 1") ; can change user profile
 
@@ -128,26 +131,26 @@ Browser.capabilities := new capabilities(Browser,BrowserOptions,"windows",true)
 ; Browser.capabilities..... other methods
 ```
 ## Enable HeadlessMode
-This will Set and GET HeadlessMode
+This will SET and GET HeadlessMode
 ```AutoHotkey
 Browser.capabilities.HeadlessMode := true
-msgbox, % Browser.capabilities.HeadlessMode
+MsgBox, % Browser.capabilities.HeadlessMode
 ```
 ## Enable Incognito Mode
-This will Set and GET Incognito mode
+This will SET and GET Incognito mode
 ```AutoHotkey
 Browser.capabilities.IncognitoMode := true
-msgbox, % Browser.capabilities.IncognitoMode
+MsgBox, % Browser.capabilities.IncognitoMode
 ```
->Note after setting ```IncognitoMode := true``` .setUserProfile() would not work
-## Enble CrossOriginFrame
+>Note after Setting ```IncognitoMode := true``` .setUserProfile() would not work
+## Enable CrossOriginFrame
 This will Set and Get CrossOriginFrame access
 ```AutoHotkey
 Browser.capabilities.useCrossOriginFrame := true
-msgbox, % Browser.capabilities.useCrossOriginFrame
+MsgBox, % Browser.capabilities.useCrossOriginFrame
 ```
 ## Setting / Removing Args
-command-line arguments to use when starting Chrome. See [here](http://peter.sh/experiments/chromium-command-line-switches/)
+Command-line arguments to use when starting Chrome. See [here](http://peter.sh/experiments/chromium-command-line-switches/)
 ```AutoHotkey
 Chrome := new Rufaydium()
 Chrome.capabilities.addArg("--headless")
@@ -155,7 +158,7 @@ Chrome.capabilities.RemoveArg("--headless")
 ```
 
 ## Binary
-We can also load Chrome-based browsers, for example, the Brave browser it's chrome based and can be controlled using ChromeDriver, SetBinary has been Merged into `NewSession(binary_location)` method
+We can also load Chromium-based browsers, for example, the Brave browser is based on chromium and can be controlled using the ChromeDriver, SetBinary has been Merged into `NewSession(binary_location)` method
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; Brave browser support chromedriver.exe
@@ -167,18 +170,19 @@ Session := Chrome.NewSession()
 ## other methods
 ```AutoHotkey
 Chrome := new Rufaydium()
-; most of option that are included as capabilities method are defined here https://chromedriver.chromium.org/capabilities#h.p_ID_106
+; most of the options that are included as capabilities method are defined here https://chromedriver.chromium.org/capabilities#h.p_ID_106
 Chrome.capabilities.Addextensions(extensionloaction) ; will load extensions
-Chrome.capabilities.AddexcludeSwitches("enable-automation") ; will load chrome without default args
+Chrome.capabilities.AddexcludeSwitches("enable-automation") ; will load Chrome without default args
 Chrome.capabilities.DebugPort(9255) ; will change port for debuggerAddress
 ```
 
 # Rufaydium Sessions
 ## New Session
-We can create a session after Setting up capabilities 
-We can skip capabilities, as the session will load default Capabilities according to Driver, which should work with any Driver.  
+Create a session after Setting up capabilities.  
+We can skip capabilities, as the session will load default Capabilities based on the Driver used. The default Capabilities should work with any Driver.  
 
-Note: In case of the web driver version is mismatched with the browser version Rufaydium will ask to update the driver and it will update the web driver automatically and load the new driver and create a session, this ability is supported for Chome and MS Edge Webbrowser for now
+Note: In case the WebDriver version is mismatched with the browser version, Rufaydium will ask to update the driver and update the WebDriver automatically and load the new driver and create a session.  
+This ability is supported for the Chrome and MS Edge web browsers for now.
 
 ```AutoHotkey
 Chrome := new Rufaydium("chromedriver.exe")
@@ -187,15 +191,15 @@ Session := Chrome.NewSession()
 
 ## Using WebDriver with different Browsers
 Brave uses chromedriver.exe, by simply passing Browser.exe (referred binary) into NewSession() method
-```autohotkey
+```AutoHotKey
 Brave := new Rufaydium() ; Brave browser support chromedriver.exe
 ; New Session will be created using Brave browser, 
 Session := Brave.NewSession("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")
-Brave.Session() ; will always open new brave session untill we reset 
+Brave.Session() ; will always open new Brave session until we reset 
 Brave.Capabilities.Resetbinary() ; reset binary to driver default
-Brave.Session() ; will create chrome session as we have loaded chrome driver
+Brave.Session() ; will create Chrome session as we have loaded Chrome driver
 ```
-this way we can load All chrome Based browsers
+this way we can load All Chromium Based browsers
 
 ## Getting Existing Sessions
 We can also access sessions created previously using the title or URL.
@@ -207,8 +211,12 @@ Session := Chrome.getSessionByUrl(URL)
 Session2 := Chrome.getSessionByTitle(Title)
 ```
 
-Note: above methods are based on `httpserver\sessions` command which is not W3C standred, but rufaydium uses ahk's functions readini, writeini & deleteini, to store and parse Session IDs by creating`ActiveSessions.ini` at `GeckoDriver location`, therefore `getSessionByUrl()` & `getSessionByTitle()` now support firefox sessions too, this way Rufadium can continue geckodriver Sessions, or multiple AHK scripts can contorl firefox.
+Note: above methods are based on `httpserver\sessions` command which is not W3C standard. Rufaydium uses AHK's functions ReadIni, WriteIni & DeleteIni, to store and parse Session IDs by creating `ActiveSessions.ini` at `GeckoDriver location`, therefore `getSessionByUrl()` & `getSessionByTitle()` now support Firefox sessions too, this way Rufaydium can continue geckodriver Sessions, or multiple AHK scripts can control Firefox.
 
+```AutoHotkey
+FF := new Rufaydium("geckodriver.exe")
+Page := FF.NewSession("c:\Program Files\Mozilla Firefox\firefox.exe")
+```
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switches to a new tab or New Window
@@ -220,18 +228,18 @@ Session.NewWindow()
 ## Session.Title
 returns Page title
 ```AutoHotkey
-msgbox, % Session.Title
+MsgBox, % Session.Title
 ```
 
 ## Session.HTML
 returns Page HTML
 ```AutoHotkey
-msgbox, % Session.HTML
+MsgBox, % Session.HTML
 ```
 ## Session.url
 return Page URL
 ```AutoHotkey
-msgbox, % Session.url
+MsgBox, % Session.url
 Session.url := "https://www.autohotkey.com/boards/posting.php?mode=edit&f=6&p=456008"
 ```
 
@@ -239,14 +247,14 @@ Session.url := "https://www.autohotkey.com/boards/posting.php?mode=edit&f=6&p=45
 Refresh the web page and wait until it gets refreshed.
 ```AutoHotkey
 Session.Refresh()
-msgbox, Page refresh complete
+MsgBox, Page refresh complete
 ```
 
 ## Session.IsLoading
-Tells if the page is ready or not by Returning a boolean, this will be helpful for [Session.CDP()](https://github.com/Xeo786/Rufaydium-Webdriver#cdp-call)
->note: this function is not w3c standard will work only with Chromedriver
+Tells if the page is ready or not by Returning a Boolean, this will be helpful for [Session.CDP()](https://github.com/Xeo786/Rufaydium-Webdriver#cdp-call)
+>note: this function is not W3C standard will work only with Chromedriver
 ```AutoHotkey
-msgbox, % Session.IsLoading()
+MsgBox, % Session.IsLoading()
 ```
 ## Session.Navigate(url)
 Navigates to the requested URL
@@ -295,7 +303,6 @@ MsgBox, % Json.Dump(Session.FullScreen()) ; return with rect, you can see x and 
 ; this simply turn fullscreen mode of
 Session.Maximize()
 ```
-
 
 ## Session.Close() and Session.Exit()
 Session.Close() Close Session window
@@ -363,10 +370,10 @@ MsgBox, % Session.FramesLength() ; this will return Frame quantity which is Zero
 >Note: Switching frame would not work for [Session.CDP](https://github.com/Xeo786/Rufaydium-Webdriver#cdpframes)
 
 ## Error Handling
-error Handling works with all methods, except methods that return Element pointer Few common functionalities
+Error Handling works with all methods, except methods that return Element pointer Few common functionalities
 
 ## Accessing Element / Elements
-Following methods return with element pointer if fail return empty and do not support error handling
+Following methods return with element pointer. Fails will return empty and do not support error handling
 ```AutoHotkey
 Element := Session.getElementByID(id)
 Element := Session.QuerySelector(Path)
@@ -386,9 +393,9 @@ Session.findelement(by.selector,"selectorparameter")
 Session.findelements(by.selector,"selectorparameter") 
 ```
 We can check the element's length
-```autohotey
+```AutoHotKey
 elements := Session.QuerySelector(Path)
-msgbox, % elements.count()
+MsgBox, % elements.count()
 ```
 
 See [accessing table](https://github.com/Xeo786/Rufaydium-Webdriver#accessing-tables)
@@ -409,13 +416,13 @@ Class by
 ## Accessing Tables
 
 There are many ways to access the table you can use the JavaScript function to extract `Session.ExecuteSync(JS)` or `Session.CDP.Evaluate(JS)`
-but easy and simple way is to utilize AHK for loops, looping through the whole table is a little bit slow because one Rufaydium step consists 3 steps
+but an easy and simple way is to utilize AHK `for` loops. Looping through the table is a little bit slow because one Rufaydium step consists of 3 steps
 
 1) `Json.Dump()` 
 2) `WinHTTP Request` 
 3) `Json.load()` 
 
-looping through tables takes lots of steps it's better to use `Session.ExecuteSync(JS)` to read huge tables and we can do make it much faster if we just want to extract table data and do not have to interact with tables 
+Looping through tables takes lots of steps, so it's better to use `Session.ExecuteSync(JS)` to read huge tables and do it much faster if we just want to extract table data and do not have to interact with tables 
 
 >Note: Following method will only works when InnerText return with tabs and line breaks
 ```AutoHotkey
@@ -480,7 +487,7 @@ Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
  		"right": 2
 	},
  	"scale": 1,
- 	"orientation":"portrait",
+ 	"orientation": "portrait",
 	"shrinkToFit": json.true,
  	"background": json.true
 	}
@@ -548,14 +555,14 @@ Element.Shadow() ; return with shadow element detail actually I going to add fun
 ; first I need to learn about them
 
 Element.Uploadfile(filelocation) ; this not working right now, I am working on it, I need to find out Payload/request parameters 
-Element.Sendkey(StrReplace(filelocation,"\","/")) ; if Element is input element than file location can be set using sendkey()
+Element.Sendkey(StrReplace(filelocation,"\","/")) ; if Element is input element than file location can be set using SendKey()
 ; click on upload button now initiate fileupload, after setting file location 
 ```
 
 ## Shadow Elements
 Shadow elements can easily be accessed using `element.shadow()`.
 The following example will navigate to the Chrome extensions page and enables Developer mode
-```autohotkey
+```AutoHotKey
 Chrome := new Rufaydium()
 Page := Chrome.getSessionByUrl("chrome://extensions")
 if !isobject(page)
@@ -615,8 +622,8 @@ Class Key
 We can interact with page using `Actions()` these interactions, which can be define as `pointer`, a `pointer` can be mouse, touch or keyboard
 Following Example will try to draw a pentagon for working example see https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=40#p458272
 
-```autohotkey
-; defining Actionobject
+```AutoHotKey
+; defining Action object
 Pentagon =
 ( LTrim Join
 {
@@ -652,7 +659,7 @@ but there are web pages that keep loading and unloading elements and stuff while
 In this kind of situation Rufaydium Basic and Rufaydium CDP would simply wait through error or if an element in question is not available or element visibility or displayed/enabled stats element, displayed(), element.enabled(), we can use these tricks to make AutoHotkey wait, 
 for example, We have click button and this would load element with tag name button.
 
-```Authotkey
+```AutoHotkey
 while !IsObject(button) ; 
 {
    sleep, 200
@@ -665,7 +672,7 @@ while h.error
     h := button.innerText ; but element.methods support error handling
     sleep, 200
 }
-Msgbox, % "innerText" h ; otherwise h has innertext
+MsgBox, % "innerText" h ; otherwise h has innertext
 Button.click()
 ```
 ## Session.CDP
@@ -674,26 +681,26 @@ Button.click()
 Example
 ```AutoHotkey
 ChromeDriver := A_ScriptDir "\chromedriver.exe"
-; incase driver is already running it will get access driver which is already running
+; in case driver is already running it will get access driver which is already running
 Driver := new RunDriver(ChromeDriver) 
 Chrome := new Rufaydium(Driver)
 Page := Chrome.getSessionByUrl(Webpage) ; getting session
 
 if !isobject(Page)
 {
-	msgbox, no session found
+	MsgBox, no session found
 	return
 }
 
 ; Page.CDP.Document()	; no longer needed
 input := Page.CDP.QuerySelector(".mb-2")
-msgbox, % input.innerText
+MsgBox, % input.innerText
 for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with their ids
 {
 	tag.sendKey(tag.id)
 }
 ```
-Note: FireFox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
+Note: Firefox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
 
 # CDP.Document()
 CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP has developed reliable access to frame
@@ -715,7 +722,7 @@ elements := Session.CDP.getElementsbyName(Tagename)
 1) GetelementbyJS() can only be used on Document like Document.GetelementbyJS(JS), yes it will work on element 
    but it would consider document as base node / pointer
 2) The JS should return with element or array of elements i.e. GetelementbyJS("document.querySelectorAll('input')")
-if you want to pass function and wana use results from it then you can pass your function which should return with 
+if you want to pass function and want use results from it then you can pass your function which should return with 
    one element or array of elements like this
 3) you can use GetelementbyJS(js).value := var and GetelementbyJS(js)[].value := var it totally depends on you 
    JavaScript what you are passing,
@@ -728,7 +735,7 @@ if you want to pass function and wana use results from it then you can pass your
 element := Session.CDP.GetelementbyJS("JSfunc()") ; JS funct
 
 ; get element by location
-; this menthod does not reriued Session.CDP.Document()
+; this method does not reriued Session.CDP.Document()
 element := Session.CDP.getelementbyLocation(x,y)
 ```
 # CDP.Element
@@ -754,7 +761,7 @@ text := CDP_element.textContent	; get textContent
 html := CDP_element.OuterHTML	; get html
 CDP_element.OuterHTML := htmlstring	; set html
 
-allattribus := CDP_element.getAttributes() ; gets all the attirbuts as Object wecan use json dump to see whats inside
+allattribus := CDP_element.getAttributes() ; gets all the attributes as Object we can use json dump to see whats inside
 value := CDP_element.getAttribute(Name) ; getting specific attribute value base on above method
 CDP_element.setAttribute(Name,Value) : change attribute value
 
@@ -766,7 +773,7 @@ CDP_element.SendKey("1234`n") ; send 1 2 3 4 enter
 ```
 
 # CDP Evaluate(JS)
-`Session.CDP.Evaluate()` executes Javascript, just like we use chrome console.
+`Session.CDP.Evaluate()` executes Javascript, just like we use Chrome console.
 ```AutoHotkey
 js = 
 (
@@ -790,9 +797,9 @@ Session.CDP.evaluate("findByTextContent('" btnName "').childNodes[0].click()")
 # CDP.Frames
 We can switch to the frame using CDP methods Just like Basic.
 ```AutoHotkey
-msgbox, % Page.CDP.FramesLength() ; will return child frame length
-Page.CDP.Frame(0) ; sitched to Frame 1
-Page.CDP.ParentFrame() ; sitched back to Main page / frame
+MsgBox, % Page.CDP.FramesLength() ; will return child frame length
+Page.CDP.Frame(0) ; switched to Frame 1
+Page.CDP.ParentFrame() ; switched back to Main page / frame
 ```
 # CDP Call
 Call is `sendCommand call` for Chrome Devtools protocols, https://chromedevtools.github.io/devtools-protocol/ 
