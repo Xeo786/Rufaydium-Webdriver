@@ -534,7 +534,7 @@ Element.SendKey("text string " . key.class ) ; this convert text and will send k
 Element.SendKey(key.ctrl "a" key.delete) ; this will clear text content in edit box by simply doing Ctrl + A and  delete
 Element.Click() ; sent simple click
 Element.Move() ; move mouse pointer to that element it will help drag drop stuff see session.click and session.move 
-Element.clear() ; will cleat selected item / uploaded file or content text 
+Element.clear() ; will clear selected item / uploaded file or content text 
 ; getting value  element should be input box or editable other wise you need to use Session.CDP approach 
 ; to modify element selenium user will understand what I am talking about
 MsgBox, % Element.value
