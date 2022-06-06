@@ -68,7 +68,7 @@ class Capabilities
         }
     }
 
-    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesnt change often, use the default
+    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesn't change often, use the default
 	{
         if this.IncognitoMode
             return
@@ -206,7 +206,7 @@ class FireFoxCapabilities extends Capabilities
 
     addArg(arg) ; idk args list
     {
-        arg := strreplace(arg,"--","-")
+        arg := StrReplace(arg,"--","-")
         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
             this.cap.capabilities.alwaysMatch[this.Options].args := []
         this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
@@ -214,7 +214,7 @@ class FireFoxCapabilities extends Capabilities
 
     RemoveArg(arg,match:="Exact")
     {
-        arg := strreplace(arg,"--","-")
+        arg := StrReplace(arg,"--","-")
 	    for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
 	    {
             if match = "Exact"
@@ -230,7 +230,7 @@ class FireFoxCapabilities extends Capabilities
 	    }
     }
 
-    setUserProfile(profileName:="Profile1") ; user data dir doesnt change often, use the default
+    setUserProfile(profileName:="Profile1") ; user data dir doesn't change often, use the default
 	{
         if this.IncognitoMode
             return
