@@ -513,6 +513,39 @@ Session.GetCookies() ; return with object array of cookies you need to parse the
 Session.GetCookieName(Name) ; return with cookie with Name haven't tested it 
 Session.AddCookie(CookieObj) ; will add cookie idk request parameters for adding cookies
 ```
+Use JSON.Dump() to determine the cookie's attributes.
+```AutoHotkey
+Msgbox, %  JSON.Dump(Session.GetCookies())
+/*
+[{"domain": ".autohotkey.com", "expiry": 1654584141, "httpOnly": 0, "name": "_gat_gtag_UA_5170375_17", "path": "/", "secure": 0, "value": "1"}, 
+{"domain": ".autohotkey.com", "expiry": 1654670481, "httpOnly": 0, "name": "_gid", "path": "/", "secure": 0, "value": "GA1.2.1414453342.1654584081"}, 
+{"domain": ".autohotkey.com", "expiry": 1717656081, "httpOnly": 0, "name": "_ga", "path": "/", "secure": 0, "value": "GA1.2.1530957962.1654584081"}]
+*/
+```
+An example of retrieving all cookies. Some results may return blank if the cookie doesn't have that attribute.
+
+```AutoHotkey
+cookies := Session.GetCookies() ; https://developer.chrome.com/docs/extensions/reference/cookies/#type-Cookie
+Loop % cookies.Length()
+{
+    MsgBox, % cookies[A_Index].Domain	; .autohotkey.com	
+    MsgBox, % cookies[A_Index].Expiry	; 1654584321	
+    MsgBox, % cookies[A_Index].HostOnly ; 
+    MsgBox, % cookies[A_Index].HttpOnly ; 0
+    MsgBox, % cookies[A_Index].Name	; _gat_gtag_UA_1234567_89
+    MsgBox, % cookies[A_Index].Path	; /
+    MsgBox, % cookies[A_Index].SameSite	;    
+    MsgBox, % cookies[A_Index].Secure   ; 0
+    MsgBox, % cookies[A_Index].Session  ; 
+    MsgBox, % cookies[A_Index].StoreId  ; 
+    MsgBox, % cookies[A_Index].Value    ; 1
+}
+```
+An example of retrieving a single cookie by name.
+```AutoHotkey
+var := Session.GetCookieName("CFID")
+MsgBox, % var.Domain " | " var.Expiry " | " var.Value ; etc.
+```
 
 # WDElement
 
