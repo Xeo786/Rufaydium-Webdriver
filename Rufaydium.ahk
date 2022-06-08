@@ -58,6 +58,8 @@ Class Rufaydium
 		if !instr(url,"HTTP")
 			url := this.address "/" url
 		try r := Json.load(this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
+		if(r.error = "chrome not reachable") ; incase someone close browser manually but session is not closed for driver
+			this.quit() ; so we close session for driver at cost of one time response wait lag
 		if r
 			return r
 	}
@@ -207,7 +209,7 @@ Class Rufaydium
 		for k, w in this.getSessions()
 		{
 			w.SwitchbyURL(URL)
-			if instr(w.URL(),URL)
+			if instr(w.URL,URL)
 				return w
 		}
 	}
@@ -217,7 +219,7 @@ Class Rufaydium
 		for k, s in this.getSessions()
 		{
 			s.SwitchbyTitle(Title)
-			if instr(s.title(),Title)
+			if instr(s.title,Title)
 				return s
 		}
 	}
@@ -226,6 +228,11 @@ Class Rufaydium
 	{
 		for k, s in this.getSessions()
 			s.Quit()
+	}
+
+	Status()
+	{
+		this.Request( this.DriverUrl "/status","GET")
 	}
 }
 
