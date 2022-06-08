@@ -215,8 +215,12 @@ Note: above methods are based on `httpserver\sessions` command which is not W3C 
 
 ```AutoHotkey
 FF := new Rufaydium("geckodriver.exe")
-Page := FF.NewSession("c:\Program Files\Mozilla Firefox\firefox.exe")
+Page := FF.NewSession() ; session id will be saved to ini for access after reloading script
 ```
+## Session Auto Delete
+Session created by driver can be closed by user, in this kind situation Driver take time act upon any task to automate exiting web pages. because Session was not closed for fro driver, driver response that session id not reachable,
+
+Session auto delete will delete Session for driver when web page is not reachable/closed by user, this automated step will be taken on any Rufaydium's method after webpage manually/accidently closed to over come driver lag,
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switches to a new tab or New Window
