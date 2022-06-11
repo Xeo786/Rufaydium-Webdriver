@@ -2,8 +2,9 @@
 
 # Rufaydium
 
-AutoHotkey WebDriver Library to interact with browsers.  
-Rufaydium will automatically try to download the correct version.  
+AutoHotkey WebDriver Library to interact with browsers.
+Rufaydium will automatically try to download the latest Webdriver and Updates Webdriver according to browser Version while creating Webdriver Session.
+
 Supported browsers: Chrome, MS Edge, Firefox, Opera.
 
 **Forum:** https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
