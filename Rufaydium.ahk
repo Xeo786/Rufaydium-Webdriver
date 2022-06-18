@@ -241,7 +241,7 @@ Class Rufaydium
 }
 
 
-Class Session extends Rufaydium
+Class Session
 {
 
 	__new(i)
@@ -276,6 +276,17 @@ Class Session extends Rufaydium
 	close()
 	{
 		This.currentTab := this.Send("window","DELETE")
+	}
+
+	send(url,Method,Payload:= 0,WaitForResponse:=1)
+	{
+		if !instr(url,"HTTP")
+			url := this.address "/" url
+		try r := Json.load(Rufaydium.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
+		if(r.error = "chrome not reachable") ; incase someone close browser manually but session is not closed for driver
+			this.quit() ; so we close session for driver at cost of one time response wait lag
+		if r
+			return r
 	}
 
 	NewTab()
