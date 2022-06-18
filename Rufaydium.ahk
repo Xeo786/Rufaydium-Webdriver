@@ -145,7 +145,12 @@ Class Rufaydium
 		return new Session(window)
 	}
 
-	getSessions() ; get all windows
+	Sessions() ; get all Sessions Details
+	{
+		return this.send(this.DriverUrl "/sessions","GET")
+	}
+
+	getSessions() ; get all Sessions for Rufaydium
 	{
 		if !this.capabilities.options
 		{
@@ -176,9 +181,8 @@ Class Rufaydium
 			return windows
 		}
 
-		Sessions := this.send(this.DriverUrl "/sessions","GET")
 		windows := []
-		for k, se in Sessions
+		for k, se in this.Sessions()
 		{
 			chromeOptions := Se["capabilities",This.driver.options]
 			s := []
