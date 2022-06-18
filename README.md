@@ -206,7 +206,10 @@ this way we can load All Chromium Based browsers
 We can also access sessions created previously using the title or URL.
  
 ```AutoHotkey
+Msgbox, % json.dump(Chrome.Sessions()) ; will return all Webdriver Sessions detail
+
 Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created
+
 Session := Chrome.getSession(1,2) ; this will return with first session and switch Second tab, Tabs count from left to right
 Session := Chrome.getSessionByUrl(URL)
 Session2 := Chrome.getSessionByTitle(Title)
