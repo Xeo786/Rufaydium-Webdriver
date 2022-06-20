@@ -236,7 +236,7 @@ Class Rufaydium
 
 	Status()
 	{
-		Rufaydium.Request( this.DriverUrl "/status","GET")
+		return Rufaydium.Request( this.DriverUrl "/status","GET")
 	}
 }
 
