@@ -303,7 +303,7 @@ Class Session
 
 	Detail()
 	{
-		return Json.load(this.Request(this.debuggerAddress "/json","GET"))
+		return Json.load(Rufaydium.Request(this.debuggerAddress "/json","GET"))
 	}
 
 	GetTabs()
