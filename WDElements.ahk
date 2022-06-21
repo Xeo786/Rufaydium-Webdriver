@@ -97,6 +97,22 @@ Class WDElement extends Session
 		}
 	}
 	
+	innerHTML
+	{
+		get
+		{
+			return  this.GetProperty("innerHTML")
+		}
+	}
+
+	outerHTML
+	{
+		get
+		{
+			return  this.GetProperty("outerHTML")
+		}
+	}
+
 	Clear()
 	{
 		;this.Send("ClearValue","POST"); not working for me
