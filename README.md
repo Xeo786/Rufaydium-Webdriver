@@ -469,8 +469,24 @@ Session.Screenshot("picture location.png") ; will save PNG to A_ScriptDir
 Session.Screenshot(a_desktop "\picture location.png") ; will save PNG to a_desktop
 ```
 
-## PDF printing 
-Supported only for headless mode according to WebDriver.
+# PDF printing 
+WebDriver only Supports headless mode printing. but Rufaydium now supports Headful mode printing thanks to "wkhtmltopdf"
+Rufaydium will ask to download and install [wkhtmltopdf](https://wkhtmltopdf.org/), if wkhtmltopdf is not available in windows, 
+>please follow [terms and condition](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/LICENSE) from wkhtmltopdf
+## Printing pdf with wkhtmltopdf
+The method is same but defining Printing Options is not mandatory and PrintOptions class can also be used with wkhtmltopdf.
+```AutoHotkey
+Session.print(PDFlocation,PrintOptions.A4_Default) ; see Class PrintOptions
+Session.print(PDFlocation) ; no need for print options
+```
+[Wkhtmltopdf command-line](https://wkhtmltopdf.org/usage/wkhtmltopdf.txt) parameters as Options for advanced printing
+```AutoHotkey
+params := "--zoom 2 --margin-bottom 0 --margin-left 0 --margin-right 0 --margin-top 0 --page-height 0"
+Session.print(PDFlocation,params)
+```
+> Note: Printing PDF from nested frame is a bit tricky but see [example](https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&p=469037#p469037)
+## Headless Mode Printing
+for Headless mode printing, we need to describe PrintOptions which is mandatory see the following example
 ```AutoHotkey
 Session.print(PDFlocation,PrintOptions.A4_Default) ; see Class PrintOptions
 Session.print(PDFlocation,{"":""}) ; for default print options
