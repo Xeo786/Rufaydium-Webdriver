@@ -646,18 +646,44 @@ Class Session
 		}
 	}
 
-	Print(PDFLocation,Options)
+	Print(PDFLocation,Options:=0)
 	{
-		Base64pdfData := this.Send("print","POST",Options) ; does not work
-		if !Base64pdfData.error
+		if !instr(PDFLocation,".pdf")
 		{
-			nBytes := Base64Dec( Base64pdfData, Bin ) ; thank you Skan :)
-			File := FileOpen(PDFLocation, "w")
-			File.RawWrite(Bin, nBytes)
-			File.Close()
+			msgbox, ,Rufaydium, error: File location be ".pdf"
+			return
+		}
+
+		if this.Capabilities.HeadlessMode
+		{
+			Base64pdfData := this.Send("print","POST",Options) ; does not work
+			if !Base64pdfData.error
+			{
+				nBytes := Base64Dec( Base64pdfData, Bin ) ; thank you Skan :)
+				File := FileOpen(PDFLocation, "w")
+				File.RawWrite(Bin, nBytes)
+				File.Close()
+			}
+			else
+				msgbox, ,Rufaydium, % "Fail to save PDF`nError : " json.Dump(Base64pdfData) "`nPlease define Print Options or use print profiles from PrintOptions.class`nSince Chrome Printing is not available in Headful mode you can try 'wkhtmltopdf' printing"
 		}
 		else
-			msgbox, ,Rufaydium, % "Fail to save PDF`nError : " json.Dump(Base64pdfData) "`n`nMake sure Chrome is running in headless mode.`nPlease define Print Options or use print profiles from PrintOptions.class"
+		{
+			if isProgInstalled("wkhtmltox")
+			{
+				wkhtmltopdf(this.HtML,PDFLocation,options)
+			}
+			else
+			{
+				MsgBox,36,Rufaydium, User is required to install "wkhtmltopdf" In order to enable pdf printing without Headless mode`n`nPress Yes to navigate to download page of "wkhtmltox" tool
+				IfMsgBox Yes
+				{
+					this.NewTab()
+					this.url := "https://wkhtmltopdf.org/downloads.html"
+					MsgBox,64,Rufaydium,Please Download and install "wkhtmltox" now, according to Windows Version then Restart Rufaydium.
+				}
+			}
+		}
 	}
 
 	click(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
@@ -838,4 +864,70 @@ Base64Enc( ByRef Bin, nBytes, LineLength := 64, LeadingSpaces := 0 ) { ; By SKAN
 	Loop % Ceil( StrLen(B64) / LineLength )
 		B .= Format("{1:" LeadingSpaces "s}","" ) . SubStr( B64, N += LineLength, LineLength ) . "`n"
 	Return RTrim( B,"`n" )
+}
+
+isProgInstalled(Prog)
+{
+	shell := ComObjCreate("Shell.Application")
+	programsFolder := shell.NameSpace("::{26EE0668-A00A-44D7-9371-BEB064C98683}\8\::{7B81BE6A-CE2B-4676-A29E-EB907A5126C5}")
+	items := programsFolder.Items()
+	for k in items
+		if instr(k.name,prog)
+			return true
+	return false
+}
+
+
+wkhtmltopdf(HtML,pdf,options)
+{
+	htmlloc := StrReplace(pdf, ".pdf",".html")
+	
+	while FileExist(pdf)
+		FileDelete, % pdf
+
+	while FileExist(htmlloc)
+		FileDelete, % htmlloc
+
+	FileAppend, % HtML, % htmlloc
+
+	while !FileExist(htmlloc)
+		sleep, 200
+
+	if !A_Is64bitOS
+		wkhtmltopdf := "C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+	else 
+		wkhtmltopdf := "C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"
+
+	if IsObject(options)
+	{
+		cmd := wkhtmltopdf " --zoom " options.scale
+
+		cmd .= " --margin-bottom "	options.margin.bottom
+		cmd .= " --margin-left "	options.margin.left
+		cmd .= " --margin-right "	options.margin.right
+		cmd .= " --margin-top "		options.margin.top
+
+		cmd .= " --page-height "	options.page.height
+		cmd .= " --page-width " 	options.page.height
+
+		cmd .= " --orientation " chr(34) options.orientation chr(34)
+
+		if options.background
+			cmd .= " --enable-smart-shrinking "
+		else
+			cmd .= " --disable-smart-shrinking "
+
+		if options.background
+			cmd .= " --background "
+		else
+			cmd .= " --no-background "	
+		
+		cmd .= " " chr(34) htmlloc chr(34) " " chr(34) pdf chr(34)
+		runwait, %  cmd,,Hide
+	}	
+	else if IsObject(options)
+		runwait, % wkhtmltopdf " " options " " chr(34) htmlloc chr(34) " " chr(34) pdf chr(34),,Hide
+	else
+		runwait, % wkhtmltopdf " --background " chr(34) htmlloc chr(34) " " chr(34) pdf chr(34),,Hide
+	FileDelete, % htmlloc
 }
