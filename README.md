@@ -572,8 +572,7 @@ MsgBox, % var.Domain " | " var.Expiry " | " var.Value ; etc.
 ```
 
 # WDElement
-
-Getting Elements and their Information 
+Available web driver Elements methods.
 
 ```AutoHotkey
 Element.Name() ; will return tagname
@@ -592,15 +591,6 @@ Element.SendKey(key.ctrl "a" key.delete) ; this will clear text content in edit 
 Element.Click() ; sent simple click
 Element.Move() ; move mouse pointer to that element it will help drag drop stuff see session.click and session.move 
 Element.clear() ; will clear selected item / uploaded file or content text 
-; getting value  element should be input box or editable other wise you need to use Session.CDP approach 
-; to modify element selenium user will understand what I am talking about
-MsgBox, % Element.value
-;setting value 
-Element.value := "somevalue"
-
-Element.InnerText ; return with innerText 
-; you cannot set innerText using this approach you will need Session.CDP approach , CDP can modify whole DOM 
-; if element is innerText based edit box we can simply use Element.SendKey()
 
 ; Attribs properties & CSS
 Element.GetAttribute(Name) ; return with required attribute
@@ -611,11 +601,29 @@ Element.GetCSS(Name) ; return with CSS
 Element.Shadow() ; return with shadow element detail actually I going to add functionality to access shadow elements in future
 ; first I need to learn about them
 
-Element.Uploadfile(filelocation) ; this not working right now, I am working on it, I need to find out Payload/request parameters 
 Element.Sendkey(StrReplace(filelocation,"\","/")) ; if Element is input element than file location can be set using SendKey()
-; click on upload button now initiate fileupload, after setting file location 
+; click on upload button now initiate fileupload, after setting file location
 ```
-
+Getting web driver Elements information.
+```AutoHotkey
+e := Page.querySelector(selector) ; getting element 
+msgbox % e.innerText
+msgbox % "TagName: " e.TagName "`nName: " e.Name "`nID: " e.id "`nTitle: " e.Title "`nClass: " e.Class "`nValue: " e.value
+msgbox, % e.InnerHTML
+msgbox, % e.outerHTML
+```
+Setting / Changing Web Driver Elements information.
+```AutoHotkey
+e.Name := "abcd"
+e.id := "Mywords"
+e.Title := "My Title"
+e.Class := "My Class"
+e.value := "My Value"
+newhtml = <button name="Rufaydium" id="MyButton" >Rufaydium</button>
+e.outerHTML := newhtml 
+e.InnerHTML := newhtml 
+```
+>Note: Element manipulation is not available for Rufaydium basic, versions less than 1.6.3
 ## Shadow Elements
 Shadow elements can easily be accessed using `element.shadow()`.
 The following example will navigate to the Chrome extensions page and enables Developer mode
