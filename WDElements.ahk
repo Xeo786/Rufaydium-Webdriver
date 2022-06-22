@@ -10,9 +10,12 @@ Class WDElement extends Session
 		This.Address := Address
 	}
 	
-	Name()
+	TagName
 	{
-		return this.Send("name","GET")
+		get
+		{
+			return this.Send("name","GET")
+		}
 	}
 	
 	Rect()
@@ -70,6 +73,30 @@ Class WDElement extends Session
 		return this.Send("moveto","POST",{"element_id":this.id})
 	}
 	
+	Title
+	{
+		get
+		{
+			return this.GetAttribute("title")
+		}
+	}
+
+	Class
+	{
+		get
+		{
+			return this.GetAttribute("class")
+		}
+	}
+
+	Name
+	{
+		get
+		{
+			return this.GetAttribute("name")
+		}
+	}
+
 	value
 	{
 		get
@@ -79,7 +106,6 @@ Class WDElement extends Session
 				return this.GetProperty("value")
 			else
 				return v	
-
 		}
 		
 		Set
@@ -124,7 +150,7 @@ Class WDElement extends Session
 	{
 		return this.Send("attribute/" Name,"GET")
 	}
-	
+
 	GetProperty(Name)
 	{
 		return this.Send("property/" Name,"GET")
