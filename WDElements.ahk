@@ -76,7 +76,7 @@ Class WDElement extends Session
 		{
 			v := this.Send("value","GET")
 			if v.error
-				return this.GetAttribute("value")
+				return this.GetProperty("value")
 			else
 				return v	
 
