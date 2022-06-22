@@ -3,11 +3,10 @@
 
 Class WDElement extends Session
 {
-	__new(Address)
+	__new(Address,Element)
 	{
-		;RegExMatch(Address,"element\/(.*)$",i)
-		;this.id := i1
 		This.Address := Address
+		This.Element := Element
 	}
 	
 	TagName
@@ -79,6 +78,11 @@ Class WDElement extends Session
 		{
 			return this.GetAttribute("title")
 		}
+
+		set
+		{
+			this.Execute("arguments[0].title = '" Value "'")
+		}
 	}
 
 	Class
@@ -87,6 +91,11 @@ Class WDElement extends Session
 		{
 			return this.GetAttribute("class")
 		}
+
+		set
+		{
+			this.Execute("arguments[0].className = '" Value "'")
+		}
 	}
 
 	Name
@@ -94,6 +103,24 @@ Class WDElement extends Session
 		get
 		{
 			return this.GetAttribute("name")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].name = '" Value "'")
+		}
+	}
+
+	id
+	{
+		get
+		{
+			return this.GetAttribute("id")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].id = '" Value "'")
 		}
 	}
 
@@ -119,7 +146,15 @@ Class WDElement extends Session
 	{
 		get
 		{
-			return  this.Send("text","GET")
+			e := this.Send("text","GET")
+			if !e
+				e := this.Execute("return arguments[0].InnerText")
+			return e
+		}
+
+		set
+		{
+			this.Execute("arguments[0].innerText = '" Value "'")
 		}
 	}
 	
@@ -129,6 +164,11 @@ Class WDElement extends Session
 		{
 			return  this.GetProperty("innerHTML")
 		}
+
+		set
+		{
+			this.Execute("arguments[0].innerHTML = '" Value "'")
+		}
 	}
 
 	outerHTML
@@ -136,6 +176,11 @@ Class WDElement extends Session
 		get
 		{
 			return  this.GetProperty("outerHTML")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].outerHTML = '" Value "'")
 		}
 	}
 
@@ -176,6 +221,17 @@ Class WDElement extends Session
 		return this.Send("file","POST",{})
 	}
 	
+	Execute(script)
+	{
+		Origin := this.Address
+		RegExMatch(Origin,"(.*)\/element\/(.*)$",i)
+		args := [{This.Element:i2}]
+		this.address := i1
+		r := this.Send("execute/sync","POST", { "script":Script,"args":Args},1)
+		this.address := Origin
+		return r
+	}
+
 }
 
 Class ShadowElement extends Session
