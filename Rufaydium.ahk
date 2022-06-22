@@ -525,13 +525,13 @@ Class Session
 
 	findelement(u,v)
 	{
-		for element, elementid in this.Send("element","POST",{"using":u,"value":v},1)
+		for i, elementid in this.Send("element","POST",{"using":u,"value":v},1)
 		{
 			if instr(elementid,"no such")
 				return 0
 			address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 			address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
-			return New WDElement(address)
+			return New WDElement(address,i)
 		}
 	}
 
@@ -547,7 +547,7 @@ Class Session
 					return 0
 				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
-				e[k-1] := New WDElement(address)
+				e[k-1] := New WDElement(address,i)
 			}
 		}
 		return e
