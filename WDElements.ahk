@@ -71,7 +71,7 @@ Class WDElement extends Session
 	{
 		return this.Send("moveto","POST",{"element_id":this.id})
 	}
-	
+
 	Title
 	{
 		get
@@ -221,13 +221,50 @@ Class WDElement extends Session
 		return this.Send("file","POST",{})
 	}
 	
+	focus()
+	{
+		this.Execute("arguments[0].focus()")
+	}
+
+	parentElement
+	{
+		get
+		{	
+			for i, elementid in this.Execute("return arguments[0].parentElement")
+			{
+				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+				return New WDElement(address,i)
+			}	
+		}
+	}
+
+	children
+	{
+		get
+		{	
+			e := []
+			for k, element in this.Execute("return arguments[0].children")
+			{
+				for i, elementid in element
+				{
+				if instr(elementid,"no such")
+					return 0
+				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+				e[k-1] := New WDElement(address,i)
+				}
+			}
+			return e	
+		}
+	}
+
 	Execute(script)
 	{
 		Origin := this.Address
 		RegExMatch(Origin,"(.*)\/element\/(.*)$",i)
-		args := [{This.Element:i2}]
 		this.address := i1
-		r := this.Send("execute/sync","POST", { "script":Script,"args":Args},1)
+		r := this.ExecuteSync(script,{This.Element:i2})
 		this.address := Origin
 		return r
 	}
