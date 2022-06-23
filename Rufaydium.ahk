@@ -519,15 +519,21 @@ Class Session
 
 	ActiveElement()
 	{
-		return New WDElement(this.Send("element/active","GET"))
+		for i, elementid in this.Send("element/active","GET")
+		{
+			address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+			address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+			return New WDElement(address,i)
+		}
 	}
 
 	findelement(u,v)
 	{
-		for i, elementid in this.Send("element","POST",{"using":u,"value":v},1)
+		r := this.Send("element","POST",{"using":u,"value":v},1)
+		for i, elementid in r
 		{
 			if instr(elementid,"no such")
-				return 0
+				return r
 			address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 			address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
 			return New WDElement(address,i)
@@ -536,20 +542,20 @@ Class Session
 
 	findelements(u,v)
 	{
-
 		e := []
 		for k, element in this.Send("elements","POST",{"using":u,"value":v},1)
 		{
 			for i, elementid in element
 			{
-				if instr(elementid,"no such")
-					return 0
 				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
 				e[k-1] := New WDElement(address,i)
 			}
 		}
-		return e
+
+		if e.count() > 0
+			return e
+		return {"Error":"no such element"}
 	}
 
 	shadow()
