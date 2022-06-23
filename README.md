@@ -381,28 +381,37 @@ MsgBox, % Session.FramesLength() ; this will return Frame quantity which is Zero
 Error Handling works with all methods, except methods that return Element pointer Few common functionalities
 
 ## Accessing Element / Elements
-Following methods return with element pointer. Fails will return empty and do not support error handling
+The following methods return with an element pointer.
 ```AutoHotkey
 Element := Session.getElementByID(id)
 Element := Session.QuerySelector(Path)
 Element := Session.QuerySelectorAll(Path)
 Element := Session.getElementsbyClassName(Class)
-Element := Session.getElementsbyName(TagName) : same as getElementsbyTagName(TagName)
+Element := Session.getElementsbyName(Name) 
+Element := Session.getElementsbyTagName(TagName)
 Element := Session.getElementsbyXpath(xPath)
 ```
 Getting element(s) from the element Just like DOM
 ```AutoHotkey
-element := Session.QuerySelector(Path)[0]       
-subelements := element.QuerySelector(Path)[0]
+element := Session.querySelector(".Someclass")
+ChildElements := element.querySelectorAll("#someID")
 ```
-Above function are simply based on findelement()/ findelements()
+Getting Parent and Child elements
+```AutoHotkey
+e := Page.QuerySelector("#keywords")
+parentelement := e.parentElement
+for n, child in parentelement.children
+	msgbox, % "index: " n "`nTagName: " child.tagname
+```
+
+Above methods are based on `.findelement()`/`.findelements()`
 ```AutoHotkey
 Session.findelement(by.selector,"selectorparameter") 
 Session.findelements(by.selector,"selectorparameter") 
 ```
 We can check the element's length
 ```AutoHotKey
-elements := Session.QuerySelector(Path)
+elements := Session.querySelectorAll(Path)
 MsgBox, % elements.count()
 ```
 
