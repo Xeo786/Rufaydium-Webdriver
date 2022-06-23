@@ -1,4 +1,4 @@
-; Rufaydium v1.5
+; Rufaydium v1.6
 ;
 ; Rufaydium          : AutoHotkey WebDriver Library to interact with browsers.
 ; Requirement        : WebDriver version needs to be compatible with the Browser version.
@@ -12,7 +12,6 @@
 ; Link : https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
 ; Git  : https://github.com/Xeo786/Rufaydium-Webdriver
 ; By Xeo786 - GPL-3.0 license, see LICENSE
-
 #include %A_LineFile%\..\
 #Include WDM.ahk
 #Include CDP.ahk
