@@ -555,7 +555,7 @@ Class Session
 
 		if e.count() > 0
 			return e
-		return {"Error":"no such element"}
+		return "no such element"
 	}
 
 	shadow()

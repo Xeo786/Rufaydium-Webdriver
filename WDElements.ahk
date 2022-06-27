@@ -248,16 +248,14 @@ Class WDElement extends Session
 			{
 				for i, elementid in element
 				{
-				if instr(elementid,"no such")
-					return r
-				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
-				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
-				e[k-1] := New WDElement(address,i)
+					address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+					address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+					e[k-1] := New WDElement(address,i)
 				}
 			}
 			if e.count() > 0
 				return e
-			return {"Error":"no such Child"}
+			return "no such Child"
 		}
 	}
 
