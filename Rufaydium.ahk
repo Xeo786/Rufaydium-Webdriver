@@ -533,7 +533,7 @@ Class Session
 		for i, elementid in r
 		{
 			if instr(elementid,"no such")
-				return r
+				return 0
 			address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 			address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
 			return New WDElement(address,i)
@@ -555,7 +555,7 @@ Class Session
 
 		if e.count() > 0
 			return e
-		return "no such element"
+		return 0
 	}
 
 	shadow()

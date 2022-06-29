@@ -255,7 +255,7 @@ Class WDElement extends Session
 			}
 			if e.count() > 0
 				return e
-			return "no such Child"
+			return 0
 		}
 	}
 
