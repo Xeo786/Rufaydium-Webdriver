@@ -125,12 +125,6 @@ Chrome.capabilities.setUserProfile("Default") ; can use Default user
 ; New Session will be created according to above Capabilities settings
 Session := Chrome.NewSession()
 ```
-Capabilities can also be set manually 
-```AutoHotkey
-Browser := new Rufaydium()
-Browser.capabilities := new capabilities(Browser,BrowserOptions,"windows",true) 
-; Browser.capabilities..... other methods
-```
 ## Enable HeadlessMode
 This will SET and GET HeadlessMode
 ```AutoHotkey
