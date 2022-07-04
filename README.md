@@ -216,9 +216,9 @@ FF := new Rufaydium("geckodriver.exe")
 Page := FF.NewSession() ; session id will be saved to ini for access after reloading script
 ```
 ## Session Auto Delete
-Session created by driver can be closed by user, in this kind situation Driver take time act upon any task to automate exiting web pages. because Session was not closed for fro driver, driver response that session id not reachable,
+Session created by driver can be closed by user, Driver take time to respond for any command in this kind of situation because Session was not closed for driver,
 
-Session auto delete will delete Session for driver when web page is not reachable/closed by user, this automated step will be taken on any Rufaydium's method after webpage manually/accidently closed to over come driver lag,
+Session auto-delete will delete Session for driver when web page is not reachable/closed by user, this automated step will be taken on any Rufaydium's method after webpage manually/accidentally closed to over come driver response lag,
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switches to a new tab or New Window
