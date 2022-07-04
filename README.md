@@ -202,7 +202,7 @@ We can also access sessions created previously using the title or URL.
 ```AutoHotkey
 Msgbox, % json.dump(Chrome.Sessions()) ; will return all Webdriver Sessions detail
 
-Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created
+Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created and switch to Active TAB
 
 Session := Chrome.getSession(1,2) ; this will return with first session and switch Second tab, Tabs count from left to right
 Session := Chrome.getSessionByUrl(URL)
@@ -266,12 +266,13 @@ Session.Navigate("https://www.autohotkey.com/")
 ## Session.Back() & Session.Forward()
 helps navigate to previous or from previous to recent the page acting like browser back and forward buttons. 
 
-## SwitchTab(), SwitchbyTitle() & SwitchbyURL()
+## SwitchTab(), SwitchbyTitle() & SwitchbyURL(), ActiveTab()
 Help to switch between tabs.
 ```AutoHotkey
-Session.SwitchTab(2) ; will switch tab by number, counted from left to right
+Session.SwitchTab(2) ; switch tab by number, counted from left to right
 Session.SwitchbyTitle(Title)
 Session.SwitchbyURL(url)
+Session.ActiveTab() ; Switch to active tab. Note: this does not work for firefox, right now.
 ```
 
 ## Session window position and location
