@@ -196,6 +196,29 @@ Class Rufaydium
 		return windows
 	}
 
+	ActiveSession()
+	{
+		for i, S in  this.getSessions()
+		{
+			if !id
+			{
+				if !S.debuggerAddress
+					return
+				id := json.load(Rufaydium.Request(S.debuggerAddress "/json","GET"))[1].id ; First id always Current Handle
+			}
+
+			for k , handle in S.GetTabs()
+			{
+				if instr(handle,id)
+				{
+					S.Switch(handle)
+					return S
+				}
+			}
+			id := "" ; if there is another Session so we need to get that session currentTab
+		}
+	}
+
 	getSession(i:=0,t:=0)
 	{
 		if i
