@@ -3,7 +3,7 @@
 # Rufaydium
 
 AutoHotkey WebDriver Library to interact with browsers.
-Rufaydium will automatically try to download the latest Webdriver and Updates Webdriver according to browser Version while creating Webdriver Session.
+Rufaydium will automatically try to download the latest Webdriver and updates Webdriver according to browser Version while creating Webdriver Session.
 
 Supported browsers: Chrome, MS Edge, Firefox, Opera.
 
@@ -44,7 +44,7 @@ Chrome.Driver.Exit() ; then exits driver
 return
 ```
 # New Rufaydium(DriverName,Parameters)
-Rundriver() Class integrated into Rufaydium.ahk that launches driver in the background where port 9515 set to default, 
+`Rundriver()` Class integrated into Rufaydium.ahk that launches driver in the background where port 9515 set to default, 
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
@@ -216,9 +216,9 @@ FF := new Rufaydium("geckodriver.exe")
 Page := FF.NewSession() ; session id will be saved to ini for access after reloading script
 ```
 ## Session Auto Delete
-Session created by driver can be closed by user, Driver take time to respond for any command in this kind of situation because Session was not closed for driver,
+A session created by a driver can be closed by the user, Driver takes time to respond to any command in this kind of situation because Session was not closed for the driver,
 
-Session auto-delete will delete Session for driver when web page is not reachable/closed by user, this automated step will be taken on any Rufaydium's method after webpage manually/accidentally closed to over come driver response lag,
+Session auto-delete will delete Session for a driver when a web page is not reachable/closed by the user, this automated step will be taken on any Rufaydium's method after the web page is manually/accidentally closed to overcome driver response lag,
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switches to a new tab or New Window
@@ -323,7 +323,7 @@ Page1.exit() ; will close all windows / tabs will end up closing whole session
 
 ## Switching Between Window Tabs & Frame
 One can Switch tabs using `Session.SwitchbyTitle(Title)` or `Session.SwitchbyURL(url="")`
-but Session remains the same If you check out[above examples](https://github.com/Xeo786/Rufaydium-Webdriver#sessionnewtab--sessionnewwindow), I posted you would easily understand how switching Tab works.
+but Session remains the same If you check out the [above examples](https://github.com/Xeo786/Rufaydium-Webdriver#sessionnewtab--sessionnewwindow), I posted you would easily understand how switching Tab works.
 
 Just like Switching tabs, one can Switch to any Frame but the session pointer will remain the same.
 
@@ -373,7 +373,7 @@ MsgBox, % Session.FramesLength() ; this will return Frame quantity which is Zero
 >Note: Switching frame would not work for [Session.CDP](https://github.com/Xeo786/Rufaydium-Webdriver#cdpframes)
 
 ## Error Handling
-Error Handling works with all methods, except methods that return Element pointer Few common functionalities
+Error Handling works with all methods, except methods that return an Element pointer Few common functionalities
 
 ## Accessing Element / Elements
 The following methods return with an element pointer.
@@ -478,7 +478,7 @@ WebDriver only Supports headless mode printing. but Rufaydium now supports Headf
 Rufaydium will ask to download and install [wkhtmltopdf](https://wkhtmltopdf.org/), if wkhtmltopdf is not available in windows, 
 >please follow [terms and condition](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/LICENSE) from wkhtmltopdf
 ## Printing pdf with wkhtmltopdf
-The method is same but defining Printing Options is not mandatory and PrintOptions class can also be used with wkhtmltopdf.
+`Print()` Method is same but defining Printing Options is not mandatory and PrintOptions class can also be used with wkhtmltopdf.
 ```AutoHotkey
 Session.print(PDFlocation,PrintOptions.A4_Default) ; see Class PrintOptions
 Session.print(PDFlocation) ; no need for print options
@@ -688,7 +688,7 @@ Class Key
 }
 ```
 # Session.Actions()
-We can interact with page using `Actions()` these interactions, which can be define as `pointer`, a `pointer` can be mouse, touch or keyboard
+We can interact with a page using `Actions()` these interactions, which can be defined as a `pointer` which can be a mouse, touch or keyboard
 Following Example will try to draw a pentagon for working example see https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=40#p458272
 
 ```AutoHotKey
@@ -725,7 +725,7 @@ Rufaydium Basic will wait for any task/change to get completed, and then execute
 
 Waiting of webpage is based on document ready state https://www.w3schools.com/jsref/prop_doc_readystate.asp
 but there are web pages that keep loading and unloading elements and stuff while their ready state remains `complete`, 
-In this kind of situation Rufaydium Basic and Rufaydium CDP would simply wait through error or if an element in question is not available or element visibility or displayed/enabled stats element, displayed(), element.enabled(), we can use these tricks to make AutoHotkey wait, 
+In this kind of situation Rufaydium Basic and Rufaydium CDP would simply wait through error or if an element in question is not available or element visibility or displayed/enabled stats element, `displayed()`, `element.enabled()`, we can use these tricks to make AutoHotkey wait, 
 for example, We have click button and this would load element with tag name button.
 
 ```AutoHotkey
@@ -842,7 +842,7 @@ CDP_element.SendKey("1234`n") ; send 1 2 3 4 enter
 ```
 
 # CDP Evaluate(JS)
-`Session.CDP.Evaluate()` executes Javascript, just like we use Chrome console.
+`Session.CDP.Evaluate()` executes Javascript, just like we use Chrome's console.
 ```AutoHotkey
 js = 
 (
