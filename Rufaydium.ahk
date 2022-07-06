@@ -294,16 +294,18 @@ Class Session
 			return r
 	}
 
-	NewTab()
+	NewTab(i:=1)
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"tab"}).handle
-		This.Switch(This.currentTab)
+		if i
+			This.Switch(This.currentTab)
 	}
 
-	NewWindow() ; by https://github.com/hotcheesesoup
+	NewWindow(i:=1) ; by https://github.com/hotcheesesoup
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"window"}).handle
-		This.Switch(This.currentTab)
+		if i 
+			This.Switch(This.currentTab)
 	}
 
 	Detail()
