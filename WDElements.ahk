@@ -186,9 +186,8 @@ Class WDElement extends Session
 
 	Clear()
 	{
-		;this.Send("ClearValue","POST"); not working for me
-		obj :=  {"text": key.ctrl "a" key.delete}
-		return this.Send("value","POST", obj)
+		this.Send("ClearValue","POST") ;  not working for me
+		this.Execute("arguments[0].value = ''")
 	}
 	
 	GetAttribute(Name)
