@@ -688,34 +688,15 @@ Class Key
 }
 ```
 # Session.Actions()
-We can interact with a page using `Actions()` these interactions, which can be defined as a `pointer` which can be a mouse, touch or keyboard
-Following Example will try to draw a pentagon for working example see https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=40#p458272
+We can interact with a page using `Actions(interactions*)` method, interactions are generated using Mouse, Wheel Keyboard Classes
 
+Mouse Intercation example
 ```AutoHotKey
-; defining Action object
-Pentagon =
-( LTrim Join
-{
-"actions": [
-	{
-	"type": "pointer",
-	"id": "mouse",
-	"parameters": {"pointerType": "mouse"},
-	"actions": [
-		{"type": "pointerDown", "button": 0},
-		{"type": "pointerMove", "duration": 10,"x":288, "y":258},
-		{"type": "pointerMove", "duration": 10,"x":391, "y":181},
-		{"type": "pointerMove", "duration": 10,"x":493, "y":258},
-		{"type": "pointerMove", "duration": 10,"x":454, "y":358},
-		{"type": "pointerMove", "duration": 10,"x":328, "y":358},
-		{"type": "pointerMove", "duration": 10,"x":288, "y":258},
-		{"type": "pointerUp", "button": 0}
-		]
-		}
-	]
-}
-)
-Session.actions(json.load(Pentagon)) ; initiate actions 
+MouseEvent := new mouse() 
+MouseEvent.press()
+MouseEvent.move(288,258,10)
+MouseEvent.release()
+Session.actions(MouseEvent)
 return
 ```
 
