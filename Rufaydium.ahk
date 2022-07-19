@@ -1,4 +1,4 @@
-; Rufaydium v1.6
+; Rufaydium v1.7.0
 ;
 ; Rufaydium          : AutoHotkey WebDriver Library to interact with browsers.
 ; Requirement        : WebDriver version needs to be compatible with the Browser version.
@@ -18,6 +18,7 @@
 #Include JSON.ahk
 #include WDElements.ahk
 #Include Capabilities.ahk
+#include actions.ahk 
 
 Class Rufaydium
 {
@@ -708,119 +709,97 @@ Class Session
 
 	click(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		PointerClick =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerDown", "button": %i%},
-					{"type": "pause", "duration": 100},
-					{"type": "pointerUp", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerClick))
+		MouseEvent := new mouse()
+		MouseEvent.Release(i)
+		MouseEvent.Pause(100)
+		MouseEvent.Release(i)
+		return this.Actions(MouseEvent)
 	}
 
 	DoubleClick(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		PointerClicks =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerDown", "button": %i%},
-					{"type": "pause", "duration": 100},
-					{"type": "pointerUp", "button": %i%},
-					{"type": "pause", "duration": 500},
-					{"type": "pointerDown", "button": %i%},
-					{"type": "pause", "duration": 100},
-					{"type": "pointerUp", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerClicks))
+		MouseEvent := new mouse()
+		; click 1
+		MouseEvent.Release(i)
+		MouseEvent.Pause(100)
+		MouseEvent.Release(i)
+		; delay
+		MouseEvent.Pause(500)
+		; click 2
+		MouseEvent.Release(i)
+		MouseEvent.Pause(100)
+		MouseEvent.Release(i)
+		return this.Actions(MouseEvent)
 	}
 
 	MBDown(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		;return this.Send("buttondown","POST",{"button":i})		PointerClick =
-		PointerDown =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerDown", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerDown))
+		MouseEvent := new mouse()
+		MouseEvent.Press(i)
+		return this.Actions(MouseEvent)
 	}
 
 	MBup(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		;return this.Send("buttonup","POST",{"button":i})
-		PointerUP =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerUp", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerUP))
+		MouseEvent := new mouse()
+		MouseEvent.Release(i)
+		return this.Actions(MouseEvent)
 	}
 
 	Move(x,y)
 	{
-		PointerMove =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [{
-							"type": "pointerMove",
-							"duration": 0,
-							"x": %x%, "y": %y%
-							}]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerMove))
+		MouseEvent := new mouse()
+		MouseEvent.move(x,y,0)
+		return this.Actions(MouseEvent)
 	}
 
-	Actions(ActionObj)
+	ScrollUP(s:=50)
 	{
-		return this.Send("actions","POST",ActionObj)
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollUP(s)
+		r := this.Actions(WheelEvent)
+		WheelEvent := ""
+		return r
+	}
+
+	ScrollDown(s:=50)
+	{
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollDown(s)
+		return this.Actions(WheelEvent)
+	}
+
+	ScrollLeft(s:=50)
+	{
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollLeft(s)
+		return this.Actions(WheelEvent)
+	}
+
+	ScrollRight(s:=50)
+	{
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollRight(s)
+		return this.Actions(WheelEvent)
+	}
+
+	SendKey(Chars)
+	{
+		KeyboardEvent := new Keyboard()
+		KeyboardEvent.SendKey(Chars) ; right now it does not support Key.Class()
+		return this.Actions(KeyboardEvent)
+	}
+
+	Actions(Interactions*)
+	{
+		ActionArray := []
+		for i, interaction in Interactions
+		{
+			ActionArray.push(interaction.perform())
+			Interactions.clear()
+			Interaction := ""
+		}
+		return this.Send("actions","POST",{"actions":ActionArray})
 	}
 
 	execute_sql()
