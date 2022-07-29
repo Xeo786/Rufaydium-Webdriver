@@ -73,10 +73,10 @@ Class Mouse extends Actions
         i := {"type": "pointerMove"
             ,"duration": duration, "x": x, "y": y
             ,"origin": origin
-            ,"width":0,"height":0
-            ,"pressure":0,"tangentialPressure":0
-            ,"tiltX":0,"tiltY":0, "twist" :0
-            ,"altitudeAngle":0, "azimuthAngle":0}
+            ,"width":width,"height":height
+            ,"pressure":pressure,"tangentialPressure":tangentialPressure
+            ,"tiltX":tiltX,"tiltY":tiltY, "twist" :twist
+            ,"altitudeAngle":altitudeAngle, "azimuthAngle":azimuthAngle}
         this.insert(i)
     }
 }
