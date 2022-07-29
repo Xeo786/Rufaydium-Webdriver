@@ -792,14 +792,19 @@ Class Session
 
 	Actions(Interactions*)
 	{
-		ActionArray := []
-		for i, interaction in Interactions
+		if Interactions.count()
 		{
-			ActionArray.push(interaction.perform())
-			Interactions.clear()
-			Interaction := ""
-		}
-		return this.Send("actions","POST",{"actions":ActionArray})
+			ActionArray := []
+			for i, interaction in Interactions
+			{
+				ActionArray.push(interaction.perform())
+				Interactions.clear()
+				Interaction := ""
+			}
+			return this.Send("actions","POST",{"actions":ActionArray})
+		}	
+		else
+			return this.Send("actions","DELETE")	
 	}
 
 	execute_sql()
