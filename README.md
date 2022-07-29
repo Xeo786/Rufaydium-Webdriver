@@ -810,7 +810,7 @@ Keyboard Class generates event/interaction Objects 'Type' "key" that later trans
 
 # Await
 
-Rufaydium Basic will wait for any task/change to get completed, and then execute the next line but any task executed through CDP `Session.CDP` would wait, therefore we need to use `Session.CDP.WaitForLoad()`
+Rufaydium Basic will wait for any task/change to get completed, and then execute the next line but any task executed through CDP `Session.CDP` wouldn't wait, therefore we need to use `Session.CDP.WaitForLoad()`
 
 Waiting of webpage is based on document ready state https://www.w3schools.com/jsref/prop_doc_readystate.asp
 but there are web pages that keep loading and unloading elements and stuff while their ready state remains `complete`, 
