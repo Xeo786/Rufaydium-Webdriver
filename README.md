@@ -818,55 +818,54 @@ clickTest:
 URL := "https://quickdraw.withgoogle.com"
 page := GetRufaydium(URL) ; run/access  chrome  browser
 
-MouseEvent := new mouse()
-;MouseEvent.click(0, 400, 400)
-;MouseEvent.click(0, 200, 300)
+MI := new mouse() ; MI = mouse interaction
+;MI.click(0, 400, 400)
+;MI.click(0, 200, 300)
 
-MouseEvent.press()
-MouseEvent.move(288,258,10)
-MouseEvent.release()
-MouseEvent.press()
-MouseEvent.move(391,181,10)
-MouseEvent.release()
-MouseEvent.press()
-MouseEvent.move(493,258,10)
-MouseEvent.release()
-MouseEvent.press()
-MouseEvent.move(454,358,10)
-MouseEvent.release()
-MouseEvent.press()
-MouseEvent.move(328,358,10)
-MouseEvent.release()
-MouseEvent.press()
-MouseEvent.move(288,258,10)
-MouseEvent.release()
-MouseEvent.press()
-MouseEvent.release()
+MI.press()
+MI.move(288,258,10)
+MI.release()
+MI.press()
+MI.move(391,181,10)
+MI.release()
+MI.press()
+MI.move(493,258,10)
+MI.release()
+MI.press()
+MI.move(454,358,10)
+MI.release()
+MI.press()
+MI.move(328,358,10)
+MI.release()
+MI.press()
+MI.move(288,258,10)
+MI.release()
+MI.press()
+MI.release()
 msgbox, move drawing window and click ok to draw
-x := page.actions(MouseEvent)
+x := page.actions(MI)
 return
-
 
 ScrollTest:
 URL :=  "https://www.autohotkey.com/boards/"
 page := GetRufaydium(URL) ; run/access  chrome  browser
-WheelEvent := new Scroll()
+msgbox, % please arrow up and Down keys to scroll
 return
 
 down::
-page.scrollDown()
+page.scrollDown() ; it utilizes Scroll class
 return
 
 up::
-page.scrollup()
+page.scrollup() ; ; it utilizes Scroll class
 return
 
 TestKeyboard:
 URL :=  "https://www.autohotkey.com/boards/"
 page := GetRufaydium(URL) ; run/access  chrome  browser
-e := Page.querySelector("#keywords")
-e.focus()
-page.sendkey("aBcd")
+e := Page.querySelector("#keywords") ; getting elemenet 
+e.focus() ; focusing element so we can see keystrokes interaction
+page.sendkey("aBcd") ; session.sendkey() uses Keyboard Class
 page.sendkey("xyZ")
 return
 
