@@ -526,7 +526,7 @@ Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
 ## Session inputs events
 
 ```AutoHotkey
-Session.move(x,y) move mouse pointer to location
+Session.move(x,y) ;move mouse pointer to location
 Session.click() ; sending left click on moved location ; [button: 0(left) | 1(middle) | 2(right)]
 Session.DoubleClick() ; sending double left click on moved location ; [button: 0(left) | 1(middle) | 2(right)]
 Session.MBDown() ; sending mouse left click down on moved location ; [button: 0(left) | 1(middle) | 2(right)]
@@ -688,17 +688,125 @@ Class Key
 }
 ```
 # Session.Actions()
-We can interact with a page using `Actions(interactions*)` method, interactions are generated using Mouse, Wheel Keyboard Classes
+We can interact with a page using `Actions(interactions*)` method, interactions are generated using [Mouse](), [Wheel]() [Keyboard]() Classes
 
-Mouse Intercation example
+Send Empty Actions()method would release/stop ongoing action
 ```AutoHotKey
-MouseEvent := new mouse() 
-MouseEvent.press()
-MouseEvent.move(288,258,10)
-MouseEvent.release()
-Session.actions(MouseEvent)
+Session.Actions(Interaction1,Interaction2,interaction3) ; read Action class for Interactions
 return
 ```
+# Actions Class
+Action class that help generating Webdriver Actions Payload for Session.Actions() method, extends from [Mouse](), [Scroll]() [Keyboard]() Classes (hereinafter referred to as "interaction/interactions" ), action payloads should be casesensative and has specific paramaters for concerning "pointerType", so these classes not only helps generatring them, but also make them easy to understand.
+
+Following methods inherited to Mouse, Scroll and Keyboard Classes, generate a interaction Objects that later translated to Webdriver Actions payload, hereinafter referred to as "Event/Events creations" 
+
+`Pause(duration)` create event of "pause" to cause delay between interactions, where default 'duration' is 100
+
+`cancel()` create 'pointerCancel' event
+
+`Clear()` resets interaction by deleting all delete Events
+> note: One interaction Class Object has multiple events
+## Mouse Class
+
+Mouse Class generates event/interaction Objects 'Type' "pointer" that later translated to Webdriver Actions payload when submitted as parameters to Session.Actions().
+
+`interaction := New mouse(pointerType)` accepts 'pointerType' as parameter which can be "mouse", "pen", or "touch", where default pointerType is mouse, return  interaction Class object.
+
+`mouse.Clear()` resets interaction by deleting all delete Events.
+
+`mouse.cancel()` create 'pointerCancel' event, which act like mouse not over document.
+
+`mouse.press(Button)` create a payload object for "pointerDown", accepts "Button" parameter 0(left), 1(middle), or 2(right) mouse button, empty parameter considered 0 to autohotkey results setting left mouse button default.
+
+`mouse.Release(Button)` create a payload object for "pointerUp", accepts "Button" parameter 0(left), 1(middle), or 2(right) mouse button, empty parameter considered 0 to autohotkey results setting left mouse button default.
+
+`mouse.Move(x,y,duration,width,height,pressure,tangentialPressure,tiltX,tiltY,twist,altitudeAngle,azimuthAngle,origin)` 
+
+Mouse.move() will move mouse pointer to 'x' 'y' direction, moveing taking time as 'duration', 
+pointer size can be define as 'width' 'height' which is optional, 
+
+move can be tweaked for button/touch 'pressure' 'tangentialPressure' 'tiltX','tiltY','twist','altitudeAngle','azimuthAngle' by using these respective parameters are also optional 
+
+"origin" can be  "viewport" or "pointer"
+
+Default parameters for move:
+| Parameters | Ports |
+|-------------|-------|
+|x|0|
+|y|0|
+|duration|10|
+|width|0|
+|height|0|
+|pressure|0|
+|tangentialPressure|0|
+|tiltX|0|
+|tiltY|0|
+|twist|0|
+|altitudeAngle|0|
+|azimuthAngle|0|
+|origin|"viewport"|
+
+
+`mouse.click(button,x,y,duration)` click generates for serialized objects following methods already defined above, and will be translted to JSON payload and executed one by one from first to last creation.
+```AutoHotKey
+        mouse.move(x,y,0)
+        mouse.press(button,duration)
+        mouse.Pause(500)
+        mouse.release(button,duration)
+```
+
+Mouse Intercation and event example
+```AutoHotKey
+MouseEvent := new mouse() ; Setting pointerType "mouse"
+MouseEvent.press() ; 0(left) | 1(middle) | 2(right)
+MouseEvent.move(288,258,10)
+MouseEvent.release()
+Session.Actions(MouseEvent)
+return
+```
+
+## Scroll Class
+Scroll Class generates event/interaction Objects 'Type' "wheel" that later translated to Webdriver Actions payload when submitted as parameters to Session.Actions().
+
+`interaction := New Scroll(pointerType)` accepts 'pointerType' as parameter which can be "mouse", "pen", or "touch", where default pointerType is mouse, return interaction Class object.
+
+`interaction.Clear()` resets interaction by deleting all delete Events.
+
+`interaction.Scroll(deltaX,deltaY,x,y,duration,origin)` navigates vertical horizontal scroll on webpage's document view. 
+It performs a scroll given duration, x, y, target delta x, target delta y, current delta x and current delta y:
+
+Default parameters for Scroll method:
+| Parameters | Ports |
+|-------------|-------|
+|deltaX|0|
+|deltaY|0|
+|x|0|
+|y|0|
+|duration|10|
+|origin|"viewport"|
+
+Following Methods utilized ```.Scroll(s)``` to perform scroll up down left right, where 's' is Scrolling value from the calculated from the exiting position, default value for 's' is 50 
+
+`interaction.ScrollUP(s)`
+
+`interaction.ScrollDown(s)`
+
+`interaction.ScrollLeft(s)`
+
+`interaction.ScrollRight(s)`
+
+## Keyboard Class
+Keyboard Class generates event/interaction Objects 'Type' "key" that later translated to Webdriver Actions payload when submitted as parameters to Session.Actions().
+
+```KeyInterAction := New Keyboard()``` return interaction Class object. does not required any parameter
+
+```Keyboard.Clear()``` resets interaction by deleting all delete Events.
+
+```Keyboard.keyUp(key)``` create a payload object for "keyUp", required "key" parameter as key "Value"
+
+```Keyboard.keyDown(key)``` create a payload object for "keyDown", required "key" parameter as key "Value"
+
+```Keyboard.SendKey(keys)``` utilizes 'keyUp()' and 'keyDown()' methods simoteniously to send keystrokes, required Keys string parameter, its recommanded to use `Element.Sendkey()` to mimic keystrokes on element or `WDElement.value` to set and Get element value.
 
 # Await
 
