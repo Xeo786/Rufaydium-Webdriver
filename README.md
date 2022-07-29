@@ -688,15 +688,14 @@ Class Key
 }
 ```
 # Session.Actions()
-We can interact with a page using `Actions(interactions*)` method, interactions are generated using [Mouse](), [Wheel]() [Keyboard]() Classes
-
-Send Empty Actions()method would release/stop ongoing action
+We can interact with a page using `Actions(interactions*)` method, interactions are generated using [Mouse](https://github.com/Xeo786/Rufaydium-Webdriver#mouse-class), [Scroll](https://github.com/Xeo786/Rufaydium-Webdriver#scroll-class) [Keyboard](https://github.com/Xeo786/Rufaydium-Webdriver#keyboard-class) Classes based on [Actions](https://github.com/Xeo786/Rufaydium-Webdriver#actions-class) Class. Sending Empty Actions() method would release/stop ongoing action.
 ```AutoHotKey
 Session.Actions(Interaction1,Interaction2,interaction3) ; read Action class for Interactions
-return
+
+Session.Actions() ; stop onging action
 ```
 # Actions Class
-Action class that help generating Webdriver Actions Payload for Session.Actions() method, extends from [Mouse](), [Scroll]() [Keyboard]() Classes (hereinafter referred to as "interaction/interactions" ), action payloads should be casesensative and has specific paramaters for concerning "pointerType", so these classes not only helps generatring them, but also make them easy to understand.
+Action class that help generating Webdriver Actions Payload for Session.Actions() method, extends from [Mouse](https://github.com/Xeo786/Rufaydium-Webdriver#mouse-class), [Scroll](https://github.com/Xeo786/Rufaydium-Webdriver#scroll-class) [Keyboard](https://github.com/Xeo786/Rufaydium-Webdriver#keyboard-class) Classes (hereinafter referred to as "interaction/interactions" ), action payloads should be casesensative and has specific paramaters for concerning "pointerType", so these classes not only helps generatring them, but also make them easy to understand.
 
 Following methods inherited to Mouse, Scroll and Keyboard Classes, generate a interaction Objects that later translated to Webdriver Actions payload, hereinafter referred to as "Event/Events creations" 
 
@@ -720,12 +719,10 @@ Mouse Class generates event/interaction Objects 'Type' "pointer" that later tran
 
 `mouse.Release(Button)` create a payload object for "pointerUp", accepts "Button" parameter 0(left), 1(middle), or 2(right) mouse button, empty parameter considered 0 to autohotkey results setting left mouse button default.
 
-`mouse.Move(x,y,duration,width,height,pressure,tangentialPressure,tiltX,tiltY,twist,altitudeAngle,azimuthAngle,origin)` 
-
-Mouse.move() will move mouse pointer to 'x' 'y' direction, moveing taking time as 'duration', 
+`mouse.Move(x,y,duration,width,height,pressure,tangentialPressure,tiltX,tiltY,twist,altitudeAngle,azimuthAngle,origin)` will move mouse pointer to 'x' 'y' direction, moveing taking time as 'duration', 
 pointer size can be define as 'width' 'height' which is optional, 
 
-move can be tweaked for button/touch 'pressure' 'tangentialPressure' 'tiltX','tiltY','twist','altitudeAngle','azimuthAngle' by using these respective parameters are also optional 
+move can be tweaked for button/touch 'pressure' 'tangentialPressure' 'tiltX','tiltY','twist','altitudeAngle','azimuthAngle' by using these respective parameters, which are also optional. 
 
 "origin" can be  "viewport" or "pointer"
 
@@ -808,6 +805,95 @@ Keyboard Class generates event/interaction Objects 'Type' "key" that later trans
 
 ```Keyboard.SendKey(keys)``` utilizes 'keyUp()' and 'keyDown()' methods simoteniously to send keystrokes, required Keys string parameter, its recommanded to use `Element.Sendkey()` to mimic keystrokes on element or `WDElement.value` to set and Get element value.
 
+<details>
+  <summary>Interaction Examples</summary>
+
+```autohotkey
+#Include, %A_ScriptDir%\..\Rufaydium-Webdriver
+#include Rufaydium.ahk 
+goto, TestKeyboard ; change lable here
+return
+
+clickTest:
+URL := "https://quickdraw.withgoogle.com"
+page := GetRufaydium(URL) ; run/access  chrome  browser
+
+MouseEvent := new mouse()
+;MouseEvent.click(0, 400, 400)
+;MouseEvent.click(0, 200, 300)
+
+MouseEvent.press()
+MouseEvent.move(288,258,10)
+MouseEvent.release()
+MouseEvent.press()
+MouseEvent.move(391,181,10)
+MouseEvent.release()
+MouseEvent.press()
+MouseEvent.move(493,258,10)
+MouseEvent.release()
+MouseEvent.press()
+MouseEvent.move(454,358,10)
+MouseEvent.release()
+MouseEvent.press()
+MouseEvent.move(328,358,10)
+MouseEvent.release()
+MouseEvent.press()
+MouseEvent.move(288,258,10)
+MouseEvent.release()
+MouseEvent.press()
+MouseEvent.release()
+msgbox, move drawing window and click ok to draw
+x := page.actions(MouseEvent)
+return
+
+
+ScrollTest:
+URL :=  "https://www.autohotkey.com/boards/"
+page := GetRufaydium(URL) ; run/access  chrome  browser
+WheelEvent := new Scroll()
+return
+
+down::
+page.scrollDown()
+return
+
+up::
+page.scrollup()
+return
+
+TestKeyboard:
+URL :=  "https://www.autohotkey.com/boards/"
+page := GetRufaydium(URL) ; run/access  chrome  browser
+e := Page.querySelector("#keywords")
+e.focus()
+page.sendkey("aBcd")
+page.sendkey("xyZ")
+return
+
+; GetRufaydium(URL) gets existing session  
+; stops us creatting multiple sessions again and again 
+; make sure do not manually close driver / chrome.driver.exit()
+; by Xeo786
+GetRufaydium(URL)
+{
+	; get chrome driver / runs chrome driver if not running, download driver if available in A_ScriptDir
+	; Run Chrome Driver with default parameters and loads deafult capabilities
+	Chrome := new Rufaydium() 
+	Page := Chrome.getSessionByUrl(URL) ; check page (created by driver) if already exist 
+	if !isobject(page) ; checcking if Session with url exist
+	{
+		Page := Chrome.getSession(1,1) ; try getting first session first tab
+		if isobject(page) ; if exist 
+			Page.NewTab() ; create new tab instead new session
+		else ; if does not exist 
+			Page := Chrome.NewSession() ; create new session ; Page.Exit() if any session manually closed by user which causes lag
+		Page.Navigate(URL) ; navigate		
+	}
+	return page 
+}
+```
+</details>
+
 # Await
 
 Rufaydium Basic will wait for any task/change to get completed, and then execute the next line but any task executed through CDP `Session.CDP` wouldn't wait, therefore we need to use `Session.CDP.WaitForLoad()`
@@ -834,9 +920,11 @@ MsgBox, % "innerText" h ; otherwise h has innertext
 Button.click()
 ```
 ## Session.CDP
-`Session.Methods()` act like Human interactions with Webpage, Where Session.CDP has access to Chrome Devtools protocols, which have the power to Modify DOM.
+Session.CDP has access to Chrome Devtools protocols,
 
-Example
+<details>
+  <summary>Example</summary>
+
 ```AutoHotkey
 ChromeDriver := A_ScriptDir "\chromedriver.exe"
 ; in case driver is already running it will get access driver which is already running
@@ -857,8 +945,11 @@ for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with t
 {
 	tag.sendKey(tag.id)
 }
+
 ```
-Note: Firefox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
+</details>
+
+>Note: Firefox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
 
 # CDP.Document()
 CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP has developed reliable access to frame
