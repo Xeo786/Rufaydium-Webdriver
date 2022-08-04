@@ -600,7 +600,7 @@ Class Session
 
 	getElementsbyClassName(Class)
 	{
-		return this.findelements(by.selector,"[class=" chr(39) Class chr(39) "]")
+		return this.findelements(by.selector,"[class='" Class "']")
 	}
 
 	getElementsbyTagName(Name)
@@ -610,7 +610,7 @@ Class Session
 
 	getElementsbyName(Name)
 	{
-		return this.findelements(by.selector,"[Name=" chr(39) Name chr(39) "]")
+		return this.findelements(by.selector,"[Name='" Name "']")
 	}
 
 	getElementsbyXpath(xPath)
