@@ -72,6 +72,11 @@ Class WDElement extends Session
 		return this.Send("moveto","POST",{"element_id":this.id})
 	}
 
+	onchange()
+	{
+		return this.Execute("arguments[0].onchange()")
+	}
+
 	Title
 	{
 		get
