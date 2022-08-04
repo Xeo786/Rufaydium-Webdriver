@@ -137,11 +137,23 @@ Class WDElement extends Session
 		
 		Set
 		{
-			this.Clear()
-			return this.Send("value","POST", {"text":Value})
+			this.Execute("arguments[0].value = '" Value "'")
 		}
 	}
 	
+	src
+	{
+		get
+		{
+			return  this.GetProperty("src")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].src = '" Value "'")
+		}
+	}
+
 	InnerText
 	{
 		get
