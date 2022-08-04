@@ -141,6 +141,19 @@ Class WDElement extends Session
 		}
 	}
 	
+	href
+	{
+		get
+		{
+			return  this.GetProperty("href")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].href = '" Value "'")
+		}
+	}
+
 	src
 	{
 		get
