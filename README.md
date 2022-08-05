@@ -594,6 +594,7 @@ Element.SendKey("text string " . key.class ) ; this convert text and will send k
 Element.SendKey(key.ctrl "a" key.delete) ; this will clear text content in edit box by simply doing Ctrl + A and  delete
 Element.Click() ; sent simple click
 Element.Move() ; move mouse pointer to that element it will help drag drop stuff see session.click and session.move 
+Element.onchange() ; to dispatch onchange() event
 Element.clear() ; will clear selected item / uploaded file or content text 
 
 ; Attribs properties & CSS
@@ -615,6 +616,7 @@ msgbox % e.innerText
 msgbox % "TagName: " e.TagName "`nName: " e.Name "`nID: " e.id "`nTitle: " e.Title "`nClass: " e.Class "`nValue: " e.value
 msgbox, % e.InnerHTML
 msgbox, % e.outerHTML
+msgbox, % "href: " e.href "`nSrc: " e.src
 ```
 Setting / Changing Web Driver Elements information.
 ```AutoHotkey
@@ -626,6 +628,8 @@ e.value := "My Value"
 newhtml = <button name="Rufaydium" id="MyButton" >Rufaydium</button>
 e.outerHTML := newhtml 
 e.InnerHTML := newhtml 
+e.href := url
+e.src := url
 ```
 >Note: Element manipulation is not available for Rufaydium basic, versions less than 1.6.3
 ## Shadow Elements
