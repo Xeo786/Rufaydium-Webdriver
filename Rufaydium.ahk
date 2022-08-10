@@ -37,6 +37,11 @@ Class Rufaydium
 				this.capabilities := new FireFoxCapabilities(this.Driver.browser,this.Driver.Options)
 			case "operadriver" :
 				this.capabilities := new OperaCapabilities(this.Driver.browser,this.Driver.Options)
+			case "BraveDriver" :
+				this.capabilities := new BraveCapabilities(this.Driver.browser,this.Driver.Options)
+				this.capabilities.Setbinary("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") 
+				; drive might crash for 32 Brave on 64 bit OS there for we can load binary while new session, 
+				; i.e. >> NewSession("32bit brave browser exe location")
 		}
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple

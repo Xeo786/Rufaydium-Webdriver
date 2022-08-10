@@ -29,6 +29,10 @@ Class RunDriver
 				this.Options := "goog:chromeOptions"
 				this.browser := "opera"
 				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9518")
+			case "BraveDriver" :
+				this.Options := "goog:chromeOptions"
+				this.browser := "Brave"
+				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9520")	
 			Default:
 				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9519")
 		}
@@ -122,23 +126,27 @@ Class RunDriver
 					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
 				else
 					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
-				
 				DriverVersion := this.GetVersion(uri)
 				this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
-			
+			case "BraveDriver" :
+				this.zip := "chromedriver_win32.zip"
+				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver) ; iam clueless for response when loading another binary which does not matches chrome driver 
+					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
+				else
+					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
+				DriverVersion := this.GetVersion(uri)
+				this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
 			case "msedgedriver" :
 				if instr(bit,"64")
 					this.zip := "edgedriver_win64.zip"
 				else 
 					this.zip := "edgedriver_win32.zip" 
-
 				if RegExMatch(Version,"version ([\d.]+).*\n.*browser version is (\d+)",bver)
 					uri := "https://msedgedriver.azureedge.net/LATEST_" "RELEASE_" bver2
 				else if(Version != "STABLE")
 					uri := "https://msedgedriver.azureedge.net/LATEST_RELEASE_" Version
 				else
 					uri := "https://msedgedriver.azureedge.net/LATEST_" Version, bver1 := "unknown"
-
 				DriverVersion := this.GetVersion(uri) ; Thanks RaptorX fixing Issues GetEdgeDrive
 				this.DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" this.zip
 			case "geckodriver" :
