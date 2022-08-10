@@ -901,10 +901,7 @@ wkhtmltopdf(HtML,pdf,options)
 	while !FileExist(htmlloc)
 		sleep, 200
 
-	if !A_Is64bitOS
-		wkhtmltopdf := "C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-	else 
-		wkhtmltopdf := "C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"
+	RegRead, wkhtmltopdf, HKLM, Software\wkhtmltopdf, PdfPath
 
 	if IsObject(options)
 	{
