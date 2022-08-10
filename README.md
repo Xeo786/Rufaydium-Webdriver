@@ -68,7 +68,9 @@ Rufaydium has default ports for every driver to resolve this conflict:
 |geckodriver  | 9517  |
 |operadriver  | 9518  |
 |unknownDriver | 9519  |
+|bravedriver | 9520  |
 
+> note: BraveDriver Parameter will download chromedriver but utilizes a separate BraveCapabailities class specificall for Brave browser's settings.
 ## Driver Parameters
 Parameters are WebDriver.exe CMD arguments.  
 Options can vary according to different drivers and we can also check these arguments
@@ -138,6 +140,24 @@ Browser.capabilities.IncognitoMode := true
 MsgBox, % Browser.capabilities.IncognitoMode
 ```
 >Note after Setting ```IncognitoMode := true``` .setUserProfile() would not work
+
+## UserPrompt
+[User prompt handler](https://www.w3.org/TR/webdriver2/#dfn-user-prompt-handler) can be assigned using UserPrompt, which decides handling procedure of Browser alerts/messages
+
+Following parameters are allowed
+| Keyword            | State                    | Description                                                                              |
+|--------------------|--------------------------|------------------------------------------------------------------------------------------|
+| dismiss            | Dismiss state            | All Alert prompt should be dismissed.                                                    |
+| accept             | Accept state             | All Alert prompt should be accepted.                                                     |
+| dismiss and notify | Dismiss and notify state | All Alert prompt should be dismissed, and an error returned that the dialog was handled. |
+| accept and notify  | Accept and notify state  | All Alert prompt should be accepted, and an error returned that the dialog was handled.  |
+| ignore             | Ignore state             | All Alert prompt should be left to the user to handle.                                   |
+
+```AutoHotkey
+MsgBox, % Browser.capabilities.UserPrompt ; default useprompt is dismiss
+Browser.capabilities.UserPrompt := "ignore"
+```
+
 ## Enable CrossOriginFrame
 This will Set and Get CrossOriginFrame access
 ```AutoHotkey
@@ -155,13 +175,6 @@ Chrome.capabilities.RemoveArg("--headless")
 ## Binary
 We can also load Chromium-based browsers, for example, the Brave browser is based on chromium and can be controlled using the ChromeDriver, SetBinary has been Merged into `NewSession(binary_location)` method
 
-```AutoHotkey
-Chrome := new Rufaydium() ; Brave browser support chromedriver.exe
-; setting Brave browser 
-Chrome.capabilities.Setbinary("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") 
-; New Session will be created using Brave browser, 
-Session := Chrome.NewSession()
-```
 ## other methods
 ```AutoHotkey
 Chrome := new Rufaydium()
@@ -186,6 +199,8 @@ Session := Chrome.NewSession()
 
 ## Using WebDriver with different Browsers
 Brave uses chromedriver.exe, by simply passing Browser.exe (referred binary) into NewSession() method
+
+
 ```AutoHotKey
 Brave := new Rufaydium() ; Brave browser support chromedriver.exe
 ; New Session will be created using Brave browser, 
@@ -195,6 +210,7 @@ Brave.Capabilities.Resetbinary() ; reset binary to driver default
 Brave.Session() ; will create Chrome session as we have loaded Chrome driver
 ```
 this way we can load All Chromium Based browsers
+
 
 ## Getting Existing Sessions
 We can also access sessions created previously using the title or URL.
