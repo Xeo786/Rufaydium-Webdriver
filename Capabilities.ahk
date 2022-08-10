@@ -22,18 +22,15 @@ class Capabilities
     {
         set
         {
-            OSC := A_StringCaseSense
-	        StringCaseSense, On
             switch Value
             {
-                Case "dismiss": capabilities._Uprompt := value
-                Case "accept": capabilities._Uprompt := value
-                Case "dismiss and notify": capabilities._Uprompt := value
-                Case "accept and notify": capabilities._Uprompt := value
-                Case "ignore": capabilities._Uprompt := value
+                Case "dismiss": capabilities._Uprompt := "dismiss"
+                Case "accept": capabilities._Uprompt := "accept"
+                Case "dismiss and notify": capabilities._Uprompt := "dismiss and notify"
+                Case "accept and notify": capabilities._Uprompt := "accept and notify"
+                Case "ignore": capabilities._Uprompt := "ignore"
                 Default: unset := 1
             }
-            StringCaseSense, % OSC
             if unset
             {
                 Prompt := "Warning: wrong UserPrompt has been passed.`n"
