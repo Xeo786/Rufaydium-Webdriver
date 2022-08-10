@@ -1,7 +1,7 @@
 class Capabilities
 {
     static Simple := {"cap":{"capabilities":{"":""}}}, olduser := {}
-    static _ucof := false, _hmode := false, _incog := false
+    static _ucof := false, _hmode := false, _incog := false, _Uprompt := "dismiss"
     __new(browser,Options,platform:="windows",notify:=false)
     {
         this.options := Options
@@ -10,11 +10,50 @@ class Capabilities
         this.cap.capabilities.alwaysMatch := { this.options :{"w3c":json.true}}
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
+        this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
         if(notify = false)
             this.AddexcludeSwitches("enable-automation")
         this.cap.capabilities.firstMatch := [{}]
         this.cap.desiredCapabilities := {}
         this.cap.desiredCapabilities.browserName := browser
+    }
+
+    UserPrompt[]
+    {
+        set
+        {
+            OSC := A_StringCaseSense
+	        StringCaseSense, On
+            switch Value
+            {
+                Case "dismiss": capabilities._Uprompt := value
+                Case "accept": capabilities._Uprompt := value
+                Case "dismiss and notify": capabilities._Uprompt := value
+                Case "accept and notify": capabilities._Uprompt := value
+                Case "ignore": capabilities._Uprompt := value
+                Default: unset := 1
+            }
+            StringCaseSense, % OSC
+            if unset
+            {
+                Prompt := "Warning: wrong UserPrompt has been passed.`n"
+                . "Use following case-sensitive parameters:`n"
+                . chr(34) "dismiss" chr(34) "`n"
+                . chr(34) "accept" chr(34) "`n"
+                . chr(34) "dismiss, and, notify" chr(34) "`n"
+                . chr(34) "accept, and, notify" chr(34) "`n"
+                . chr(34) "ignore" chr(34) "`n"
+                . "`n`nPress OK to continue"
+                msgbox,48,Rufaydium Capabilities Error, % Prompt
+                return
+            }
+            this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
+        }
+
+        Get
+        {
+            return capabilities._Uprompt
+        }
     }
 
     HeadlessMode[]
