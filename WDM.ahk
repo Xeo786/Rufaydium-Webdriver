@@ -9,37 +9,38 @@ Class RunDriver
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir ? Dir : A_ScriptDir
 		this.exe := Name
-		this.param := Parameters
+		;this.param := Parameters
 		this.Name := DriverName
 		switch this.Name
 		{
 			case "chromedriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "chrome"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9515")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", $1 "=9515")
 			case "msedgedriver" : 
 				this.Options := "ms:edgeOptions"
 				this.browser := "msedge"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9516")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9516")
 			case "geckodriver" : 
 				this.Options := "moz:firefoxOptions"
 				this.browser := "firefox"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9517")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9517")
 			case "operadriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "opera"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9518")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9518")
 			case "BraveDriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "Brave"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9520")	
+				this.exe := "chromedriver.exe"
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9515")	
 			Default:
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9519")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9519")
 		}
 		
 		if !FileExist(Location) and this.browser
 			Location := this.GetDriver()
-		This.Target := Location " " chr(34) Parameters chr(34)
+		This.Target := Location " " chr(34) this.param chr(34)
 		if !FileExist(Location)
 		{
 			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exiting
@@ -238,7 +239,7 @@ Class RunDriver
 
 	DownloadnExtract()
 	{
-		static fso := ComObjCreate("Scripting.FileSystemObject")
+		;static fso := ComObjCreate("Scripting.FileSystemObject") idr why this is here
 		URLDownloadToFile, % this.DriverUrl,  % this.zip
 		AppObj := ComObjCreate("Shell.Application")
 		FolderObj := AppObj.Namespace(this.zip)	
