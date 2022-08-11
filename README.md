@@ -68,7 +68,7 @@ Rufaydium has default ports for every driver to resolve this conflict:
 |geckodriver  | 9517  |
 |operadriver  | 9518  |
 |unknownDriver | 9519  |
-|bravedriver | 9520  |
+|bravedriver | 9515  |
 
 > note: BraveDriver Parameter will download chromedriver but utilizes a separate BraveCapabailities class specificall for Brave browser's settings.
 ## Driver Parameters
