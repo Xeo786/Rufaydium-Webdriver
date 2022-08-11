@@ -47,7 +47,7 @@ Class RunDriver
 			ExitApp
 		}
 
-		if RegExMatch(this.param,"--port=(\d+)",port)
+		if RegExMatch(Parameters,"--port=(\d+)",port)
 			This.Port := Port1
 		else
 		{
