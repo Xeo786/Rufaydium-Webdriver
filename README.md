@@ -764,7 +764,7 @@ Default parameters for move:
 |origin|"viewport"|
 
 
-`mouse.click(button,x,y,duration)` click generates for serialized objects following methods already defined above, and will be translted to JSON payload and executed one by one from first to last creation.
+`mouse.click(button,x,y,duration)` click generates for serialized objects following methods already defined above, and will be translated to JSON payload and executed one by one from first to last creation.
 ```AutoHotKey
         mouse.move(x,y,0)
         mouse.press(button,duration)
@@ -772,7 +772,7 @@ Default parameters for move:
         mouse.release(button,duration)
 ```
 
-Mouse Intercation and event example
+Mouse Interaction and event example
 ```AutoHotKey
 MouseEvent := new mouse() ; Setting pointerType "mouse"
 MouseEvent.press() ; 0(left) | 1(middle) | 2(right)
@@ -823,7 +823,7 @@ Keyboard Class generates event/interaction Objects 'Type' "key" that later trans
 
 ```Keyboard.keyDown(key)``` create a payload object for "keyDown", required "key" parameter as key "Value"
 
-```Keyboard.SendKey(keys)``` utilizes 'keyUp()' and 'keyDown()' methods simoteniously to send keystrokes, required Keys string parameter, its recommanded to use `Element.Sendkey()` to mimic keystrokes on element or `WDElement.value` to set and Get element value.
+```Keyboard.SendKey(keys)``` utilizes 'keyUp()' and 'keyDown()' methods simultaneously to send keystrokes, required Keys string parameter, its recommended to use `Element.Sendkey()` to mimic keystrokes on element or `WDElement.value` to set and Get element value.
 
 <details>
   <summary>Interaction Examples</summary>
