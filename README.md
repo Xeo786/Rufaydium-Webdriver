@@ -715,7 +715,7 @@ Session.Actions(Interaction1,Interaction2,interaction3) ; read Action class for 
 Session.Actions() ; stop onging action
 ```
 # Actions Class
-Action class that help generating Webdriver Actions Payload for Session.Actions() method, extends from [Mouse](https://github.com/Xeo786/Rufaydium-Webdriver#mouse-class), [Scroll](https://github.com/Xeo786/Rufaydium-Webdriver#scroll-class) [Keyboard](https://github.com/Xeo786/Rufaydium-Webdriver#keyboard-class) Classes (hereinafter referred to as "interaction/interactions" ), action payloads should be casesensative and has specific paramaters for concerning "pointerType", so these classes not only helps generatring them, but also make them easy to understand.
+Action class that help generating Webdriver Actions Payload for Session.Actions() method, extends from [Mouse](https://github.com/Xeo786/Rufaydium-Webdriver#mouse-class), [Scroll](https://github.com/Xeo786/Rufaydium-Webdriver#scroll-class) [Keyboard](https://github.com/Xeo786/Rufaydium-Webdriver#keyboard-class) Classes (hereinafter referred to as "interaction/interactions" ), action payloads should be casesensitive and has specific parameters for concerning "pointerType", so these classes not only helps generating them, but also make them easy to understand.
 
 Following methods inherited to Mouse, Scroll and Keyboard Classes, generate a interaction Objects that later translated to Webdriver Actions payload, hereinafter referred to as "Event/Events creations" 
 
