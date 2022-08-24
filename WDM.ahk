@@ -19,7 +19,7 @@ Class RunDriver
 			case "chromedriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "chrome"
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", $1 "=9515")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9515")
 			case "msedgedriver" : 
 				this.Options := "ms:edgeOptions"
 				this.browser := "msedge"
