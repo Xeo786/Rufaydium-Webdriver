@@ -277,11 +277,12 @@ class FireFoxCapabilities extends Capabilities
 	    }
     }
 
-    setUserProfile(profileName:="Profile1") ; user data dir doesn't change often, use the default
+    setUserProfile(profileName:="Profile1",userDataDir:="") ; user data dir doesn't change often, use the default
 	{
         if this.IncognitoMode
             return
-        userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
+        if !userDataDir
+            userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
         profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
         IniRead, profilePath , % profileini, % profileName, Path
         for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args

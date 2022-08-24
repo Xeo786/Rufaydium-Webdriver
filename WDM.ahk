@@ -6,6 +6,9 @@ Class RunDriver
 {
 	__New(Location,Parameters:= "--port=0000")
 	{
+		if !FileExist(Location)
+			if !instr(Location,".exe")
+				Location .= ".exe"
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir ? Dir : A_ScriptDir
 		this.exe := Name
@@ -39,7 +42,13 @@ Class RunDriver
 		}
 		
 		if !FileExist(Location) and this.browser
-			Location := this.GetDriver()
+		{
+			if A_Is64bitOS
+				Location := this.GetDriver(,"64")
+			else
+				Location := this.GetDriver()
+		}
+			
 		This.Target := Location " " chr(34) this.param chr(34)
 		if !FileExist(Location)
 		{
@@ -47,7 +56,7 @@ Class RunDriver
 			ExitApp
 		}
 
-		if RegExMatch(Parameters,"--port=(\d+)",port)
+		if RegExMatch(this.param,"--port=(\d+)",port)
 			This.Port := Port1
 		else
 		{
@@ -226,6 +235,7 @@ Class RunDriver
 			WebRequest.Open("GET", uri, false)
 			WebRequest.SetRequestHeader("Content-Type","application/json")
 			WebRequest.Send()
+			bytes := WebRequest.Responsebody
 			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over responsebody 1 byte at a time
 					text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
 			return SubStr(text, 3)
