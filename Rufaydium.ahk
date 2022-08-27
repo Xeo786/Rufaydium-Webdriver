@@ -347,10 +347,7 @@ Class Session
 
 	SwitchTab(i:=0)
 	{
-		if i
-		{
-			return this.Switch(This.currentTab := this.GetTabs()[i])
-		}
+		return this.Switch(This.currentTab := this.GetTabs()[i])
 	}
 
 	SwitchbyTitle(Title:="")
