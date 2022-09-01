@@ -146,6 +146,19 @@ Class WDElement extends Session
 		}
 	}
 	
+
+	checked
+	{
+		get
+		{
+			return  this.Execute("arguments[0].checked")
+		}
+
+		set
+		{
+		}
+	}
+
 	href
 	{
 		get
