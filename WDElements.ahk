@@ -3,16 +3,18 @@
 
 Class WDElement extends Session
 {
-	__new(Address)
+	__new(Address,Element)
 	{
-		;RegExMatch(Address,"element\/(.*)$",i)
-		;this.id := i1
 		This.Address := Address
+		This.Element := Element
 	}
 	
-	Name()
+	TagName
 	{
-		return this.Send("name","GET")
+		get
+		{
+			return this.Send("name","GET")
+		}
 	}
 	
 	Rect()
@@ -69,46 +71,173 @@ Class WDElement extends Session
 	{
 		return this.Send("moveto","POST",{"element_id":this.id})
 	}
-	
+
+	onchange()
+	{
+		return this.Execute("arguments[0].onchange()")
+	}
+
+	Title
+	{
+		get
+		{
+			return this.GetAttribute("title")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].title = '" Value "'")
+		}
+	}
+
+	Class
+	{
+		get
+		{
+			return this.GetAttribute("class")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].className = '" Value "'")
+		}
+	}
+
+	Name
+	{
+		get
+		{
+			return this.GetAttribute("name")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].name = '" Value "'")
+		}
+	}
+
+	id
+	{
+		get
+		{
+			return this.GetAttribute("id")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].id = '" Value "'")
+		}
+	}
+
 	value
 	{
 		get
 		{
 			v := this.Send("value","GET")
 			if v.error
-				return this.GetAttribute("value")
+				return this.GetProperty("value")
 			else
 				return v	
-
 		}
 		
 		Set
 		{
-			this.Clear()
-			return this.Send("value","POST", {"text":Value})
+			this.Execute("arguments[0].value = '" Value "'")
 		}
 	}
 	
+
+	checked
+	{
+		get
+		{
+			return  this.Execute("arguments[0].checked")
+		}
+
+		set
+		{
+		}
+	}
+
+	href
+	{
+		get
+		{
+			return  this.GetProperty("href")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].href = '" Value "'")
+		}
+	}
+
+	src
+	{
+		get
+		{
+			return  this.GetProperty("src")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].src = '" Value "'")
+		}
+	}
+
 	InnerText
 	{
 		get
 		{
-			return  this.Send("text","GET")
+			e := this.Send("text","GET")
+			if !e
+				e := this.Execute("return arguments[0].InnerText")
+			return e
+		}
+
+		set
+		{
+			this.Execute("arguments[0].innerText = '" Value "'")
 		}
 	}
 	
+	innerHTML
+	{
+		get
+		{
+			return  this.GetProperty("innerHTML")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].innerHTML = '" Value "'")
+		}
+	}
+
+	outerHTML
+	{
+		get
+		{
+			return  this.GetProperty("outerHTML")
+		}
+
+		set
+		{
+			this.Execute("arguments[0].outerHTML = '" Value "'")
+		}
+	}
+
 	Clear()
 	{
-		;this.Send("ClearValue","POST"); not working for me
-		obj :=  {"text": key.ctrl "a" key.delete}
-		return this.Send("value","POST", obj)
+		this.Send("ClearValue","POST") ;  not working for me
+		this.Execute("arguments[0].value = ''")
 	}
 	
 	GetAttribute(Name)
 	{
 		return this.Send("attribute/" Name,"GET")
 	}
-	
+
 	GetProperty(Name)
 	{
 		return this.Send("property/" Name,"GET")
@@ -134,6 +263,54 @@ Class WDElement extends Session
 		return this.Send("file","POST",{})
 	}
 	
+	focus()
+	{
+		this.Execute("arguments[0].focus()")
+	}
+
+	parentElement
+	{
+		get
+		{	
+			for i, elementid in this.Execute("return arguments[0].parentElement")
+			{
+				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+				return New WDElement(address,i)
+			}	
+		}
+	}
+
+	children
+	{
+		get
+		{	
+			e := []
+			for k, element in this.Execute("return arguments[0].children")
+			{
+				for i, elementid in element
+				{
+					address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+					address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+					e[k-1] := New WDElement(address,i)
+				}
+			}
+			if e.count() > 0
+				return e
+			return 0
+		}
+	}
+
+	Execute(script)
+	{
+		Origin := this.Address
+		RegExMatch(Origin,"(.*)\/element\/(.*)$",i)
+		this.address := i1
+		r := this.ExecuteSync(script,{This.Element:i2})
+		this.address := Origin
+		return r
+	}
+
 }
 
 Class ShadowElement extends Session

@@ -6,36 +6,50 @@ Class RunDriver
 {
 	__New(Location,Parameters:= "--port=0000")
 	{
+		if !FileExist(Location)
+			if !instr(Location,".exe")
+				Location .= ".exe"
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir ? Dir : A_ScriptDir
 		this.exe := Name
-		this.param := Parameters
+		;this.param := Parameters
 		this.Name := DriverName
 		switch this.Name
 		{
 			case "chromedriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "chrome"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9515")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9515")
 			case "msedgedriver" : 
 				this.Options := "ms:edgeOptions"
 				this.browser := "msedge"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9516")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9516")
 			case "geckodriver" : 
 				this.Options := "moz:firefoxOptions"
 				this.browser := "firefox"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9517")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9517")
 			case "operadriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "opera"
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9518")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9518")
+			case "BraveDriver" :
+				this.Options := "goog:chromeOptions"
+				this.browser := "Brave"
+				this.exe := "chromedriver.exe"
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9515")	
 			Default:
-				Parameters := RegExReplace(Parameters, "(--port)=(0000)", $1 "=9519")
+				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9519")
 		}
 		
 		if !FileExist(Location) and this.browser
-			Location := this.GetDriver()
-		This.Target := Location " " chr(34) Parameters chr(34)
+		{
+			if A_Is64bitOS
+				Location := this.GetDriver(,"64")
+			else
+				Location := this.GetDriver()
+		}
+			
+		This.Target := Location " " chr(34) this.param chr(34)
 		if !FileExist(Location)
 		{
 			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exiting
@@ -122,23 +136,27 @@ Class RunDriver
 					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
 				else
 					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
-				
 				DriverVersion := this.GetVersion(uri)
 				this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
-			
+			case "BraveDriver" :
+				this.zip := "chromedriver_win32.zip"
+				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver) ; iam clueless for response when loading another binary which does not matches chrome driver 
+					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
+				else
+					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
+				DriverVersion := this.GetVersion(uri)
+				this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
 			case "msedgedriver" :
 				if instr(bit,"64")
 					this.zip := "edgedriver_win64.zip"
 				else 
 					this.zip := "edgedriver_win32.zip" 
-
 				if RegExMatch(Version,"version ([\d.]+).*\n.*browser version is (\d+)",bver)
 					uri := "https://msedgedriver.azureedge.net/LATEST_" "RELEASE_" bver2
 				else if(Version != "STABLE")
 					uri := "https://msedgedriver.azureedge.net/LATEST_RELEASE_" Version
 				else
 					uri := "https://msedgedriver.azureedge.net/LATEST_" Version, bver1 := "unknown"
-
 				DriverVersion := this.GetVersion(uri) ; Thanks RaptorX fixing Issues GetEdgeDrive
 				this.DriverUrl := "https://msedgedriver.azureedge.net/" DriverVersion "/" this.zip
 			case "geckodriver" :
@@ -217,6 +235,7 @@ Class RunDriver
 			WebRequest.Open("GET", uri, false)
 			WebRequest.SetRequestHeader("Content-Type","application/json")
 			WebRequest.Send()
+			bytes := WebRequest.Responsebody
 			loop, % WebRequest.GetResponseHeader("Content-Length") ;loop over responsebody 1 byte at a time
 					text .= chr(bytes[A_Index-1]) ;lookup each byte and assign a charter
 			return SubStr(text, 3)
@@ -230,7 +249,7 @@ Class RunDriver
 
 	DownloadnExtract()
 	{
-		static fso := ComObjCreate("Scripting.FileSystemObject")
+		;static fso := ComObjCreate("Scripting.FileSystemObject") idr why this is here
 		URLDownloadToFile, % this.DriverUrl,  % this.zip
 		AppObj := ComObjCreate("Shell.Application")
 		FolderObj := AppObj.Namespace(this.zip)	

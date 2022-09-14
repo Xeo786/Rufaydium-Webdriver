@@ -1,7 +1,7 @@
 class Capabilities
 {
     static Simple := {"cap":{"capabilities":{"":""}}}, olduser := {}
-    static _ucof := false, _hmode := false, _incog := false
+    static _ucof := false, _hmode := false, _incog := false, _Uprompt := "dismiss"
     __new(browser,Options,platform:="windows",notify:=false)
     {
         this.options := Options
@@ -10,11 +10,47 @@ class Capabilities
         this.cap.capabilities.alwaysMatch := { this.options :{"w3c":json.true}}
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
+        this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
         if(notify = false)
             this.AddexcludeSwitches("enable-automation")
         this.cap.capabilities.firstMatch := [{}]
         this.cap.desiredCapabilities := {}
         this.cap.desiredCapabilities.browserName := browser
+    }
+
+    UserPrompt[]
+    {
+        set
+        {
+            switch Value
+            {
+                Case "dismiss": capabilities._Uprompt := "dismiss"
+                Case "accept": capabilities._Uprompt := "accept"
+                Case "dismiss and notify": capabilities._Uprompt := "dismiss and notify"
+                Case "accept and notify": capabilities._Uprompt := "accept and notify"
+                Case "ignore": capabilities._Uprompt := "ignore"
+                Default: unset := 1
+            }
+            if unset
+            {
+                Prompt := "Warning: wrong UserPrompt has been passed.`n"
+                . "Use following case-sensitive parameters:`n"
+                . chr(34) "dismiss" chr(34) "`n"
+                . chr(34) "accept" chr(34) "`n"
+                . chr(34) "dismiss, and, notify" chr(34) "`n"
+                . chr(34) "accept, and, notify" chr(34) "`n"
+                . chr(34) "ignore" chr(34) "`n"
+                . "`n`nPress OK to continue"
+                msgbox,48,Rufaydium Capabilities Error, % Prompt
+                return
+            }
+            this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
+        }
+
+        Get
+        {
+            return capabilities._Uprompt
+        }
     }
 
     HeadlessMode[]
@@ -68,21 +104,6 @@ class Capabilities
         }
     }
 
-    setUserProfile(profileName:="Default", userDataDir:="") ; user data dir doesn't change often, use the default
-	{
-        if this.IncognitoMode
-            return
-		if !userDataDir
-			userDataDir := "C:/Users/" A_UserName "/AppData/Local/Google/Chrome/User Data"
-        userDataDir := StrReplace(userDataDir, "\", "/")
-        ; removing previous args if any
-        this.RemoveArg("--user-data-dir=","in")
-        this.RemoveArg("--profile-directory=","in")
-        ; adding new profile args
-        this.addArg("--user-data-dir=" userDataDir)
-        this.addArg("--profile-directory=" profileName)
-	}
-
     Setbinary(location)
     {
         this.cap.capabilities.alwaysMatch[this.Options].binary := StrReplace(location, "\", "/")
@@ -110,6 +131,31 @@ class Capabilities
 
 class ChromeCapabilities extends Capabilities
 {
+    setUserProfile(profileName:="Profile 1", userDataDir:="") ; Default is sample profile used everytime to create new profile 
+	{
+        if this.IncognitoMode
+            return
+		if !userDataDir
+			userDataDir := StrReplace(A_AppData, "\Roaming") "\Local\Google\Chrome\User Data"
+        userDataDir := StrReplace(userDataDir, "\", "/")
+        ; removing previous args if any
+        this.RemoveArg("--user-data-dir=","in")
+        this.RemoveArg("--profile-directory=","in")
+        ; adding new profile args
+        this.addArg("--user-data-dir=" userDataDir)
+        this.addArg("--profile-directory=" profileName)
+        
+        if !fileExist( userDataDir "\" profileName )
+        {
+            Prompt := "Warning: Following Profile is Directory does not exist`n"
+            . chr(34) userDataDir "\" profileName  chr(34) "`n"
+            . "`n`nRufaydium is going to create profile directory Manually exitapp"
+            . "`nPress OK to continue / Manually exitapp"
+            msgbox,48,Rufaydium Capabilities, % Prompt
+            fileCreateDir, % userDataDir "\" profileName
+        }	
+	}
+
     useCrossOriginFrame[]
     {
         set {
@@ -133,6 +179,7 @@ class ChromeCapabilities extends Capabilities
             return capabilities._ucof
         }
     }
+
     addArg(arg) ; args links https://peter.sh/experiments/chromium-command-line-switches/
     {
         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].args)
@@ -230,11 +277,12 @@ class FireFoxCapabilities extends Capabilities
 	    }
     }
 
-    setUserProfile(profileName:="Profile1") ; user data dir doesn't change often, use the default
+    setUserProfile(profileName:="Profile1",userDataDir:="") ; user data dir doesn't change often, use the default
 	{
         if this.IncognitoMode
             return
-        userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
+        if !userDataDir
+            userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
         profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
         IniRead, profilePath , % profileini, % profileName, Path
         for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
@@ -244,6 +292,15 @@ class FireFoxCapabilities extends Capabilities
         }
         this.addArg("-profile")
         this.addArg(StrReplace(A_AppData "\Mozilla\Firefox\" profilePath, "\", "/"))
+        if !fileExist( userDataDir "\" profileName )
+        {
+            Prompt := "Warning: Following Profile is Directory does not exist`n"
+            . chr(34) userDataDir "\" profileName  chr(34) "`n"
+            . "`n`nRufaydium is going to create profile directory Manually exitapp"
+            . "`nPress OK to continue / Manually exitapp"
+            msgbox,48,Rufaydium Capabilities, % Prompt
+            fileCreateDir, % userDataDir "\" profileName
+        }
 	}
 
     Addextensions(crxlocation)
@@ -257,6 +314,30 @@ class FireFoxCapabilities extends Capabilities
 
 class EdgeCapabilities extends ChromeCapabilities
 {
+    setUserProfile(profileName:="Profile 1", userDataDir:="") ; default profile is Sample profile
+	{
+        if this.IncognitoMode
+            return
+		if !userDataDir
+			userDataDir := StrReplace(A_AppData, "\Roaming") "\Local\Microsoft\Edge\User Data"
+        userDataDir := StrReplace(userDataDir, "\", "/")
+        ; removing previous args if any
+        this.RemoveArg("--user-data-dir=","in")
+        this.RemoveArg("--profile-directory=","in")
+        ; adding new profile args
+        this.addArg("--user-data-dir=" userDataDir)
+        this.addArg("--profile-directory=" profileName)
+        if !fileExist( userDataDir "\" profileName )
+        {
+            Prompt := "Warning: Following Profile is Directory does not exist`n"
+            . chr(34) userDataDir "\" profileName  chr(34) "`n"
+            . "`n`nRufaydium is going to create profile directory Manually exitapp"
+            . "`nPress OK to continue / Manually exitapp"
+            msgbox,48,Rufaydium Capabilities, % Prompt
+            fileCreateDir, % userDataDir "\" profileName
+        }
+	}
+
     Addextensions(crxlocation)
     {
         ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
@@ -266,8 +347,60 @@ class EdgeCapabilities extends ChromeCapabilities
     }
 }
 
+class BraveCapabilities extends ChromeCapabilities
+{
+    setUserProfile(profileName:="Default", userDataDir:="")
+	{
+        if this.IncognitoMode
+            return
+		if !userDataDir
+			userDataDir := StrReplace(A_AppData, "\Roaming") "\Local\BraveSoftware\Brave-Browser\User Data\"
+        userDataDir := StrReplace(userDataDir, "\", "/")
+        ; removing previous args if any
+        this.RemoveArg("--user-data-dir=","in")
+        this.RemoveArg("--profile-directory=","in")
+        ; adding new profile args
+        this.addArg("--user-data-dir=" userDataDir)
+        this.addArg("--profile-directory=" profileName)
+        if !fileExist( userDataDir "\" profileName )
+        {
+            Prompt := "Warning: Following Profile is Directory does not exist`n"
+            . chr(34) userDataDir "\" profileName  chr(34) "`n"
+            . "`n`nRufaydium is going to create profile directory Manually exitapp"
+            . "`nPress OK to continue / Manually exitapp"
+            msgbox,48,Rufaydium Capabilities, % Prompt
+            fileCreateDir, % userDataDir "\" profileName
+        }
+	}
+}
+
+
 class OperaCapabilities extends ChromeCapabilities
 {
+        setUserProfile(profileName:="Opera stable", userDataDir:="") ; not sure is "Opera stable" is default profile
+	{
+        if this.IncognitoMode
+            return
+		if !userDataDir
+			userDataDir := A_AppData "\opera software" ; not sure is (A_AppData "\opera software\Opera stable") is userDataDir
+        userDataDir := StrReplace(userDataDir, "\", "/")
+        ; removing previous args if any
+        this.RemoveArg("--user-data-dir=","in")
+        this.RemoveArg("--profile-directory=","in")
+        ; adding new profile args
+        this.addArg("--user-data-dir=" userDataDir)
+        this.addArg("--profile-directory=" profileName)
+        if !fileExist( userDataDir "\" profileName )
+        {
+            Prompt := "Warning: Following Profile is Directory does not exist`n"
+            . chr(34) userDataDir "\" profileName  chr(34) "`n"
+            . "`n`nRufaydium is going to create profile directory Manually exitapp"
+            . "`nPress OK to continue / Manually exitapp"
+            msgbox,48,Rufaydium Capabilities, % Prompt
+            fileCreateDir, % userDataDir "\" profileName
+        }
+	}
+
     Addextensions(crxlocation)
     {
         ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)

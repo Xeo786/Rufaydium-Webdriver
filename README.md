@@ -3,7 +3,7 @@
 # Rufaydium
 
 AutoHotkey WebDriver Library to interact with browsers.
-Rufaydium will automatically try to download the latest Webdriver and Updates Webdriver according to browser Version while creating Webdriver Session.
+Rufaydium will automatically try to download the latest Webdriver and updates Webdriver according to browser Version while creating Webdriver Session.
 
 Supported browsers: Chrome, MS Edge, Firefox, Opera.
 
@@ -44,7 +44,7 @@ Chrome.Driver.Exit() ; then exits driver
 return
 ```
 # New Rufaydium(DriverName,Parameters)
-Rundriver() Class integrated into Rufaydium.ahk that launches driver in the background where port 9515 set to default, 
+`Rundriver()` Class integrated into Rufaydium.ahk that launches driver in the background where port 9515 set to default, 
 
 ```AutoHotkey
 Chrome := new Rufaydium() ; will Download/Load Chrome driver as "chromedriver.exe" is default DriverName
@@ -68,7 +68,9 @@ Rufaydium has default ports for every driver to resolve this conflict:
 |geckodriver  | 9517  |
 |operadriver  | 9518  |
 |unknownDriver | 9519  |
+|bravedriver | 9515  |
 
+> note: BraveDriver Parameter will download chromedriver but utilizes a separate BraveCapabailities class specificall for Brave browser's settings.
 ## Driver Parameters
 Parameters are WebDriver.exe CMD arguments.  
 Options can vary according to different drivers and we can also check these arguments
@@ -125,12 +127,6 @@ Chrome.capabilities.setUserProfile("Default") ; can use Default user
 ; New Session will be created according to above Capabilities settings
 Session := Chrome.NewSession()
 ```
-Capabilities can also be set manually 
-```AutoHotkey
-Browser := new Rufaydium()
-Browser.capabilities := new capabilities(Browser,BrowserOptions,"windows",true) 
-; Browser.capabilities..... other methods
-```
 ## Enable HeadlessMode
 This will SET and GET HeadlessMode
 ```AutoHotkey
@@ -144,6 +140,24 @@ Browser.capabilities.IncognitoMode := true
 MsgBox, % Browser.capabilities.IncognitoMode
 ```
 >Note after Setting ```IncognitoMode := true``` .setUserProfile() would not work
+
+## UserPrompt
+[User prompt handler](https://www.w3.org/TR/webdriver2/#dfn-user-prompt-handler) can be assigned using UserPrompt, which decides handling procedure of Browser alerts/messages
+
+Following parameters are allowed
+| Keyword            | State                    | Description                                                                              |
+|--------------------|--------------------------|------------------------------------------------------------------------------------------|
+| dismiss            | Dismiss state            | All Alert prompt should be dismissed.                                                    |
+| accept             | Accept state             | All Alert prompt should be accepted.                                                     |
+| dismiss and notify | Dismiss and notify state | All Alert prompt should be dismissed, and an error returned that the dialog was handled. |
+| accept and notify  | Accept and notify state  | All Alert prompt should be accepted, and an error returned that the dialog was handled.  |
+| ignore             | Ignore state             | All Alert prompt should be left to the user to handle.                                   |
+
+```AutoHotkey
+MsgBox, % Browser.capabilities.UserPrompt ; default useprompt is dismiss
+Browser.capabilities.UserPrompt := "ignore"
+```
+
 ## Enable CrossOriginFrame
 This will Set and Get CrossOriginFrame access
 ```AutoHotkey
@@ -161,13 +175,6 @@ Chrome.capabilities.RemoveArg("--headless")
 ## Binary
 We can also load Chromium-based browsers, for example, the Brave browser is based on chromium and can be controlled using the ChromeDriver, SetBinary has been Merged into `NewSession(binary_location)` method
 
-```AutoHotkey
-Chrome := new Rufaydium() ; Brave browser support chromedriver.exe
-; setting Brave browser 
-Chrome.capabilities.Setbinary("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") 
-; New Session will be created using Brave browser, 
-Session := Chrome.NewSession()
-```
 ## other methods
 ```AutoHotkey
 Chrome := new Rufaydium()
@@ -192,6 +199,8 @@ Session := Chrome.NewSession()
 
 ## Using WebDriver with different Browsers
 Brave uses chromedriver.exe, by simply passing Browser.exe (referred binary) into NewSession() method
+
+
 ```AutoHotKey
 Brave := new Rufaydium() ; Brave browser support chromedriver.exe
 ; New Session will be created using Brave browser, 
@@ -202,13 +211,14 @@ Brave.Session() ; will create Chrome session as we have loaded Chrome driver
 ```
 this way we can load All Chromium Based browsers
 
+
 ## Getting Existing Sessions
 We can also access sessions created previously using the title or URL.
  
 ```AutoHotkey
 Msgbox, % json.dump(Chrome.Sessions()) ; will return all Webdriver Sessions detail
 
-Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created
+Session := Chrome.getSession(1) ; this will return with Session by number sequencing from first created to latest created and switch to Active TAB
 
 Session := Chrome.getSession(1,2) ; this will return with first session and switch Second tab, Tabs count from left to right
 Session := Chrome.getSessionByUrl(URL)
@@ -222,9 +232,9 @@ FF := new Rufaydium("geckodriver.exe")
 Page := FF.NewSession() ; session id will be saved to ini for access after reloading script
 ```
 ## Session Auto Delete
-Session created by driver can be closed by user, in this kind situation Driver take time act upon any task to automate exiting web pages. because Session was not closed for fro driver, driver response that session id not reachable,
+A session created by a driver can be closed by the user, Driver takes time to respond to any command in this kind of situation because Session was not closed for the driver,
 
-Session auto delete will delete Session for driver when web page is not reachable/closed by user, this automated step will be taken on any Rufaydium's method after webpage manually/accidently closed to over come driver lag,
+Session auto-delete will delete Session for a driver when a web page is not reachable/closed by the user, this automated step will be taken on any Rufaydium's method after the web page is manually/accidentally closed to overcome driver response lag,
 
 ## Session.NewTab() & Session.NewWindow()
 Creates and switches to a new tab or New Window
@@ -272,12 +282,13 @@ Session.Navigate("https://www.autohotkey.com/")
 ## Session.Back() & Session.Forward()
 helps navigate to previous or from previous to recent the page acting like browser back and forward buttons. 
 
-## SwitchTab(), SwitchbyTitle() & SwitchbyURL()
+## SwitchTab(), SwitchbyTitle() & SwitchbyURL(), ActiveTab()
 Help to switch between tabs.
 ```AutoHotkey
-Session.SwitchTab(2) ; will switch tab by number, counted from left to right
+Session.SwitchTab(2) ; switch tab by number, counted from left to right
 Session.SwitchbyTitle(Title)
 Session.SwitchbyURL(url)
+Session.ActiveTab() ; Switch to active tab. Note: this does not work for firefox, right now.
 ```
 
 ## Session window position and location
@@ -328,7 +339,7 @@ Page1.exit() ; will close all windows / tabs will end up closing whole session
 
 ## Switching Between Window Tabs & Frame
 One can Switch tabs using `Session.SwitchbyTitle(Title)` or `Session.SwitchbyURL(url="")`
-but Session remains the same If you check out[above examples](https://github.com/Xeo786/Rufaydium-Webdriver#sessionnewtab--sessionnewwindow), I posted you would easily understand how switching Tab works.
+but Session remains the same If you check out the [above examples](https://github.com/Xeo786/Rufaydium-Webdriver#sessionnewtab--sessionnewwindow), I posted you would easily understand how switching Tab works.
 
 Just like Switching tabs, one can Switch to any Frame but the session pointer will remain the same.
 
@@ -378,31 +389,40 @@ MsgBox, % Session.FramesLength() ; this will return Frame quantity which is Zero
 >Note: Switching frame would not work for [Session.CDP](https://github.com/Xeo786/Rufaydium-Webdriver#cdpframes)
 
 ## Error Handling
-Error Handling works with all methods, except methods that return Element pointer Few common functionalities
+Error Handling works with all methods, except methods that return an Element pointer Few common functionalities
 
 ## Accessing Element / Elements
-Following methods return with element pointer. Fails will return empty and do not support error handling
+The following methods return with an element pointer.
 ```AutoHotkey
 Element := Session.getElementByID(id)
 Element := Session.QuerySelector(Path)
 Element := Session.QuerySelectorAll(Path)
 Element := Session.getElementsbyClassName(Class)
-Element := Session.getElementsbyName(TagName) : same as getElementsbyTagName(TagName)
+Element := Session.getElementsbyName(Name) 
+Element := Session.getElementsbyTagName(TagName)
 Element := Session.getElementsbyXpath(xPath)
 ```
 Getting element(s) from the element Just like DOM
 ```AutoHotkey
-element := Session.QuerySelector(Path)[0]       
-subelements := element.QuerySelector(Path)[0]
+element := Session.querySelector(".Someclass")
+ChildElements := element.querySelectorAll("#someID")
 ```
-Above function are simply based on findelement()/ findelements()
+Getting Parent and Child elements
+```AutoHotkey
+e := Page.QuerySelector("#keywords")
+parentelement := e.parentElement
+for n, child in parentelement.children
+	msgbox, % "index: " n "`nTagName: " child.tagname
+```
+
+Above methods are based on `.findelement()`/`.findelements()`
 ```AutoHotkey
 Session.findelement(by.selector,"selectorparameter") 
 Session.findelements(by.selector,"selectorparameter") 
 ```
 We can check the element's length
 ```AutoHotKey
-elements := Session.QuerySelector(Path)
+elements := Session.querySelectorAll(Path)
 MsgBox, % elements.count()
 ```
 
@@ -469,8 +489,24 @@ Session.Screenshot("picture location.png") ; will save PNG to A_ScriptDir
 Session.Screenshot(a_desktop "\picture location.png") ; will save PNG to a_desktop
 ```
 
-## PDF printing 
-Supported only for headless mode according to WebDriver.
+# PDF printing 
+WebDriver only Supports headless mode printing. but Rufaydium now supports Headful mode printing thanks to "wkhtmltopdf"
+Rufaydium will ask to download and install [wkhtmltopdf](https://wkhtmltopdf.org/), if wkhtmltopdf is not available in windows, 
+>please follow [terms and condition](https://github.com/wkhtmltopdf/wkhtmltopdf/blob/master/LICENSE) from wkhtmltopdf
+## Printing pdf with wkhtmltopdf
+`Print()` Method is same but defining Printing Options is not mandatory and PrintOptions class can also be used with wkhtmltopdf.
+```AutoHotkey
+Session.print(PDFlocation,PrintOptions.A4_Default) ; see Class PrintOptions
+Session.print(PDFlocation) ; no need for print options
+```
+[Wkhtmltopdf command-line](https://wkhtmltopdf.org/usage/wkhtmltopdf.txt) parameters as Options for advanced printing
+```AutoHotkey
+params := "--zoom 2 --margin-bottom 0 --margin-left 0 --margin-right 0 --margin-top 0 --page-height 0"
+Session.print(PDFlocation,params)
+```
+> Note: Printing PDF from nested frame is a bit tricky but see [example](https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&p=469037#p469037)
+## Headless Mode Printing
+for Headless mode printing, we need to describe PrintOptions which is mandatory see the following example
 ```AutoHotkey
 Session.print(PDFlocation,PrintOptions.A4_Default) ; see Class PrintOptions
 Session.print(PDFlocation,{"":""}) ; for default print options
@@ -506,7 +542,7 @@ Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
 ## Session inputs events
 
 ```AutoHotkey
-Session.move(x,y) move mouse pointer to location
+Session.move(x,y) ;move mouse pointer to location
 Session.click() ; sending left click on moved location ; [button: 0(left) | 1(middle) | 2(right)]
 Session.DoubleClick() ; sending double left click on moved location ; [button: 0(left) | 1(middle) | 2(right)]
 Session.MBDown() ; sending mouse left click down on moved location ; [button: 0(left) | 1(middle) | 2(right)]
@@ -556,8 +592,7 @@ MsgBox, % var.Domain " | " var.Expiry " | " var.Value ; etc.
 ```
 
 # WDElement
-
-Getting Elements and their Information 
+Available web driver Elements methods.
 
 ```AutoHotkey
 Element.Name() ; will return tagname
@@ -575,16 +610,8 @@ Element.SendKey("text string " . key.class ) ; this convert text and will send k
 Element.SendKey(key.ctrl "a" key.delete) ; this will clear text content in edit box by simply doing Ctrl + A and  delete
 Element.Click() ; sent simple click
 Element.Move() ; move mouse pointer to that element it will help drag drop stuff see session.click and session.move 
+Element.onchange() ; to dispatch onchange() event
 Element.clear() ; will clear selected item / uploaded file or content text 
-; getting value  element should be input box or editable other wise you need to use Session.CDP approach 
-; to modify element selenium user will understand what I am talking about
-MsgBox, % Element.value
-;setting value 
-Element.value := "somevalue"
-
-Element.InnerText ; return with innerText 
-; you cannot set innerText using this approach you will need Session.CDP approach , CDP can modify whole DOM 
-; if element is innerText based edit box we can simply use Element.SendKey()
 
 ; Attribs properties & CSS
 Element.GetAttribute(Name) ; return with required attribute
@@ -595,11 +622,32 @@ Element.GetCSS(Name) ; return with CSS
 Element.Shadow() ; return with shadow element detail actually I going to add functionality to access shadow elements in future
 ; first I need to learn about them
 
-Element.Uploadfile(filelocation) ; this not working right now, I am working on it, I need to find out Payload/request parameters 
 Element.Sendkey(StrReplace(filelocation,"\","/")) ; if Element is input element than file location can be set using SendKey()
-; click on upload button now initiate fileupload, after setting file location 
+; click on upload button now initiate fileupload, after setting file location
 ```
-
+Getting web driver Elements information.
+```AutoHotkey
+e := Page.querySelector(selector) ; getting element 
+msgbox % e.innerText
+msgbox % "TagName: " e.TagName "`nName: " e.Name "`nID: " e.id "`nTitle: " e.Title "`nClass: " e.Class "`nValue: " e.value
+msgbox, % e.InnerHTML
+msgbox, % e.outerHTML
+msgbox, % "href: " e.href "`nSrc: " e.src
+```
+Setting / Changing Web Driver Elements information.
+```AutoHotkey
+e.Name := "abcd"
+e.id := "Mywords"
+e.Title := "My Title"
+e.Class := "My Class"
+e.value := "My Value"
+newhtml = <button name="Rufaydium" id="MyButton" >Rufaydium</button>
+e.outerHTML := newhtml 
+e.InnerHTML := newhtml 
+e.href := url
+e.src := url
+```
+>Note: Element manipulation is not available for Rufaydium basic, versions less than 1.6.3
 ## Shadow Elements
 Shadow elements can easily be accessed using `element.shadow()`.
 The following example will navigate to the Chrome extensions page and enables Developer mode
@@ -660,44 +708,218 @@ Class Key
 }
 ```
 # Session.Actions()
-We can interact with page using `Actions()` these interactions, which can be define as `pointer`, a `pointer` can be mouse, touch or keyboard
-Following Example will try to draw a pentagon for working example see https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616&start=40#p458272
-
+We can interact with a page using `Actions(interactions*)` method, interactions are generated using [Mouse](https://github.com/Xeo786/Rufaydium-Webdriver#mouse-class), [Scroll](https://github.com/Xeo786/Rufaydium-Webdriver#scroll-class) [Keyboard](https://github.com/Xeo786/Rufaydium-Webdriver#keyboard-class) Classes based on [Actions](https://github.com/Xeo786/Rufaydium-Webdriver#actions-class) Class. Sending Empty Actions() method would release/stop ongoing action.
 ```AutoHotKey
-; defining Action object
-Pentagon =
-( LTrim Join
-{
-"actions": [
-	{
-	"type": "pointer",
-	"id": "mouse",
-	"parameters": {"pointerType": "mouse"},
-	"actions": [
-		{"type": "pointerDown", "button": 0},
-		{"type": "pointerMove", "duration": 10,"x":288, "y":258},
-		{"type": "pointerMove", "duration": 10,"x":391, "y":181},
-		{"type": "pointerMove", "duration": 10,"x":493, "y":258},
-		{"type": "pointerMove", "duration": 10,"x":454, "y":358},
-		{"type": "pointerMove", "duration": 10,"x":328, "y":358},
-		{"type": "pointerMove", "duration": 10,"x":288, "y":258},
-		{"type": "pointerUp", "button": 0}
-		]
-		}
-	]
-}
-)
-Session.actions(json.load(Pentagon)) ; initiate actions 
+Session.Actions(Interaction1,Interaction2,interaction3) ; read Action class for Interactions
+
+Session.Actions() ; stop onging action
+```
+# Actions Class
+Action class that help generating Webdriver Actions Payload for Session.Actions() method, extends from [Mouse](https://github.com/Xeo786/Rufaydium-Webdriver#mouse-class), [Scroll](https://github.com/Xeo786/Rufaydium-Webdriver#scroll-class) [Keyboard](https://github.com/Xeo786/Rufaydium-Webdriver#keyboard-class) Classes (hereinafter referred to as "interaction/interactions" ), action payloads should be casesensitive and has specific parameters for concerning "pointerType", so these classes not only helps generating them, but also make them easy to understand.
+
+Following methods inherited to Mouse, Scroll and Keyboard Classes, generate a interaction Objects that later translated to Webdriver Actions payload, hereinafter referred to as "Event/Events creations" 
+
+`Pause(duration)` create event of "pause" to cause delay between interactions, where default 'duration' is 100
+
+`cancel()` create 'pointerCancel' event
+
+`Clear()` resets interaction by deleting all delete Events
+> note: One interaction Class Object has multiple events
+## Mouse Class
+
+Mouse Class generates event/interaction Objects 'Type' "pointer" that later translated to Webdriver Actions payload when submitted as parameters to Session.Actions().
+
+`interaction := New mouse(pointerType)` accepts 'pointerType' as parameter which can be "mouse", "pen", or "touch", where default pointerType is mouse, return  interaction Class object.
+
+`mouse.Clear()` resets interaction by deleting all delete Events.
+
+`mouse.cancel()` create 'pointerCancel' event, which act like mouse not over document.
+
+`mouse.press(Button)` create a payload object for "pointerDown", accepts "Button" parameter 0(left), 1(middle), or 2(right) mouse button, empty parameter considered 0 to autohotkey results setting left mouse button default.
+
+`mouse.Release(Button)` create a payload object for "pointerUp", accepts "Button" parameter 0(left), 1(middle), or 2(right) mouse button, empty parameter considered 0 to autohotkey results setting left mouse button default.
+
+`mouse.Move(x,y,duration,width,height,pressure,tangentialPressure,tiltX,tiltY,twist,altitudeAngle,azimuthAngle,origin)` will move mouse pointer to 'x' 'y' direction, moveing taking time as 'duration', 
+pointer size can be define as 'width' 'height' which is optional, 
+
+move can be tweaked for button/touch 'pressure' 'tangentialPressure' 'tiltX','tiltY','twist','altitudeAngle','azimuthAngle' by using these respective parameters, which are also optional. 
+
+"origin" can be  "viewport" or "pointer"
+
+Default parameters for move:
+| Parameters | Ports |
+|-------------|-------|
+|x|0|
+|y|0|
+|duration|10|
+|width|0|
+|height|0|
+|pressure|0|
+|tangentialPressure|0|
+|tiltX|0|
+|tiltY|0|
+|twist|0|
+|altitudeAngle|0|
+|azimuthAngle|0|
+|origin|"viewport"|
+
+
+`mouse.click(button,x,y,duration)` click generates for serialized objects following methods already defined above, and will be translated to JSON payload and executed one by one from first to last creation.
+```AutoHotKey
+        mouse.move(x,y,0)
+        mouse.press(button,duration)
+        mouse.Pause(500)
+        mouse.release(button,duration)
+```
+
+Mouse Interaction and event example
+```AutoHotKey
+MouseEvent := new mouse() ; Setting pointerType "mouse"
+MouseEvent.press() ; 0(left) | 1(middle) | 2(right)
+MouseEvent.move(288,258,10)
+MouseEvent.release()
+Session.Actions(MouseEvent)
 return
 ```
 
+## Scroll Class
+Scroll Class generates event/interaction Objects 'Type' "wheel" that later translated to Webdriver Actions payload when submitted as parameters to Session.Actions().
+
+`interaction := New Scroll(pointerType)` accepts 'pointerType' as parameter which can be "mouse", "pen", or "touch", where default pointerType is mouse, return interaction Class object.
+
+`interaction.Clear()` resets interaction by deleting all delete Events.
+
+`interaction.Scroll(deltaX,deltaY,x,y,duration,origin)` navigates vertical horizontal scroll on webpage's document view. 
+It performs a scroll given duration, x, y, target delta x, target delta y, current delta x and current delta y:
+
+Default parameters for Scroll method:
+| Parameters | Ports |
+|-------------|-------|
+|deltaX|0|
+|deltaY|0|
+|x|0|
+|y|0|
+|duration|10|
+|origin|"viewport"|
+
+Following Methods utilized ```.Scroll(s)``` to perform scroll up down left right, where 's' is Scrolling value from the calculated from the exiting position, default value for 's' is 50 
+
+`interaction.ScrollUP(s)`
+
+`interaction.ScrollDown(s)`
+
+`interaction.ScrollLeft(s)`
+
+`interaction.ScrollRight(s)`
+
+## Keyboard Class
+Keyboard Class generates event/interaction Objects 'Type' "key" that later translated to Webdriver Actions payload when submitted as parameters to Session.Actions().
+
+```KeyInterAction := New Keyboard()``` return interaction Class object. does not required any parameter
+
+```Keyboard.Clear()``` resets interaction by deleting all delete Events.
+
+```Keyboard.keyUp(key)``` create a payload object for "keyUp", required "key" parameter as key "Value"
+
+```Keyboard.keyDown(key)``` create a payload object for "keyDown", required "key" parameter as key "Value"
+
+```Keyboard.SendKey(keys)``` utilizes 'keyUp()' and 'keyDown()' methods simultaneously to send keystrokes, required Keys string parameter, its recommended to use `Element.Sendkey()` to mimic keystrokes on element or `WDElement.value` to set and Get element value.
+
+<details>
+  <summary>Interaction Examples</summary>
+
+```autohotkey
+#Include, %A_ScriptDir%\..\Rufaydium-Webdriver
+#include Rufaydium.ahk 
+goto, TestKeyboard ; change lable here
+return
+
+clickTest:
+URL := "https://quickdraw.withgoogle.com"
+page := GetRufaydium(URL) ; run/access  chrome  browser
+
+MI := new mouse() ; MI = mouse interaction
+;MI.click(0, 400, 400)
+;MI.click(0, 200, 300)
+
+MI.press()
+MI.move(288,258,10)
+MI.release()
+MI.press()
+MI.move(391,181,10)
+MI.release()
+MI.press()
+MI.move(493,258,10)
+MI.release()
+MI.press()
+MI.move(454,358,10)
+MI.release()
+MI.press()
+MI.move(328,358,10)
+MI.release()
+MI.press()
+MI.move(288,258,10)
+MI.release()
+MI.press()
+MI.release()
+msgbox, move drawing window and click ok to draw
+x := page.actions(MI)
+return
+
+ScrollTest:
+URL :=  "https://www.autohotkey.com/boards/"
+page := GetRufaydium(URL) ; run/access  chrome  browser
+msgbox, % please arrow up and Down keys to scroll
+return
+
+down::
+page.scrollDown() ; it utilizes Scroll class
+return
+
+up::
+page.scrollup() ; ; it utilizes Scroll class
+return
+
+TestKeyboard:
+URL :=  "https://www.autohotkey.com/boards/"
+page := GetRufaydium(URL) ; run/access  chrome  browser
+e := Page.querySelector("#keywords") ; getting elemenet 
+e.focus() ; focusing element so we can see keystrokes interaction
+page.sendkey("aBcd") ; session.sendkey() uses Keyboard Class
+page.sendkey("xyZ")
+return
+
+; GetRufaydium(URL) gets existing session  
+; stops us creatting multiple sessions again and again 
+; make sure do not manually close driver / chrome.driver.exit()
+; by Xeo786
+GetRufaydium(URL)
+{
+	; get chrome driver / runs chrome driver if not running, download driver if available in A_ScriptDir
+	; Run Chrome Driver with default parameters and loads deafult capabilities
+	Chrome := new Rufaydium() 
+	Page := Chrome.getSessionByUrl(URL) ; check page (created by driver) if already exist 
+	if !isobject(page) ; checcking if Session with url exist
+	{
+		Page := Chrome.getSession(1,1) ; try getting first session first tab
+		if isobject(page) ; if exist 
+			Page.NewTab() ; create new tab instead new session
+		else ; if does not exist 
+			Page := Chrome.NewSession() ; create new session ; Page.Exit() if any session manually closed by user which causes lag
+		Page.Navigate(URL) ; navigate		
+	}
+	return page 
+}
+```
+</details>
+
 # Await
 
-Rufaydium Basic will wait for any task/change to get completed, and then execute the next line but any task executed through CDP `Session.CDP` would wait, therefore we need to use `Session.CDP.WaitForLoad()`
+Rufaydium Basic will wait for any task/change to get completed, and then execute the next line but any task executed through CDP `Session.CDP` wouldn't wait, therefore we need to use `Session.CDP.WaitForLoad()`
 
 Waiting of webpage is based on document ready state https://www.w3schools.com/jsref/prop_doc_readystate.asp
 but there are web pages that keep loading and unloading elements and stuff while their ready state remains `complete`, 
-In this kind of situation Rufaydium Basic and Rufaydium CDP would simply wait through error or if an element in question is not available or element visibility or displayed/enabled stats element, displayed(), element.enabled(), we can use these tricks to make AutoHotkey wait, 
+In this kind of situation Rufaydium Basic and Rufaydium CDP would simply wait through error or if an element in question is not available or element visibility or displayed/enabled stats element, `displayed()`, `element.enabled()`, we can use these tricks to make AutoHotkey wait, 
 for example, We have click button and this would load element with tag name button.
 
 ```AutoHotkey
@@ -717,9 +939,11 @@ MsgBox, % "innerText" h ; otherwise h has innertext
 Button.click()
 ```
 ## Session.CDP
-`Session.Methods()` act like Human interactions with Webpage, Where Session.CDP has access to Chrome Devtools protocols, which have the power to Modify DOM.
+Session.CDP has access to Chrome Devtools protocols,
 
-Example
+<details>
+  <summary>Example</summary>
+
 ```AutoHotkey
 ChromeDriver := A_ScriptDir "\chromedriver.exe"
 ; in case driver is already running it will get access driver which is already running
@@ -740,8 +964,11 @@ for k , tag in  Page.cdp.QuerySelectorAll("input") ; full all input boxes with t
 {
 	tag.sendKey(tag.id)
 }
+
 ```
-Note: Firefox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
+</details>
+
+>Note: Firefox / Geckodriver session does not support Session.CDP (Chrome Devtools Protocols) as Firefox has its Remote protocols, which will be added soon as Session.FRP, Firefox Remote Protocols
 
 # CDP.Document()
 CDP.Document() is DEPRECATED is no longer required as Rufaydium CDP has developed reliable access to frame
@@ -814,7 +1041,7 @@ CDP_element.SendKey("1234`n") ; send 1 2 3 4 enter
 ```
 
 # CDP Evaluate(JS)
-`Session.CDP.Evaluate()` executes Javascript, just like we use Chrome console.
+`Session.CDP.Evaluate()` executes Javascript, just like we use Chrome's console.
 ```AutoHotkey
 js = 
 (

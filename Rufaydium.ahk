@@ -1,4 +1,4 @@
-; Rufaydium v1.5
+; Rufaydium v1.7.0
 ;
 ; Rufaydium          : AutoHotkey WebDriver Library to interact with browsers.
 ; Requirement        : WebDriver version needs to be compatible with the Browser version.
@@ -12,13 +12,13 @@
 ; Link : https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
 ; Git  : https://github.com/Xeo786/Rufaydium-Webdriver
 ; By Xeo786 - GPL-3.0 license, see LICENSE
-
 #include %A_LineFile%\..\
 #Include WDM.ahk
 #Include CDP.ahk
 #Include JSON.ahk
 #include WDElements.ahk
 #Include Capabilities.ahk
+#include actions.ahk 
 
 Class Rufaydium
 {
@@ -37,6 +37,11 @@ Class Rufaydium
 				this.capabilities := new FireFoxCapabilities(this.Driver.browser,this.Driver.Options)
 			case "operadriver" :
 				this.capabilities := new OperaCapabilities(this.Driver.browser,this.Driver.Options)
+			case "BraveDriver" :
+				this.capabilities := new BraveCapabilities(this.Driver.browser,this.Driver.Options)
+				this.capabilities.Setbinary("C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe") 
+				; drive might crash for 32 Brave on 64 bit OS there for we can load binary while new session, 
+				; i.e. >> NewSession("32bit brave browser exe location")
 		}
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple
@@ -57,6 +62,8 @@ Class Rufaydium
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
+		if !Payload and (Method = "POST")
+			Payload := Json.null
 		try r := Json.load(this.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
 		if(r.error = "chrome not reachable") ; incase someone close browser manually but session is not closed for driver
 			this.quit() ; so we close session for driver at cost of one time response wait lag
@@ -204,6 +211,8 @@ Class Rufaydium
 			{
 				S.SwitchTab(t)
 			}
+			else
+				S.ActiveTab()
 			return S
 		}
 	}
@@ -282,6 +291,8 @@ Class Session
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
+		if (Payload = 0) and (Method = "POST")
+			Payload := Json.null
 		try r := Json.load(Rufaydium.Request(url,Method,Payload,WaitForResponse)).value ; Thanks to GeekDude for his awesome cJson.ahk
 		if(r.error = "chrome not reachable") ; incase someone close browser manually but session is not closed for driver
 			this.quit() ; so we close session for driver at cost of one time response wait lag
@@ -289,16 +300,18 @@ Class Session
 			return r
 	}
 
-	NewTab()
+	NewTab(i:=1)
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"tab"}).handle
-		This.Switch(This.currentTab)
+		if i
+			This.Switch(This.currentTab)
 	}
 
-	NewWindow() ; by https://github.com/hotcheesesoup
+	NewWindow(i:=1) ; by https://github.com/hotcheesesoup
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"window"}).handle
-		This.Switch(This.currentTab)
+		if i 
+			This.Switch(This.currentTab)
 	}
 
 	Detail()
@@ -325,12 +338,16 @@ Class Session
 		}
 	}
 
+	ActiveTab()
+	{
+		if !this.debuggerAddress ; does not work for Firefox
+			return
+		this.Switch("CDwindow-" this.Detail()[1].id ) ; First id always Current Handle
+	}
+
 	SwitchTab(i:=0)
 	{
-		if i
-		{
-			return this.Switch(This.currentTab := this.GetTabs()[i])
-		}
+		return this.Switch(This.currentTab := this.GetTabs()[i])
 	}
 
 	SwitchbyTitle(Title:="")
@@ -520,37 +537,43 @@ Class Session
 
 	ActiveElement()
 	{
-		return New WDElement(this.Send("element/active","GET"))
+		for i, elementid in this.Send("element/active","GET")
+		{
+			address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
+			address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
+			return New WDElement(address,i)
+		}
 	}
 
 	findelement(u,v)
 	{
-		for element, elementid in this.Send("element","POST",{"using":u,"value":v},1)
+		r := this.Send("element","POST",{"using":u,"value":v},1)
+		for i, elementid in r
 		{
 			if instr(elementid,"no such")
 				return 0
 			address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 			address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
-			return New WDElement(address)
+			return New WDElement(address,i)
 		}
 	}
 
 	findelements(u,v)
 	{
-
 		e := []
 		for k, element in this.Send("elements","POST",{"using":u,"value":v},1)
 		{
 			for i, elementid in element
 			{
-				if instr(elementid,"no such")
-					return 0
 				address := RegExReplace(this.address "/element/" elementid,"(\/shadow\/.*)\/element","/element")
 				address := RegExReplace(address "/element/" elementid,"(\/element\/.*)\/element","/element")
-				e[k-1] := New WDElement(address)
+				e[k-1] := New WDElement(address,i)
 			}
 		}
-		return e
+
+		if e.count() > 0
+			return e
+		return 0
 	}
 
 	shadow()
@@ -579,13 +602,17 @@ Class Session
 
 	getElementsbyClassName(Class)
 	{
-		Class = [class='%Class%']
-		return this.findelements(by.selector,Class)
+		return this.findelements(by.selector,"[class='" Class "']")
+	}
+
+	getElementsbyTagName(Name)
+	{
+		return this.findelements(by.TagName,Name)
 	}
 
 	getElementsbyName(Name)
 	{
-		return this.findelements(by.TagName,Name)
+		return this.findelements(by.selector,"[Name='" Name "']")
 	}
 
 	getElementsbyXpath(xPath)
@@ -646,135 +673,144 @@ Class Session
 		}
 	}
 
-	Print(PDFLocation,Options)
+	Print(PDFLocation,Options:=0)
 	{
-		Base64pdfData := this.Send("print","POST",Options) ; does not work
-		if !Base64pdfData.error
+		if !instr(PDFLocation,".pdf")
 		{
-			nBytes := Base64Dec( Base64pdfData, Bin ) ; thank you Skan :)
-			File := FileOpen(PDFLocation, "w")
-			File.RawWrite(Bin, nBytes)
-			File.Close()
+			msgbox, ,Rufaydium, error: File location be ".pdf"
+			return
+		}
+
+		if this.Capabilities.HeadlessMode
+		{
+			Base64pdfData := this.Send("print","POST",Options) ; does not work
+			if !Base64pdfData.error
+			{
+				nBytes := Base64Dec( Base64pdfData, Bin ) ; thank you Skan :)
+				File := FileOpen(PDFLocation, "w")
+				File.RawWrite(Bin, nBytes)
+				File.Close()
+			}
+			else
+				msgbox, ,Rufaydium, % "Fail to save PDF`nError : " json.Dump(Base64pdfData) "`nPlease define Print Options or use print profiles from PrintOptions.class`nSince Chrome Printing is not available in Headful mode you can try 'wkhtmltopdf' printing"
 		}
 		else
-			msgbox, ,Rufaydium, % "Fail to save PDF`nError : " json.Dump(Base64pdfData) "`n`nMake sure Chrome is running in headless mode.`nPlease define Print Options or use print profiles from PrintOptions.class"
+		{
+			if isProgInstalled("wkhtmltox")
+			{
+				wkhtmltopdf(this.HtML,PDFLocation,options)
+			}
+			else
+			{
+				MsgBox,36,Rufaydium, User is required to install "wkhtmltopdf" In order to enable pdf printing without Headless mode`n`nPress Yes to navigate to download page of "wkhtmltox" tool
+				IfMsgBox Yes
+				{
+					this.NewTab()
+					this.url := "https://wkhtmltopdf.org/downloads.html"
+					MsgBox,64,Rufaydium,Please Download and install "wkhtmltox" now, according to Windows Version then Restart Rufaydium.
+				}
+			}
+		}
 	}
 
 	click(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		PointerClick =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerDown", "button": %i%},
-					{"type": "pause", "duration": 100},
-					{"type": "pointerUp", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerClick))
+		MouseEvent := new mouse()
+		MouseEvent.Release(i)
+		MouseEvent.Pause(100)
+		MouseEvent.Release(i)
+		return this.Actions(MouseEvent)
 	}
 
 	DoubleClick(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		PointerClicks =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerDown", "button": %i%},
-					{"type": "pause", "duration": 100},
-					{"type": "pointerUp", "button": %i%},
-					{"type": "pause", "duration": 500},
-					{"type": "pointerDown", "button": %i%},
-					{"type": "pause", "duration": 100},
-					{"type": "pointerUp", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerClicks))
+		MouseEvent := new mouse()
+		; click 1
+		MouseEvent.Release(i)
+		MouseEvent.Pause(100)
+		MouseEvent.Release(i)
+		; delay
+		MouseEvent.Pause(500)
+		; click 2
+		MouseEvent.Release(i)
+		MouseEvent.Pause(100)
+		MouseEvent.Release(i)
+		return this.Actions(MouseEvent)
 	}
 
 	MBDown(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		;return this.Send("buttondown","POST",{"button":i})		PointerClick =
-		PointerDown =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerDown", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerDown))
+		MouseEvent := new mouse()
+		MouseEvent.Press(i)
+		return this.Actions(MouseEvent)
 	}
 
 	MBup(i:=0) ; [button: 0(left) | 1(middle) | 2(right)]
 	{
-		;return this.Send("buttonup","POST",{"button":i})
-		PointerUP =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [
-					{"type": "pointerUp", "button": %i%}
-					]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerUP))
+		MouseEvent := new mouse()
+		MouseEvent.Release(i)
+		return this.Actions(MouseEvent)
 	}
 
 	Move(x,y)
 	{
-		PointerMove =
-		( LTrim Join
-		{
-			"actions": [
-				{
-				"type": "pointer",
-				"id": "mouse",
-				"parameters": {"pointerType": "mouse"},
-				"actions": [{
-							"type": "pointerMove",
-							"duration": 0,
-							"x": %x%, "y": %y%
-							}]
-				}
-			]
-		}
-		)
-		return this.Actions(json.load(PointerMove))
+		MouseEvent := new mouse()
+		MouseEvent.move(x,y,0)
+		return this.Actions(MouseEvent)
 	}
 
-	Actions(ActionObj)
+	ScrollUP(s:=50)
 	{
-		return this.Send("actions","POST",ActionObj)
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollUP(s)
+		r := this.Actions(WheelEvent)
+		WheelEvent := ""
+		return r
+	}
+
+	ScrollDown(s:=50)
+	{
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollDown(s)
+		return this.Actions(WheelEvent)
+	}
+
+	ScrollLeft(s:=50)
+	{
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollLeft(s)
+		return this.Actions(WheelEvent)
+	}
+
+	ScrollRight(s:=50)
+	{
+		WheelEvent := new Scroll()
+		WheelEvent.ScrollRight(s)
+		return this.Actions(WheelEvent)
+	}
+
+	SendKey(Chars)
+	{
+		KeyboardEvent := new Keyboard()
+		KeyboardEvent.SendKey(Chars) ; right now it does not support Key.Class()
+		return this.Actions(KeyboardEvent)
+	}
+
+	Actions(Interactions*)
+	{
+		if Interactions.count()
+		{
+			ActionArray := []
+			for i, interaction in Interactions
+			{
+				ActionArray.push(interaction.perform())
+				Interactions.clear()
+				Interaction := ""
+			}
+			return this.Send("actions","POST",{"actions":ActionArray})
+		}	
+		else
+			return this.Send("actions","DELETE")	
 	}
 
 	execute_sql()
@@ -838,4 +874,67 @@ Base64Enc( ByRef Bin, nBytes, LineLength := 64, LeadingSpaces := 0 ) { ; By SKAN
 	Loop % Ceil( StrLen(B64) / LineLength )
 		B .= Format("{1:" LeadingSpaces "s}","" ) . SubStr( B64, N += LineLength, LineLength ) . "`n"
 	Return RTrim( B,"`n" )
+}
+
+isProgInstalled(Prog)
+{
+	shell := ComObjCreate("Shell.Application")
+	programsFolder := shell.NameSpace("::{26EE0668-A00A-44D7-9371-BEB064C98683}\8\::{7B81BE6A-CE2B-4676-A29E-EB907A5126C5}")
+	items := programsFolder.Items()
+	for k in items
+		if instr(k.name,prog)
+			return true
+	return false
+}
+
+
+wkhtmltopdf(HtML,pdf,options)
+{
+	htmlloc := StrReplace(pdf, ".pdf",".html")
+	
+	while FileExist(pdf)
+		FileDelete, % pdf
+
+	while FileExist(htmlloc)
+		FileDelete, % htmlloc
+
+	FileAppend, % HtML, % htmlloc
+
+	while !FileExist(htmlloc)
+		sleep, 200
+
+	RegRead, wkhtmltopdf, HKLM, Software\wkhtmltopdf, PdfPath
+
+	if IsObject(options)
+	{
+		cmd := wkhtmltopdf " --zoom " options.scale
+
+		cmd .= " --margin-bottom "	options.margin.bottom
+		cmd .= " --margin-left "	options.margin.left
+		cmd .= " --margin-right "	options.margin.right
+		cmd .= " --margin-top "		options.margin.top
+
+		cmd .= " --page-height "	options.page.height
+		cmd .= " --page-width " 	options.page.height
+
+		cmd .= " --orientation " chr(34) options.orientation chr(34)
+
+		if options.background
+			cmd .= " --enable-smart-shrinking "
+		else
+			cmd .= " --disable-smart-shrinking "
+
+		if options.background
+			cmd .= " --background "
+		else
+			cmd .= " --no-background "	
+		
+		cmd .= " " chr(34) htmlloc chr(34) " " chr(34) pdf chr(34)
+		runwait, %  cmd,,Hide
+	}	
+	else if IsObject(options)
+		runwait, % wkhtmltopdf " " options " " chr(34) htmlloc chr(34) " " chr(34) pdf chr(34),,Hide
+	else
+		runwait, % wkhtmltopdf " --background " chr(34) htmlloc chr(34) " " chr(34) pdf chr(34),,Hide
+	FileDelete, % htmlloc
 }
