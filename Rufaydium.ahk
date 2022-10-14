@@ -375,8 +375,7 @@ Class Session
 		{
 			; debuggeraddress /json/list provides the window handles IDs 
 			; this method uses less effort 
-			msgbox
-			Pages := this.Detail() 
+			try Pages := this.Detail() 
 			if isobject(Pages)
 			{
 				for k, p in pages
