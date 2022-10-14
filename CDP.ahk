@@ -107,6 +107,51 @@ class CDP ;extends Rufaydium
 		return enrties
 	}
 	
+	createBrowserContext() ; create session
+	{
+		return this.call("Target.createBrowserContext")
+	}
+
+	disposeBrowserContext() ; close session and its all pages
+	{
+		return this.call("Target.disposeBrowserContext")
+	}
+
+	getBrowserContexts() ; Get sessions
+	{
+		return this.call("Target.getBrowserContexts")
+	}
+
+	CreateTarget(url) ; create new page with url
+	{
+		return this.call("Target.createTarget",{"url":url})
+	}
+
+	closeTarget() ; close page
+	{
+		return this.call("Target.closeTarget",{"targetId":targetId})
+	}
+
+	Switch(targetId) ; switch to page
+	{
+		return this.call("Target.activateTarget",{"targetId":targetId})
+	}
+
+	GetTargets() ; get all sessions with Pages 
+	{
+		return this.call("Target.getTargets")
+	}
+	
+	AttachTarget(targetId) ; connect to disconnected page
+	{
+		return this.call("Target.attachToTarget",{"targetId":targetId})
+	}
+
+	DetachTarget(targetId) ; disconnect page 
+	{
+		return this.call("Target.detachFromTarget",{"targetId":targetId})
+	}
+
 	requestNode(Objectid)
 	{
 		obj := this.call("DOM.requestNode",{"objectId":Objectid})

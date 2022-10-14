@@ -62,9 +62,12 @@ Class WDElement extends Session
 		return this.Send("value","POST", {"text":text})
 	}
 	
-	click()
+	click(slient:=1)
 	{
-		return this.Send("click","POST",{"":""})
+		if slient
+			return this.Execute("arguments[0].click()")
+		else
+			return this.Send("click","POST",{"":""})
 	}
 	
 	Move()

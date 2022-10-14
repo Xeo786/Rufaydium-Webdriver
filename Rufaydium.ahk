@@ -365,19 +365,46 @@ Class Session
 		this.Switch(This.currentTab )
 	}
 
-	SwitchbyURL(url:="")
+	SwitchbyURL(url:="",Silent:=1)
 	{
-		handles := this.GetTabs()
-		for k , handle in handles
+		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
+		; might able to access pages even after restarting webdriver
+		; Targets := this.CDP.GetTargets() 
+
+		if isobject(this.CDP)
 		{
-			this.switch(handle)
-			if instr(this.URL(),url)
+			; debuggeraddress /json/list provides the window handles IDs 
+			; this method uses less effort 
+			try Pages := this.Detail() 
+			if isobject(Pages)
 			{
-				This.currentTab := handle
-				break
+				for k, p in pages
+				{
+					if instr(p.url, url)
+					{
+						This.currentTab := "CDwindow-" p.id
+						;this.Switch(This.currentTab )
+						this.CDP.Switch(p.id)
+						return
+					}
+				}
 			}
 		}
-		this.Switch(This.currentTab )
+		else
+		{
+			; following method switches tabs one by one and checking title
+			handles := this.GetTabs()
+			for k , handle in handles
+			{
+				this.switch(handle)
+				if instr(this.URL(),url)
+				{
+					This.currentTab := handle
+					break
+				}
+			}
+			this.Switch(This.currentTab )
+		}
 	}
 
 	url
