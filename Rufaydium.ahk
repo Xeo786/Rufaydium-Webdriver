@@ -362,19 +362,19 @@ Class Session
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
-		Targets := this.CDP.GetTargets() 
+		; Targets := this.CDP.GetTargets() 
 		handles := this.GetTabs()
-		if isobject(this.CDP) && Targets
+		if isobject(this.CDP) ;&& Targets
 		{	
 			for k , handle in handles
 			{
-				for i, t in Targets.targetInfos
+				for i, t in this.Detail() ;Targets.targetInfos
 				{
-					if instr(Handle,t.targetid)
+					if instr(Handle,t.id)
 					{
 						if instr(t.Title, Title)
 						{
-							This.currentTab := "CDwindow-" t.targetid
+							This.currentTab := handle ; "CDwindow-" t.targetid
 							this.Switch(This.currentTab )
 							;this.CDP.Switch(t.targetid)
 							return
@@ -402,19 +402,19 @@ Class Session
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
-		Targets := this.CDP.GetTargets() 
+		;Targets := this.CDP.GetTargets() 
 		handles := this.GetTabs()
-		if isobject(this.CDP) && Targets
+		if isobject(this.CDP)
 		{	
 			for k , handle in handles
 			{
-				for i, t in Targets.targetInfos
+				for i, t in this.Detail() ;Targets.targetInfos
 				{
-					if instr(Handle,t.targetid)
+					if instr(Handle,t.id)
 					{
 						if instr(t.url, url)
 						{
-							This.currentTab := "CDwindow-" t.targetid
+							This.currentTab := Handle ;"CDwindow-" t.targetid
 							this.Switch(This.currentTab )
 							;this.CDP.Switch(t.targetid)
 							return
