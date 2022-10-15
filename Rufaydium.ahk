@@ -352,17 +352,37 @@ Class Session
 
 	SwitchbyTitle(Title:="")
 	{
-		handles := this.GetTabs()
-		for k , handle in handles
+		if isobject(this.CDP)
 		{
-			this.switch(handle)
-			if instr(this.title(),Title)
+			try Pages := this.Detail() 
+			if isobject(Pages)
 			{
-				This.currentTab := handle
-				break
+				for k, p in pages
+				{
+					if instr(p.Title, Title)
+					{
+						This.currentTab := "CDwindow-" p.id
+						;this.Switch(This.currentTab )
+						this.CDP.Switch(p.id)
+						return
+					}
+				}
 			}
 		}
-		this.Switch(This.currentTab )
+		else
+		{
+			handles := this.GetTabs()
+			for k , handle in handles
+			{
+				this.switch(handle)
+				if instr(this.title(),Title)
+				{
+					This.currentTab := handle
+					break
+				}
+			}
+			this.Switch(This.currentTab )
+		}
 	}
 
 	SwitchbyURL(url:="",Silent:=1)
