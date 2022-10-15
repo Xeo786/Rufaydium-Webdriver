@@ -222,7 +222,7 @@ Class Rufaydium
 		for k, w in this.getSessions()
 		{
 			w.SwitchbyURL(URL)
-			if instr(x:=w.URL,URL)
+			if instr(w.URL,URL)
 				return w
 		}
 	}
@@ -364,7 +364,7 @@ Class Session
 		; might able to access pages even after restarting webdriver
 		Targets := this.CDP.GetTargets() 
 		handles := this.GetTabs()
-		if isobject(this.CDP)
+		if isobject(this.CDP) && Targets
 		{	
 			for k , handle in handles
 			{
@@ -404,7 +404,7 @@ Class Session
 		; might able to access pages even after restarting webdriver
 		Targets := this.CDP.GetTargets() 
 		handles := this.GetTabs()
-		if isobject(this.CDP)
+		if isobject(this.CDP) && Targets
 		{	
 			for k , handle in handles
 			{
