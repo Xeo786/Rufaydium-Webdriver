@@ -284,7 +284,15 @@ Class Session
 
 	close()
 	{
-		This.currentTab := this.Send("window","DELETE")
+		r := this.Send("window","DELETE")
+		if isobject(r)
+			This.currentTab := r[1]
+		else
+			This.currentTab := r
+		;if isobject(this.CDP)
+		;	this.CDP.Switch(StrReplace(This.currentTab, "CDwindow-"))	
+		;else
+		This.Switch(This.currentTab)
 	}
 
 	send(url,Method,Payload:= 0,WaitForResponse:=1)
@@ -352,26 +360,34 @@ Class Session
 
 	SwitchbyTitle(Title:="")
 	{
-		if isobject(this.CDP)
-		{
-			try Pages := this.Detail() 
-			if isobject(Pages)
+		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
+		; might able to access pages even after restarting webdriver
+		; Targets := this.CDP.GetTargets() 
+		try pages := this.Detail() ; if Browser closed by user this will closed the session
+		if !pages
+			this.quit()
+		handles := this.GetTabs()
+		if isobject(this.CDP) ;&& Targets
+		{	
+			for k , handle in handles
 			{
-				for k, p in pages
+				for i, t in pages ;Targets.targetInfos
 				{
-					if instr(p.Title, Title)
+					if instr(Handle,t.id)
 					{
-						This.currentTab := "CDwindow-" p.id
-						;this.Switch(This.currentTab )
-						this.CDP.Switch(p.id)
-						return
+						if instr(t.Title, Title)
+						{
+							This.currentTab := handle ; "CDwindow-" t.targetid
+							this.Switch(This.currentTab )
+							;this.CDP.Switch(t.targetid)
+							return
+						}
 					}
 				}
 			}
-		}
+		}	
 		else
 		{
-			handles := this.GetTabs()
 			for k , handle in handles
 			{
 				this.switch(handle)
@@ -389,35 +405,37 @@ Class Session
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
-		; Targets := this.CDP.GetTargets() 
+		;Targets := this.CDP.GetTargets() 
+		try pages := this.Detail() ; if Browser closed by user this will closed the session
+		if !pages
+			this.quit()
+		handles := this.GetTabs()
 
 		if isobject(this.CDP)
-		{
-			; debuggeraddress /json/list provides the window handles IDs 
-			; this method uses less effort 
-			try Pages := this.Detail() 
-			if isobject(Pages)
+		{	
+			for k , handle in handles
 			{
-				for k, p in pages
+				for i, t in pages ;Targets.targetInfos
 				{
-					if instr(p.url, url)
+					if instr(Handle,t.id)
 					{
-						This.currentTab := "CDwindow-" p.id
-						;this.Switch(This.currentTab )
-						this.CDP.Switch(p.id)
-						return
+						if instr(t.url, url)
+						{
+							This.currentTab := Handle ;"CDwindow-" t.targetid
+							this.Switch(This.currentTab )
+							;this.CDP.Switch(t.targetid)
+							return
+						}
 					}
 				}
 			}
-		}
+		}	
 		else
 		{
-			; following method switches tabs one by one and checking title
-			handles := this.GetTabs()
 			for k , handle in handles
 			{
 				this.switch(handle)
-				if instr(this.URL(),url)
+				if instr(this.url,url)
 				{
 					This.currentTab := handle
 					break

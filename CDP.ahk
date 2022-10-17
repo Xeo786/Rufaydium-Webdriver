@@ -127,17 +127,17 @@ class CDP ;extends Rufaydium
 		return this.call("Target.createTarget",{"url":url})
 	}
 
-	closeTarget() ; close page
+	closeTarget(targetId) ; close page
 	{
 		return this.call("Target.closeTarget",{"targetId":targetId})
 	}
 
-	Switch(targetId,Silent:=1) ; switch to page
+	Switch(targetId) ; switch to page
 	{
-		if Slient
+		;if Slient
 			return this.call("Target.activateTarget",{"targetId":targetId})
-		else
-			return this.call("Browser.getWindowForTarget",{"targetId":targetId})
+		;else
+		;	return this.call("Browser.getWindowForTarget",{"targetId":targetId})
 	}
 
 	GetTargets() ; get all sessions with Pages 
