@@ -363,12 +363,15 @@ Class Session
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
 		; Targets := this.CDP.GetTargets() 
+		try pages := this.Detail() ; if Browser closed by user this will closed the session
+		if !pages
+			this.quit()
 		handles := this.GetTabs()
 		if isobject(this.CDP) ;&& Targets
 		{	
 			for k , handle in handles
 			{
-				for i, t in this.Detail() ;Targets.targetInfos
+				for i, t in pages ;Targets.targetInfos
 				{
 					if instr(Handle,t.id)
 					{
@@ -403,12 +406,16 @@ Class Session
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
 		;Targets := this.CDP.GetTargets() 
+		try pages := this.Detail() ; if Browser closed by user this will closed the session
+		if !pages
+			this.quit()
 		handles := this.GetTabs()
+
 		if isobject(this.CDP)
 		{	
 			for k , handle in handles
 			{
-				for i, t in this.Detail() ;Targets.targetInfos
+				for i, t in pages ;Targets.targetInfos
 				{
 					if instr(Handle,t.id)
 					{
