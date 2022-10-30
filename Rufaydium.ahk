@@ -284,7 +284,8 @@ Class Session
 
 	close()
 	{
-		This.currentTab := this.Send("window","DELETE")
+		Tabs := this.Send("window","DELETE")
+		this.Switch(this.currentTab := tabs[tabs.Length()])
 	}
 
 	send(url,Method,Payload:= 0,WaitForResponse:=1)
@@ -355,10 +356,10 @@ Class Session
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
 		; Targets := this.CDP.GetTargets() 
+		handles := this.GetTabs()
 		try pages := this.Detail() ; if Browser closed by user this will closed the session
 		if !pages
 			this.quit()
-		handles := this.GetTabs()
 		if isobject(this.CDP) ;&& Targets
 		{	
 			for k , handle in handles
@@ -398,10 +399,10 @@ Class Session
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
 		;Targets := this.CDP.GetTargets() 
+		handles := this.GetTabs()
 		try pages := this.Detail() ; if Browser closed by user this will closed the session
 		if !pages
 			this.quit()
-		handles := this.GetTabs()
 
 		if isobject(this.CDP)
 		{	
