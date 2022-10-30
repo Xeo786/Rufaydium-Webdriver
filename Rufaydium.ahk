@@ -284,17 +284,7 @@ Class Session
 
 	close()
 	{
-		r := this.Send("window","DELETE")
-		/*
-		if isobject(r)
-			This.currentTab := r[1]
-		else
-			This.currentTab := r
-		;if isobject(this.CDP)
-		;	this.CDP.Switch(StrReplace(This.currentTab, "CDwindow-"))	
-		;else
-		This.Switch(This.currentTab)
-		*/
+		This.currentTab := this.Send("window","DELETE")
 	}
 
 	send(url,Method,Payload:= 0,WaitForResponse:=1)
