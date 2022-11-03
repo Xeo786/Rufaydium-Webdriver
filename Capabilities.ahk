@@ -320,7 +320,7 @@ class EdgeCapabilities extends ChromeCapabilities
             return
 		if !userDataDir
 			userDataDir := StrReplace(A_AppData, "\Roaming") "\Local\Microsoft\Edge\User Data"
-        userDataDir := StrReplace(userDataDir, "\", "/")
+        userDataDir := StrReplace(userDataDir, "\", "\\")
         ; removing previous args if any
         this.RemoveArg("--user-data-dir=","in")
         this.RemoveArg("--profile-directory=","in")
