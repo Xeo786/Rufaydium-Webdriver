@@ -12,6 +12,8 @@
 ; Link : https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
 ; Git  : https://github.com/Xeo786/Rufaydium-Webdriver
 ; By Xeo786 - GPL-3.0 license, see LICENSE
+#Requires Autohotkey v1.1.33+
+
 #include %A_LineFile%\..\
 #Include WDM.ahk
 #Include CDP.ahk
