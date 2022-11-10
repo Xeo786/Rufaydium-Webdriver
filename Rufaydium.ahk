@@ -25,7 +25,7 @@
 Class Rufaydium
 {
 	static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	__new(DriverName:="chromedriver.exe",Parameters:="--port=9515")
+	__new(DriverName:="chromedriver.exe",Parameters:="--port=0")
 	{
 		this.Driver := new RunDriver(DriverName,Parameters)
 		this.DriverUrl := "http://127.0.0.1:" This.Driver.Port

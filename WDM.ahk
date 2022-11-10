@@ -4,7 +4,7 @@
 
 Class RunDriver
 {
-	__New(Location,Parameters:= "--port=0000")
+	__New(Location,Parameters:= "--port=0")
 	{
 		if !FileExist(Location)
 			if !instr(Location,".exe")
@@ -12,33 +12,40 @@ Class RunDriver
 		SplitPath, Location,Name,Dir,,DriverName
 		this.Dir := Dir ? Dir : A_ScriptDir
 		this.exe := Name
-		;this.param := Parameters
+		if RegExMatch(Parameters, "--port=(\d+)",P)
+			this.param := p1 ? p : 0
 		this.Name := DriverName
 		switch this.Name
 		{
 			case "chromedriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "chrome"
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9515")
+				if !this.param
+					this.param := RegExReplace(Parameters, "(--port)=(\d+)", "$1=9515")
 			case "msedgedriver" : 
 				this.Options := "ms:edgeOptions"
 				this.browser := "msedge"
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9516")
+				if !this.param
+					this.param := RegExReplace(Parameters, "(--port)=(\d+)", "$1=9516")
 			case "geckodriver" : 
 				this.Options := "moz:firefoxOptions"
 				this.browser := "firefox"
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9517")
+				if !this.param
+					this.param := RegExReplace(Parameters, "(--port)=(\d+)", "$1=9517")
 			case "operadriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "opera"
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9518")
+				if !this.param
+					this.param := RegExReplace(Parameters, "(--port)=(\d+)", "$1=9518")
 			case "BraveDriver" :
 				this.Options := "goog:chromeOptions"
 				this.browser := "Brave"
 				this.exe := "chromedriver.exe"
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9515")	
+				if !this.param
+					this.param := RegExReplace(Parameters, "(--port)=(\d+)", "$1=9515")	
 			Default:
-				this.param := RegExReplace(Parameters, "(--port)=(\d\d\d\d)", "$1=9519")
+				if !this.param
+					this.param := RegExReplace(Parameters, "(--port)=(\d+)", "$1=9519")
 		}
 		
 		if !FileExist(Location) and this.browser
