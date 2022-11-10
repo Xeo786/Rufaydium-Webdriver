@@ -90,6 +90,12 @@ Class RunDriver
 		Process, Close, % This.PID
 	}
 	
+	Delete()
+	{
+		Process, Close, % This.PID
+		FileDelete, % this.Dir "\" this.exe
+	}
+
 	Launch()
 	{
 		Run % this.Target,,Hide,PID
