@@ -106,12 +106,15 @@ Chrome.Driver.visible := false ; will hide
 ```
 ## Script reloading
 
-We can reload the script as many times as we want, but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far. We can also close the Driver process, but this will cause issues as we can no longer access any session created through WebDriver. its better to use `Session.exit()` followed by `Chrome.Driver.Exit()`.
+We can reload the script as many times as we want, but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far. We can also close the Driver process, but this will cause issues as we can no longer access any session created through WebDriver. its better to use `Session.exit()` then `Chrome.Driver.Exit()`.
 
 ```AutoHotkey
-Chrome := new Rufaydium("chromedriver.exe")
-; use this to close driver (after quiting all sessions) when you finished using Rufaydium
+; to download and Run chromeDriver.exe using port 10280
+Chrome := new Rufaydium("chromedriver.exe","--port=10280")
+; to close driver 
 Chrome.Driver.Exit() 
+; to close and Delete Driver.exe
+Chrome.Driver.Delete() 
 ```
 
 # Capabilities Class 
