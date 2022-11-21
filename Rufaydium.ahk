@@ -964,6 +964,23 @@ wkhtmltopdf(HtML,pdf,options)
 		sleep, 200
 
 	RegRead, wkhtmltopdf, HKLM, Software\wkhtmltopdf, PdfPath
+	if !fileexist(wkhtmltopdf)
+	{
+		wkhtmltopdf := "C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"
+		if !fileexist(exe)
+		{
+			wkhtmltopdf := "C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+			if !fileexist(wkhtmltopdf)
+			{
+				msg := "Error:`tunable to print pdf using 'wkhtmltopdf'"
+				msg .= "`nReason:`tUnable to read registry or Default location for`n`t" wkhtmltopdf 
+				msg .= "`n`nPlease run program as administrator or at least with registry reading privilages,"
+				msg .= "`n`nPress OK to conitnue"
+				MsgBox,,Rufaydium, % msg
+				return
+			}
+		}
+	}
 
 	if IsObject(options)
 	{
