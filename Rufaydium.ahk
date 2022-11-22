@@ -756,7 +756,7 @@ Class Session
 		}
 		else
 		{
-			if isProgInstalled("wkhtmltox")
+			if isProgInstalled("wkhtmltox") or isProgInstalled("wkhtmltopdf")
 			{
 				wkhtmltopdf(this.HtML,PDFLocation,options)
 			}
