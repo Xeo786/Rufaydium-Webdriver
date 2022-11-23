@@ -314,6 +314,17 @@ Class WDElement extends Session
 		return r
 	}
 
+	Screenshot(location:=0)
+	{
+		Base64Canvas :=  this.Send("screenshot","GET")
+		if Base64Canvas
+		{
+			nBytes := Base64Dec( Base64Canvas, Bin ) ; thank you Skan :)
+			File := FileOpen(location, "w")
+			File.RawWrite(Bin, nBytes)
+			File.Close()
+		}
+	}
 }
 
 Class ShadowElement extends Session
