@@ -733,6 +733,18 @@ Class Session
 		}
 	}
 
+	CaptureFullSizeScreenShot(location)
+	{
+		if !isobject(this.CDP)
+		{
+
+		}
+		JSOP := {"width":this.Getrect().width,"height":this.ExecuteSync("return document.documentElement.scrollHeight")+0,"deviceScaleFactor":1,"mobile":json.false}
+		this.CDP.Call("Emulation.setDeviceMetricsOverride",JSOP)
+		this.Screenshot(location)
+		this.CDP.Call("Emulation.clearDeviceMetricsOverride")
+	}
+
 	Print(PDFLocation,Options:=0)
 	{
 		if !instr(PDFLocation,".pdf")
