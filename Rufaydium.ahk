@@ -737,7 +737,8 @@ Class Session
 	{
 		if !isobject(this.CDP)
 		{
-
+			msgbox, ,Rufaydium, Unable to Capture Full Size ScreenShot`nThis Chromium limited method
+			return
 		}
 		JSOP := {"width":this.Getrect().width,"height":this.ExecuteSync("return document.documentElement.scrollHeight")+0,"deviceScaleFactor":1,"mobile":json.false}
 		this.CDP.Call("Emulation.setDeviceMetricsOverride",JSOP)
