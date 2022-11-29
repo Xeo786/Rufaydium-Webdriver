@@ -338,6 +338,52 @@ class EdgeCapabilities extends ChromeCapabilities
         }
 	}
 
+    InPrivate[]
+    {
+        set
+        {
+            if value
+                this.IncognitoMode := true
+            else
+                this.IncognitoMode := false
+        }
+
+        get
+        {
+            return this.IncognitoMode
+        }
+    }
+
+    IncognitoMode[]
+    {
+        set 
+        {
+            if value
+            {
+                Capabilities.olduser.push(this.RemoveArg("--user-data-dir=","in"))
+                Capabilities.olduser.push(this.RemoveArg("--profile-directory=","in"))
+                this.addArg("--InPrivate")
+                capabilities._incog := true
+            }
+            else
+            {
+                capabilities._incog := false
+                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+                    if (arg = "--InPrivate")
+                        this.RemoveArg(arg)
+                for i, arg in Capabilities.olduser
+                    this.addArg(arg)
+                Capabilities.olduser := {}
+	        }	
+        }
+
+        get
+        {
+            return capabilities._incog
+        }
+    }
+
+
     Addextensions(crxlocation)
     {
         ; if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
