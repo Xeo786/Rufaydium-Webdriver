@@ -125,7 +125,9 @@ Makes changes to capabilities before creating a session.
 ```AutoHotkey
 Chrome := new Rufaydium() ; will load Chrome driver with default Capabilities
 Chrome.capabilities.setUserProfile("Default") ; can use Default user 
-;Chrome.capabilities.setUserProfile("Profile 1") ; can change user profile
+
+; can change user profile Data Dir, but location: "D:\Profile Dir\Profile 1" must exist
+Chrome.capabilities.setUserProfile("Profile 1","D:\Profile Dir\") 
 
 ; New Session will be created according to above Capabilities settings
 Session := Chrome.NewSession()
@@ -490,6 +492,7 @@ Session.Alert("Send","some text")  ; sending a Alert / pop up msg
 ```AutoHotkey
 Session.Screenshot("picture location.png") ; will save PNG to A_ScriptDir
 Session.Screenshot(a_desktop "\picture location.png") ; will save PNG to a_desktop
+Session.CaptureFullSizeScreenShot(a_desktop "\fullPage.png") ; will save full page screenshot
 ```
 
 # PDF printing 
