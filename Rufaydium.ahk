@@ -319,7 +319,7 @@ Class Session
 
 	Detail()
 	{
-		return Json.load(Rufaydium.Request(this.debuggerAddress "/json","GET"))
+		return Json.load(Rufaydium.Request(this.debuggerAddress "/json/list","GET"))
 	}
 
 	GetTabs()
@@ -362,37 +362,21 @@ Class Session
 		try pages := this.Detail() ; if Browser closed by user this will closed the session
 		if !pages
 			this.quit()
-		if isobject(this.CDP) ;&& Targets
-		{	
-			for k , handle in handles
+		for k , handle in handles
+		{
+			for i, t in pages ;Targets.targetInfos
 			{
-				for i, t in pages ;Targets.targetInfos
+				if instr(Handle,t.id)
 				{
-					if instr(Handle,t.id)
+					if instr(t.Title, Title)
 					{
-						if instr(t.Title, Title)
-						{
-							This.currentTab := handle ; "CDwindow-" t.targetid
-							this.Switch(This.currentTab )
-							;this.CDP.Switch(t.targetid)
-							return
-						}
+						This.currentTab := handle ; "CDwindow-" t.targetid
+						this.Switch(This.currentTab )
+						;this.CDP.Switch(t.targetid)
+						return
 					}
 				}
 			}
-		}	
-		else
-		{
-			for k , handle in handles
-			{
-				this.switch(handle)
-				if instr(this.title(),Title)
-				{
-					This.currentTab := handle
-					break
-				}
-			}
-			this.Switch(This.currentTab )
 		}
 	}
 
@@ -405,38 +389,21 @@ Class Session
 		try pages := this.Detail() ; if Browser closed by user this will closed the session
 		if !pages
 			this.quit()
-
-		if isobject(this.CDP)
-		{	
-			for k , handle in handles
+		for k , handle in handles
+		{
+			for i, t in pages ;Targets.targetInfos
 			{
-				for i, t in pages ;Targets.targetInfos
+				if instr(Handle,t.id)
 				{
-					if instr(Handle,t.id)
+					if instr(t.url, url)
 					{
-						if instr(t.url, url)
-						{
-							This.currentTab := Handle ;"CDwindow-" t.targetid
-							this.Switch(This.currentTab )
-							;this.CDP.Switch(t.targetid)
-							return
-						}
+						This.currentTab := Handle ;"CDwindow-" t.targetid
+						this.Switch(This.currentTab )
+						;this.CDP.Switch(t.targetid)
+						return
 					}
 				}
 			}
-		}	
-		else
-		{
-			for k , handle in handles
-			{
-				this.switch(handle)
-				if instr(this.url,url)
-				{
-					This.currentTab := handle
-					break
-				}
-			}
-			this.Switch(This.currentTab )
 		}
 	}
 
