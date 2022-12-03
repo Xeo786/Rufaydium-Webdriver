@@ -144,12 +144,14 @@ Class Rufaydium
 		}
 		window := []
 		window.Name := This.driver.Name
-		window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
-		window.address := this.DriverUrl "/session/" k.SessionId
-		if This.driver.Name = "geckodriver"
+		if window.Name = "geckodriver"
 		{
-			IniWrite, % k.SessionId, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
+			window.debuggerAddress := "http://" k.capabilities["moz:debuggerAddress"]
+			IniWrite, % window.debuggerAddress, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
 		}
+		else
+			window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
+		window.address := this.DriverUrl "/session/" k.SessionId
 
 		return new Session(window)
 	}
@@ -174,22 +176,23 @@ Class Rufaydium
 			Windows := []
 			for k, se in StrSplit(SessionList,"`n")
 			{
-				se := RegExReplace(se, "(.*)=(.*)", "$1")
-				r :=  this.Send(this.DriverUrl "/session/" se "/url","GET")
+				;se := RegExReplace(se, "(.*)=(.*)", "$1")
+				RegExMatch(se, "(.*)=(.*)", $)
+				r :=  this.Send(this.DriverUrl "/session/" $1 "/url","GET")
 				if r.error
-					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % se
+					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % $1
 				else
 				{
 					s := []
-					s.id := Se
+					s.id := $1
 					s.Name := This.driver.Name
 					s.address := this.DriverUrl "/session/" s.id
+					s.debuggerAddress := $2
 					windows[k] := new Session(s)
 				}
 			}
 			return windows
 		}
-
 		windows := []
 		for k, se in this.Sessions()
 		{
