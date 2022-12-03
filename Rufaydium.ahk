@@ -371,6 +371,16 @@ Class Session
 			{
 				if instr(Handle,t.id)
 				{
+					if !t.HasKey("Title")
+					{
+						phandle := This.currentTab
+						this.Switch(handle)
+						if instr(this.title,Title)
+							return
+						else	
+							continue
+					}
+
 					if instr(t.Title, Title)
 					{
 						This.currentTab := handle ; "CDwindow-" t.targetid
@@ -381,6 +391,8 @@ Class Session
 				}
 			}
 		}
+		if pHandle 
+			this.Switch(handle)
 	}
 
 	SwitchbyURL(url:="",Silent:=1)
