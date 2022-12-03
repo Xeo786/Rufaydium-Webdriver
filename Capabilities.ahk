@@ -232,7 +232,7 @@ class FireFoxCapabilities extends Capabilities
         this.options := Options
         this.cap := {}
         this.cap.capabilities := {}
-        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{"dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}}}
+        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{"dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}},"webSocketUrl": json.true}
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
         this.cap.capabilities.log := {}
