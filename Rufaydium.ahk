@@ -453,9 +453,14 @@ Class Session
 		return this.Send("timeouts","GET")
 	}
 
-	Navigate(url)
+	Navigate(urls*)
 	{
-		this.url := url
+		for i, url in urls
+		{
+			if a_index != 1
+				this.NewTab(i:=1)
+			this.URL := url
+		}
 	}
 
 	Forward()
