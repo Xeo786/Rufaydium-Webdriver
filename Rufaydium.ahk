@@ -77,7 +77,7 @@ Class Rufaydium
 	{
 		Rufaydium.WebRequest.Open(Method, url, false)
 		Rufaydium.WebRequest.SetRequestHeader("Content-Type","application/json")
-
+		Rufaydium.WebRequest.SetTimeouts(3000,3000,3000,3000)
 		if p
 		{
 			p := StrReplace(json.dump(p),"[[]]","[{}]") ; why using StrReplace() >> https://www.autohotkey.com/boards/viewtopic.php?f=6&p=450824#p450824
