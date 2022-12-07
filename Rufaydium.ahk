@@ -45,7 +45,7 @@ Class Rufaydium
 				; drive might crash for 32 Brave on 64 bit OS there for we can load binary while new session, 
 				; i.e. >> NewSession("32bit brave browser exe location")
 		}
-		this.Driver.Location := this.Driver.Dir "\" this.Driver.exe
+		this.Driver.Location := this.Driver.GetPath() ;this.Driver.Dir "\" this.Driver.exe
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple
 	}

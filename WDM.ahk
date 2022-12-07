@@ -285,6 +285,13 @@ Class RunDriver
 		for Process in wmi.ExecQuery("SELECT * FROM Win32_Process WHERE Name = '" name "'")
 			return Process.processId
 	}
+
+	GetPath() 
+	{
+		if this.PID
+			for process in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process where ProcessId=" This.PID)
+				return process.ExecutablePath
+	}
 }
 
 
