@@ -116,6 +116,41 @@ Chrome.Driver.Exit()
 ; to close and Delete Driver.exe
 Chrome.Driver.Delete() 
 ```
+## Driver Location
+if a Specific driver i.e. chromedriver is running already and occupying a specific port, Rufaydium will access that driver with driver i.e. chromedriver, while ignoring the given Location and Update the correction process location to Driver.Location
+
+```Autohotkey
+Chrome1 := new Rufaydium("D:\chromedriver.exe","--port=9555")
+Chrome2 := new Rufaydium("E:\chromedriver.exe","--port=9555") ;reaccess already running driver
+L1 := Chrome1.Driver.Location
+L2 := Chrome2.Driver.Location
+Msgbox, L1 "`n" L2 "both location are through 1 driver process and port"
+```
+## Handling Multiple Driver
+It is better to create multiple session over single driver process, Rufaydium can also handle multiple driver executables.
+In the Following example Chrome2 and chrome3 sharing same chromedriver.exe but chrome1 is run from different location and different port
+```Autohotkey
+Chrome1 := new Rufaydium(A_desktop "\chromedriver.exe","--port=9226")
+Chrome2 := new Rufaydium()
+Chrome3 := new Rufaydium() ; reaccess existing driver
+msgbox, % "Driver 1 Name :" Chrome1.Driver.Name
+.       "`nDriver 1 Port :" Chrome1.Driver.Port
+.       "`nDriver 1 Dest :" Chrome1.Driver.Location
+.       "`nDriver 2 Name :" Chrome2.Driver.Name
+.       "`nDriver 2 Port :" Chrome2.Driver.Port
+.       "`nDriver 2 Dest :" Chrome2.Driver.Location
+.       "`nDriver 3 Name :" Chrome2.Driver.Name
+.       "`nDriver 3 Port :" Chrome2.Driver.Port
+.       "`nDriver 3 Dest :" Chrome2.Driver.Location
+
+msgbox, % Chrome1.status() "`n`nPress Ok to close drive Drive from Chrome1"
+Chrome1.Driver.Exit() ; then exits driver
+msgbox, % Chrome2.status() "`n`nPress Ok to close drive Drive from Chrome2"
+Chrome2.Driver.Exit() ; then exits driver
+
+; Chrome3.status() "`n`nthis will cause error as Chrome2 and Chrome3 were same Diver executable"
+; Chrome3.Driver.Exit() ; already exited with chrome2
+```
 
 # Capabilities Class 
 One can access and use Capabilities after 'New Rufaydium()'  
@@ -283,6 +318,12 @@ MsgBox, % Session.IsLoading()
 Navigates to the requested URL
 ```AutoHotkey
 Session.Navigate("https://www.autohotkey.com/")
+```
+Multiple url can be navigated at once
+```AutoHotkey
+TabId := Session.currentTab
+Session.Navigate(url1,url2,url3,url4,url4)
+Session.Switch(TabId) ; returned to previous tab
 ```
 ## Session.Back() & Session.Forward()
 helps navigate to previous or from previous to recent the page acting like browser back and forward buttons. 
