@@ -70,8 +70,9 @@ Class RunDriver
 			Msgbox,64,"Rufaydium WebDriver Support,Unable to download driver from`nURL :" this.DriverUrl "`nRufaydium exiting"
 			ExitApp
 		}
-		
-		PID := this.GetPIDbyName(Name)
+	
+
+		PID := this.GetDriverbyPort(this.Port)
 		if PID
 		{
 			this.PID := PID
@@ -232,7 +233,7 @@ Class RunDriver
 		
 		while FileExist(this.Dir "\" this.exe)
 		{
-			Process, Close, % this.GetPIDbyName(this.exe)
+			Process, Close, % this.GetDriverbyPort(this.Port)
 			FileMove, % this.Dir "\" this.exe, % this.Dir "\Backup\" this.name " Version " bver1 ".exe", 1
 		}
 		
@@ -279,18 +280,40 @@ Class RunDriver
 			return this.Dir "\" this.exe
 	}
 
+	GetDriverbyPort(Port)
+	{
+		for process in ComObjGet("winmgmts:").ExecQuery("SELECT * FROM Win32_Process WHERE Name = '" this.exe "'")
+		{
+			RegExMatch(process.CommandLine, "(--port)=(\d+)",$)
+			if (Port != $2)
+			 	continue
+			else
+				return Process.processId
+		}
+	}
+
 	GetPIDbyName(name) 
 	{
-		static wmi := ComObjGet("winmgmts:\\.\root\cimv2")
-		for Process in wmi.ExecQuery("SELECT * FROM Win32_Process WHERE Name = '" name "'")
+		for Process in ComObjGet("winmgmts:\\.\root\cimv2").ExecQuery("SELECT * FROM Win32_Process WHERE Name = '" name "'")
 			return Process.processId
+	}
+
+	GetPortbyPID(PID)
+	{
+		for process in ComObjGet("winmgmts:\\.\root\cimv2").ExecQuery("Select * from Win32_Process where ProcessId=" PID)
+		{
+			RegExMatch(process.CommandLine, "(--port)=(\d+)",$)
+			 return $2
+		}
 	}
 
 	GetPath() 
 	{
 		if this.PID
-			for process in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process where ProcessId=" This.PID)
+			for process in ComObjGet("winmgmts:").ExecQuery("Select * FROM Win32_Process WHERE ProcessId=" This.PID)
+			{
 				return process.ExecutablePath
+			}		
 	}
 }
 
