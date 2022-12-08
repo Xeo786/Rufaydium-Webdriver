@@ -116,6 +116,19 @@ Chrome.Driver.Exit()
 ; to close and Delete Driver.exe
 Chrome.Driver.Delete() 
 ```
+
+## Driver Status
+```Autohotkey
+Chrome := new Rufaydium()
+msgbox, % " Chrome.Status()
+msgbox, % ".Build.Version : " Chrome.Build.Version
+.    "`n.OS Name : "	Chrome.OS.Name 
+.    "`n.OS.Arch : "	Chrome.OS.Arch
+.    "`n.OS.Version : " Chrome.OS.Version
+. 	 "`n.Message : "	Chrome.Message
+. 	 "`n.Ready : "		Chrome.Ready
+```
+
 ## Driver Location
 if a Specific driver i.e. chromedriver is running already and occupying a specific port, Rufaydium will access that driver with driver i.e. chromedriver, while ignoring the given Location and Update the correction process location to Driver.Location
 
