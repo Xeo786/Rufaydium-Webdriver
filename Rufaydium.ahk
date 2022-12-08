@@ -253,6 +253,11 @@ Class Rufaydium
 	{
 		return Rufaydium.Request( this.DriverUrl "/status","GET")
 	}
+
+	__Get(n)
+    {
+		return this.Send( this.DriverUrl "/status","GET")[n]
+    }
 }
 
 
