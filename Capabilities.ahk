@@ -1,13 +1,14 @@
 class Capabilities
 {
     static Simple := {"cap":{"capabilities":{"":""}}}, olduser := {}
-    static _ucof := false, _hmode := false, _incog := false, _Uprompt := "dismiss"
+    static _ucof := false, _hmode := false, _incog := false, _Uprompt := "dismiss", _Bidi := false
     __new(browser,Options,platform:="windows",notify:=false)
     {
         this.options := Options
         this.cap := {}
         this.cap.capabilities := {}
         this.cap.capabilities.alwaysMatch := { this.options :{"w3c":json.true}}
+        this.cap.capabilities.alwaysMatch.webSocketUrl := json.false
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
         this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
@@ -16,6 +17,28 @@ class Capabilities
         this.cap.capabilities.firstMatch := [{}]
         this.cap.desiredCapabilities := {}
         this.cap.desiredCapabilities.browserName := browser
+    }
+
+    BiDi[]
+    {
+        Set
+        {
+            if value
+            {
+                capabilities._Bidi := true
+                this.cap.capabilities.alwaysMatch.webSocketUrl := json.true
+            }      
+            else
+            {
+                capabilities._Bidi := false
+                this.cap.capabilities.alwaysMatch.webSocketUrl := json.false    
+            }   
+        }
+
+        Get
+        {
+            return capabilities._Bidi
+        }
     }
 
     UserPrompt[]

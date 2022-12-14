@@ -153,7 +153,9 @@ Class Rufaydium
 		else
 			window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
 		window.address := this.DriverUrl "/session/" k.SessionId
-
+		window.id := k.SessionId
+		if k.capabilities.websocketurl
+			window.websocketurl := k.capabilities.websocketurl
 		return new Session(window)
 	}
 
@@ -203,6 +205,8 @@ Class Rufaydium
 			s.Name := This.driver.Name
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")
 			s.address := this.DriverUrl "/session/" s.id
+			if se.capabilities.websocketurl
+				s.websocketurl := se.capabilities.websocketurl
 			windows[k] := new Session(s)
 		}
 		return windows
@@ -269,6 +273,8 @@ Class Session
 		this.id := i.id
 		this.Address := i.address
 		this.debuggerAddress := i.debuggerAddress
+		if i.websocketurl
+			this.websocketurl := i.websocketurl
 		this.currentTab := this.Send("window","GET")
 		switch i.name
 		{
