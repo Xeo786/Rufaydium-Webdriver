@@ -657,9 +657,6 @@ Available web driver Elements methods.
 ```AutoHotkey
 Element.Name() ; will return tagname
 Element.Rect() ; will return position and size
-Element.Size() ; will return Size
-Element.Location() ; will return position
-Element.LocationInView() ; will return position in view
 Element.enabled() ; will return Boolean true for enabled or false disabled 
 Element.Selected() ; will return Boolean true for Selected or false not selected this will come handy for dropdown lists or combo list selecting options
 Element.Displayed() ; will return Boolean true for visible element / false for invisible element

@@ -22,21 +22,6 @@ Class WDElement extends Session
 		return this.Send("rect","GET")
 	}
 	
-	Size()
-	{
-		return this.Send("Size","GET")
-	}
-	
-	Location()
-	{
-		return this.Send("location","GET")
-	}
-	
-	LocationInView()
-	{
-		return this.Send("location_in_view","GET")
-	}
-	
 	enabled()
 	{
 		return this.Send("enabled","GET")
