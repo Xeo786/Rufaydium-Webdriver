@@ -1,4 +1,4 @@
-; Rufaydium v1.7.0
+﻿; Rufaydium v1.7.0
 ;
 ; Rufaydium          : AutoHotkey WebDriver Library to interact with browsers.
 ; Requirement        : WebDriver version needs to be compatible with the Browser version.
@@ -145,6 +145,7 @@ Class Rufaydium
 		}
 		window := []
 		window.Name := This.driver.Name
+		window.DriverPID := This.driver.PID
 		if window.Name = "geckodriver"
 		{
 			window.debuggerAddress := "http://" k.capabilities["moz:debuggerAddress"]
@@ -188,6 +189,7 @@ Class Rufaydium
 				{
 					s := []
 					s.id := $1
+					s.DriverPID := This.driver.PID
 					s.Name := This.driver.Name
 					s.address := this.DriverUrl "/session/" s.id
 					s.debuggerAddress := $2
@@ -202,6 +204,7 @@ Class Rufaydium
 			chromeOptions := Se["capabilities",This.driver.options]
 			s := []
 			s.id := Se.id
+			s.DriverPID := This.driver.PID
 			s.Name := This.driver.Name
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")
 			s.address := this.DriverUrl "/session/" s.id
@@ -273,6 +276,7 @@ Class Session
 		this.id := i.id
 		this.Address := i.address
 		this.debuggerAddress := i.debuggerAddress
+		this.name := i.name
 		if i.websocketurl
 			this.websocketurl := i.websocketurl
 		this.currentTab := this.Send("window","GET")
@@ -283,7 +287,7 @@ Class Session
 			case "msedgedriver" :
 				this.CDP := new CDP(this.Address)
 			case "geckodriver" :
-
+				this.DriverPID := i.DriverPID
 			case "operadriver" :
 				this.CDP := new CDP(this.Address)
 		}
@@ -358,9 +362,20 @@ Class Session
 
 	ActiveTab()
 	{
-		if !this.debuggerAddress ; does not work for Firefox
-			return
-		this.Switch("CDwindow-" this.Detail()[1].id ) ; First id always Current Handle
+		if( this.name != "geckodriver" )
+			this.Switch("CDwindow-" this.Detail()[1].id ) ; First id always Current Handle
+		else
+		{
+			for proc in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
+				if ( proc.ParentProcessId = this.DriverPID)
+					for proc2 in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
+						if ( proc2.ParentProcessId = proc.processid)
+						{
+							wingettitle, title, % "ahk_pid " proc2.processid
+	    					this.SwitchbyTitle(strreplace(title," — Mozilla Firefox"))
+							return
+						} 
+		}	
 	}
 
 	SwitchTab(i:=0)
