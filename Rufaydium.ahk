@@ -286,10 +286,17 @@ Class Session
 				this.CDP := new CDP(this.Address)
 			case "msedgedriver" :
 				this.CDP := new CDP(this.Address)
-			case "geckodriver" :
-				this.DriverPID := i.DriverPID
 			case "operadriver" :
 				this.CDP := new CDP(this.Address)
+			case "geckodriver" :
+				for proc in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
+					if ( proc.ParentProcessId = i.DriverPID)
+						for proc2 in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
+							if ( proc2.ParentProcessId = proc.processid)
+							{
+								this.BroswerPID := proc2.processid
+								break
+							} 
 		}
 	}
 
@@ -366,15 +373,8 @@ Class Session
 			this.Switch("CDwindow-" this.Detail()[1].id ) ; First id always Current Handle
 		else
 		{
-			for proc in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
-				if ( proc.ParentProcessId = this.DriverPID)
-					for proc2 in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
-						if ( proc2.ParentProcessId = proc.processid)
-						{
-							wingettitle, title, % "ahk_pid " proc2.processid
-	    					this.SwitchbyTitle(strreplace(title," — Mozilla Firefox"))
-							return
-						} 
+			wingettitle, title, % "ahk_pid " this.BroswerPID
+			this.SwitchbyTitle(strreplace(title," — Mozilla Firefox"))
 		}	
 	}
 
