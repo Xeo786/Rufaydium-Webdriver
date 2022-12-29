@@ -305,16 +305,8 @@ class FireFoxCapabilities extends Capabilities
         if this.IncognitoMode
             return
         if !userDataDir
-            userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
-        profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
-        IniRead, profilePath , % profileini, % profileName, Path
-        for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
-        {
-            if (argtbr = "-profile") or instr(argtbr,"\Mozilla\Firefox\Profiles\")
-                this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
-        }
-        this.addArg("-profile")
-        this.addArg(StrReplace(A_AppData "\Mozilla\Firefox\" profilePath, "\", "/"))
+            userDataDir := A_AppData "\Mozilla\Firefox\Profiles"
+        profileini := userDataDir ".ini"
         if !fileExist( userDataDir "\" profileName )
         {
             Prompt := "Warning: Following Profile is Directory does not exist`n"
@@ -323,7 +315,18 @@ class FireFoxCapabilities extends Capabilities
             . "`nPress OK to continue / Manually exitapp"
             msgbox,48,Rufaydium Capabilities, % Prompt
             fileCreateDir, % userDataDir "\" profileName
+            IniWrite, % "Profiles/" profileName , % profileini, % profileName, Path
+            IniWrite, % profileName , % profileini, % profileName, Name
+            IniWrite, % 1, % profileini, % profileName, IsRelative
         }
+        IniRead, profilePath , % profileini, % profileName, Path
+        for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
+        {
+            if (argtbr = "-profile") or instr(argtbr,"\Mozilla\Firefox\Profiles\")
+                this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
+        }
+        this.addArg("-profile")
+        this.addArg(StrReplace(A_AppData "\Mozilla\Firefox\" profilePath, "\", "/"))
 	}
 
     Addextensions(crxlocation)
