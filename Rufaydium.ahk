@@ -103,6 +103,12 @@ Class Rufaydium
 			this.capabilities.Setbinary(Binary)
 		this.Driver.Options := this.capabilities.options ; in case someone uses a custom driver and want to change capabilities manually
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
+		if !k
+		{
+			msgbox,48,Rufaydium WebDriver Error, % This.driver.Name " Error`nRufaydium is unable to access Driver Session`n as No response received against New Session request`n`nThis mostly happens when browser is creating new profile"
+			return
+		}
+
 		if k.error
 		{
 			if(k.message = "binary is not a Firefox executable")
