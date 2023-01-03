@@ -186,8 +186,11 @@ Class Rufaydium
 			Windows := []
 			for k, se in StrSplit(SessionList,"`n")
 			{
-				;se := RegExReplace(se, "(.*)=(.*)", "$1")
-				RegExMatch(se, "(.*)=(.*)", $)
+				if !RegExMatch(se, "(.*)=(.*)", $)
+				{
+					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % se
+					continue
+				}	
 				r :=  this.Send(this.DriverUrl "/session/" $1 "/url","GET")
 				if r.error
 					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % $1
