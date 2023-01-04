@@ -179,7 +179,7 @@ Class Rufaydium
 			return
 		}
 		this.Driver.Options := this.capabilities.options
-
+		i := 0
 		if This.driver.Name = "geckodriver"
 		{
 			IniRead, SessionList, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name
@@ -202,7 +202,7 @@ Class Rufaydium
 					s.Name := This.driver.Name
 					s.address := this.DriverUrl "/session/" s.id
 					s.debuggerAddress := $2
-					windows[k] := new Session(s)
+					windows[++i] := new Session(s)
 				}
 			}
 			return windows
