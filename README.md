@@ -237,6 +237,16 @@ Chrome.capabilities.AddexcludeSwitches("enable-automation") ; will load Chrome w
 Chrome.capabilities.DebugPort(9255) ; will change port for debuggerAddress
 ```
 
+## SetTimeouts
+Timeout can be define at any level/time/place, 
+
+```AutoHotkey
+Browser := new Rufaydium(driver,params)
+ResolveTimeout := ConnectTimeout := SendTimeout := ReceiveTimeout := 3 * 1000
+Broswer.SetTimeouts(ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout)
+```
+> read about [Settimeouts](https://learn.microsoft.com/en-us/windows/win32/winhttp/iwinhttprequest-settimeouts)
+
 # Rufaydium Sessions
 ## New Session
 Create a session after Setting up capabilities.  

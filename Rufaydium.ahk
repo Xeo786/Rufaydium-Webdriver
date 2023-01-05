@@ -94,7 +94,7 @@ Class Rufaydium
 	; The SetTimeouts method specifies the individual time-out components of a send/receive operation, in milliseconds.
 	SetTimeouts(ResolveTimeout:=3000,ConnectTimeout:=3000,SendTimeout:=3000,ReceiveTimeout:=3000)
 	{
-		Rufaydium.WebRequest.SetTimeouts(3000,3000,3000,3000)
+		Rufaydium.WebRequest.SetTimeouts(ResolveTimeout,ConnectTimeout,SendTimeout,ReceiveTimeout)
 	}
 
 	; To create New Rufaydium Session
