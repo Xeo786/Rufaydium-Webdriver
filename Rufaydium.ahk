@@ -61,7 +61,7 @@ Class Rufaydium
 		this.Driver.Exit()
 	}
 
-	send(url,Method,Payload:= 0,WaitForResponse:=1)
+	Send(url,Method,Payload:= 0,WaitForResponse:=1)
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
@@ -78,7 +78,6 @@ Class Rufaydium
 	{
 		Rufaydium.WebRequest.Open(Method, url, false)
 		Rufaydium.WebRequest.SetRequestHeader("Content-Type","application/json")
-		Rufaydium.WebRequest.SetTimeouts(3000,3000,3000,3000)
 		if p
 		{
 			p := StrReplace(json.dump(p),"[[]]","[{}]") ; why using StrReplace() >> https://www.autohotkey.com/boards/viewtopic.php?f=6&p=450824#p450824
@@ -92,6 +91,13 @@ Class Rufaydium
 		return Rufaydium.WebRequest.responseText
 	}
 
+	; The SetTimeouts method specifies the individual time-out components of a send/receive operation, in milliseconds.
+	SetTimeouts(ResolveTimeout:=3000,ConnectTimeout:=3000,SendTimeout:=3000,ReceiveTimeout:=3000)
+	{
+		Rufaydium.WebRequest.SetTimeouts(3000,3000,3000,3000)
+	}
+
+	; To create New Rufaydium Session
 	NewSession(Binary:="")
 	{
 		if !this.capabilities.options
@@ -224,6 +230,7 @@ Class Rufaydium
 		return windows
 	}
 
+	; Get existing Session by number 'i' and Tab 't'
 	getSession(i:=0,t:=0)
 	{
 		if i
@@ -239,6 +246,7 @@ Class Rufaydium
 		}
 	}
 
+	; get Existing Session by URL, it will look into all sessions and return with first match
 	getSessionByUrl(URL)
 	{
 		for k, w in this.getSessions()
@@ -249,6 +257,7 @@ Class Rufaydium
 		}
 	}
 
+	; get Existing Session by Title, will look for title in all sessions and return with first match
 	getSessionByTitle(Title)
 	{
 		for k, s in this.getSessions()
@@ -259,12 +268,14 @@ Class Rufaydium
 		}
 	}
 
+	; Get all session Quit one by one
 	QuitAllSessions()
 	{
 		for k, s in this.getSessions()
 			s.Quit()
 	}
 
+	; To verify driver is there working
 	Status()
 	{
 		return Rufaydium.Request( this.DriverUrl "/status","GET")
@@ -314,11 +325,12 @@ Class Session
 		;this.Quit()
 	}
 
+	; To quit Session
 	Quit()
 	{
 		this.Send(this.address ,"DELETE")
 	}
-
+	; To quit tab or window
 	close()
 	{
 		Tabs := this.Send("window","DELETE")
@@ -338,6 +350,7 @@ Class Session
 			return r
 	}
 
+	; to create New tab, NewTab(0) will create new tab without switching
 	NewTab(i:=1)
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"tab"}).handle
@@ -345,6 +358,7 @@ Class Session
 			This.Switch(This.currentTab)
 	}
 
+	; To create New window, NewWindow(0) will create new window without switching
 	NewWindow(i:=1) ; by https://github.com/hotcheesesoup
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"window"}).handle
@@ -352,6 +366,7 @@ Class Session
 			This.Switch(This.currentTab)
 	}
 
+	; Traditional Browser Json/List 
 	Detail()
 	{
 		return Json.load(Rufaydium.Request(this.debuggerAddress "/json/list","GET"))
@@ -376,6 +391,7 @@ Class Session
 		}
 	}
 
+	; Switch to active tab, incase manually switch tab, working good for chromium but not for firefox
 	ActiveTab()
 	{
 		if( this.name != "geckodriver" )
@@ -387,11 +403,13 @@ Class Session
 		}	
 	}
 
+	; switch tab/window by number 'i'
 	SwitchTab(i:=0)
 	{
 		return this.Switch(This.currentTab := this.GetTabs()[i])
 	}
 
+	; Switch tab/window by Title
 	SwitchbyTitle(Title:="")
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
@@ -431,6 +449,7 @@ Class Session
 			this.Switch(handle)
 	}
 
+	; Switch tab/window by URL
 	SwitchbyURL(url:="",Silent:=1)
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
@@ -471,6 +490,7 @@ Class Session
 		}
 	}
 
+	; to refresh active tab/window
 	Refresh()
 	{
 		return this.Send("refresh","POST")
@@ -489,6 +509,7 @@ Class Session
 		return this.Send("timeouts","GET")
 	}
 
+	; to navigate to 1 or multiple urls Navigate(url1,url2,url3)
 	Navigate(urls*)
 	{
 		for i, url in urls
