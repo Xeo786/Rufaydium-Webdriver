@@ -16,6 +16,9 @@ and also supports Chrome Devtools Protocols same as [chrome.ahk](https://github.
 
 No need to install / setup Selenium, Rufaydium is AHK's Selenium and is more flexible than selenium.
 
+
+## If you want to support my work just [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/Xeo786)
+
 ## How to use
 
 ```AutoHotkey
@@ -1144,3 +1147,7 @@ ExtList := ["*.ttf","*.gif" , "*.png" , "*.jpg" , "*.jpeg" , "*.webp"]
 Session.CDP.call("Network.enable")
 Session.CDP.call("Network.setBlockedURLs",{"urls": ExtList })
 ```
+
+
+
+
