@@ -395,7 +395,7 @@ Class Session
 	ActiveTab()
 	{
 		if( this.name != "geckodriver" )
-			this.Switch("CDwindow-" this.Detail()[1].id ) ; First id always Current Handle
+			this.Switch(this.Detail()[1].id ) ; First id always Current Handle
 		else
 		{
 			wingettitle, title, % "ahk_pid " this.BroswerPID
