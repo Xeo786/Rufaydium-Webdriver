@@ -82,13 +82,13 @@ class Capabilities
         {
             if value
             {
-                this.addArg("--headless")
+                this.addArg("--headless=new")
                 capabilities._hmode := true
             }
             else
             {
                 capabilities._hmode := false
-                this.RemoveArg("--headless")
+                this.RemoveArg("--headless=new")
 	        }	
         }
 
