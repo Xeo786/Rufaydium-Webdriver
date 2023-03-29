@@ -221,7 +221,7 @@ class ChromeCapabilities extends Capabilities
          if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
              this.cap.capabilities.alwaysMatch[this.Options].extensions := []
         nbytes := Base64Str(Bin,crxlocation)
-        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(Base64 := Base64Enc( Bin, nbytes)) ; base shoud be base64 encoded but
+        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(Base64 := Base64Enc( Bin, nbytes,40001)) ; base shoud be base64 encoded but
     }
 
     RemoveArg(arg,match="Exact")
