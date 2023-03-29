@@ -968,6 +968,11 @@ Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
 	)
 }
 
+Base64Str(byref bin, Text)
+{
+    VarSetCapacity(Bin, StrPut(Text, "UTF-8"))
+    return StrPut(Text, &Bin, "UTF-8")-1
+}
 
 ; https://www.autohotkey.com/boards/viewtopic.php?t=35964
 Base64Dec( ByRef B64, ByRef Bin ) {  ; By SKAN / 18-Aug-2017

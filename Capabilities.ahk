@@ -210,12 +210,18 @@ class ChromeCapabilities extends Capabilities
         this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
     }
 
+    AddCustomExtension(Folder)
+    {
+        this.addArg("--load-extension=" StrReplace(Folder, "\", "/"))
+    }
+
     Addextensions(crxlocation)
     {
-        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
-            this.cap.capabilities.alwaysMatch[this.Options].extensions := []
-        crxlocation := StrReplace(crxlocation, "\", "/")
-        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+        ; following code is failing error := unable to unzip
+         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+             this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        nbytes := Base64Str(Bin,crxlocation)
+        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(Base64 := Base64Enc( Bin, nbytes)) ; base shoud be base64 encoded but
     }
 
     RemoveArg(arg,match="Exact")
