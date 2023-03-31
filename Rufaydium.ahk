@@ -48,6 +48,8 @@ Class Rufaydium
 		this.Driver.Location := this.Driver.GetPath() ;this.Driver.Dir "\" this.Driver.exe
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple
+		RegExMatch(this.Driver.Version := this.Version(),"\d+",Build)
+		this.Build := Build
 	}
 
 	__Delete()
@@ -169,6 +171,7 @@ Class Rufaydium
 		window.id := k.SessionId
 		if k.capabilities.websocketurl
 			window.websocketurl := k.capabilities.websocketurl
+		window.Build := this.Build
 		return new Session(window)
 	}
 
@@ -221,6 +224,7 @@ Class Rufaydium
 			s.id := Se.id
 			s.DriverPID := This.driver.PID
 			s.Name := This.driver.Name
+			s.Build := this.Build
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")
 			s.address := this.DriverUrl "/session/" s.id
 			if se.capabilities.websocketurl
@@ -285,6 +289,12 @@ Class Rufaydium
     {
 		return this.Send( this.DriverUrl "/status","GET")[n]
     }
+
+	Version()
+	{
+		if RegExMatch(this.build.version,"(\d+\.\d+\.\d+.\d+)",d)
+			return d
+	}
 }
 
 
@@ -296,6 +306,7 @@ Class Session
 		this.id := i.id
 		this.Address := i.address
 		this.debuggerAddress := i.debuggerAddress
+		this.Build := i.Build
 		this.name := i.name
 		if i.websocketurl
 			this.websocketurl := i.websocketurl
@@ -394,8 +405,10 @@ Class Session
 	; Switch to active tab, incase manually switch tab, working good for chromium but not for firefox
 	ActiveTab()
 	{
+		if this.Build < 110.1
+			CDwindow := "CDwindow-"
 		if( this.name != "geckodriver" )
-			this.Switch(this.Detail()[1].id ) ; First id always Current Handle
+			this.Switch(CDwindow this.Detail()[1].id ) ; First id always Current Handle
 		else
 		{
 			wingettitle, title, % "ahk_pid " this.BroswerPID
