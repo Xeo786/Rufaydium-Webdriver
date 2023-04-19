@@ -308,6 +308,11 @@ Creates and switches to a new tab or New Window
 Session.NewTab()
 Session.NewWindow()
 ```
+Creates new tab and New Window without switching to it
+```AutoHotkey
+Session.NewTab(0)
+Session.NewWindow(0)
+```
 
 ## Session.Title
 returns Page title
