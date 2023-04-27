@@ -742,9 +742,9 @@ Class Session
 		return this.Send("execute/sync","POST", { "script":Script,"args":[Args*]},1)
 	}
 
-	ExecuteAsync(Script,Args*)
+	ExecuteAsync(Script,Callback,Args*)
 	{
-		return this.Send("execute/async","POST", { "script":Script,"args":Args*},1)
+		return this.Send("execute/async","POST", { "script":Script,"Callback":Callback,"args":[Args*]},1)
 	}
 
 	GetCookies()
