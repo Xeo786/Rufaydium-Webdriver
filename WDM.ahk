@@ -145,13 +145,39 @@ Class RunDriver
 		switch this.Name
 		{
 			case "chromedriver" :
-				this.zip := "chromedriver_win32.zip"
+				this.zip := "chromedriver-win32.zip"
+				; if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
+				; 	uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
+				; else
+				; 	uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
+				; DriverVersion := this.GetVersion(uri)
+				; this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
 				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
-					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
+				{
+					uri := "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
+					for k, obj in json.load(this.GetVersion(uri)).versions
+					{
+						if instr(obj.version,bver2)
+						{
+							for i, download in obj.downloads.chromedriver
+							{
+								if download.platform = "win32"
+								{
+									this.DriverUrl := download.url
+									break
+								}
+							}
+							break
+						}
+					}
+					
+				}
 				else
-					uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
-				DriverVersion := this.GetVersion(uri)
-				this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
+				{
+					uri := "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json"
+					DriverVersion := json.load(this.GetVersion(uri)).channels.Stable.version
+					this.DriverUrl := "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" DriverVersion "/win32/chromedriver-win32.zip"
+				}
 			case "BraveDriver" :
 				this.zip := "chromedriver_win32.zip"
 				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver) ; iam clueless for response when loading another binary which does not matches chrome driver 
