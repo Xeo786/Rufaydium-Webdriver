@@ -146,31 +146,34 @@ Class RunDriver
 		{
 			case "chromedriver" :
 				this.zip := "chromedriver-win32.zip"
-				; if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
-				; 	uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
-				; else
-				; 	uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE", bver1 := "unknown"
-				; DriverVersion := this.GetVersion(uri)
-				; this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
+				RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+)",Dver)
 				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
 				{
-					uri := "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
-					for k, obj in json.load(this.GetVersion(uri)).versions
+					if Dver < 115 ; 
 					{
-						if instr(obj.version,bver2)
+						uri := "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
+						for k, obj in json.load(this.GetVersion(uri)).versions
 						{
-							for i, download in obj.downloads.chromedriver
+							if instr(obj.version,bver2)
 							{
-								if download.platform = "win32"
+								for i, download in obj.downloads.chromedriver
 								{
-									this.DriverUrl := download.url
-									break
+									if download.platform = "win32"
+									{
+										this.DriverUrl := download.url
+										break
+									}
 								}
+								break
 							}
-							break
 						}
 					}
-					
+					else
+					{
+						uri := "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_"  bver2
+						DriverVersion := this.GetVersion(uri)
+						this.DriverUrl := "https://chromedriver.storage.googleapis.com/" DriverVersion "/" this.zip
+					}
 				}
 				else
 				{
