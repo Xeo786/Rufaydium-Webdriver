@@ -1,4 +1,4 @@
-; Rufaydium v1.7.0
+﻿; Rufaydium v1.7.0
 ;
 ; Rufaydium          : AutoHotkey WebDriver Library to interact with browsers.
 ; Requirement        : WebDriver version needs to be compatible with the Browser version.
@@ -12,6 +12,8 @@
 ; Link : https://www.autohotkey.com/boards/viewtopic.php?f=6&t=102616
 ; Git  : https://github.com/Xeo786/Rufaydium-Webdriver
 ; By Xeo786 - GPL-3.0 license, see LICENSE
+#Requires Autohotkey v1.1.33+
+
 #include %A_LineFile%\..\
 #Include WDM.ahk
 #Include CDP.ahk
@@ -23,7 +25,7 @@
 Class Rufaydium
 {
 	static WebRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-	__new(DriverName:="chromedriver.exe",Parameters:="--port=9515")
+	__new(DriverName:="chromedriver.exe",Parameters:="--port=0")
 	{
 		this.Driver := new RunDriver(DriverName,Parameters)
 		this.DriverUrl := "http://127.0.0.1:" This.Driver.Port
@@ -43,8 +45,11 @@ Class Rufaydium
 				; drive might crash for 32 Brave on 64 bit OS there for we can load binary while new session, 
 				; i.e. >> NewSession("32bit brave browser exe location")
 		}
+		this.Driver.Location := this.Driver.GetPath() ;this.Driver.Dir "\" this.Driver.exe
 		if !isobject(cap := this.capabilities.cap)
 			this.capabilities := capabilities.Simple
+		RegExMatch(this.Driver.Version := this.Version(),"\d+",Build)
+		this.Build := Build
 	}
 
 	__Delete()
@@ -58,7 +63,7 @@ Class Rufaydium
 		this.Driver.Exit()
 	}
 
-	send(url,Method,Payload:= 0,WaitForResponse:=1)
+	Send(url,Method,Payload:= 0,WaitForResponse:=1)
 	{
 		if !instr(url,"HTTP")
 			url := this.address "/" url
@@ -75,7 +80,6 @@ Class Rufaydium
 	{
 		Rufaydium.WebRequest.Open(Method, url, false)
 		Rufaydium.WebRequest.SetRequestHeader("Content-Type","application/json")
-
 		if p
 		{
 			p := StrReplace(json.dump(p),"[[]]","[{}]") ; why using StrReplace() >> https://www.autohotkey.com/boards/viewtopic.php?f=6&p=450824#p450824
@@ -89,6 +93,13 @@ Class Rufaydium
 		return Rufaydium.WebRequest.responseText
 	}
 
+	; The SetTimeouts method specifies the individual time-out components of a send/receive operation, in milliseconds.
+	SetTimeouts(ResolveTimeout:=3000,ConnectTimeout:=3000,SendTimeout:=3000,ReceiveTimeout:=3000)
+	{
+		Rufaydium.WebRequest.SetTimeouts(ResolveTimeout,ConnectTimeout,SendTimeout,ReceiveTimeout)
+	}
+
+	; To create New Rufaydium Session
 	NewSession(Binary:="")
 	{
 		if !this.capabilities.options
@@ -100,6 +111,12 @@ Class Rufaydium
 			this.capabilities.Setbinary(Binary)
 		this.Driver.Options := this.capabilities.options ; in case someone uses a custom driver and want to change capabilities manually
 		k := this.Send( this.DriverUrl "/session","POST",this.capabilities.cap,1)
+		if !k
+		{
+			msgbox,48,Rufaydium WebDriver Error, % This.driver.Name " Error`nRufaydium is unable to access Driver Session`n as No response received against New Session request`n`nMake sure you have driver version supported with browser version"
+			return
+		}
+
 		if k.error
 		{
 			if(k.message = "binary is not a Firefox executable")
@@ -142,13 +159,19 @@ Class Rufaydium
 		}
 		window := []
 		window.Name := This.driver.Name
-		window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
-		window.address := this.DriverUrl "/session/" k.SessionId
-		if This.driver.Name = "geckodriver"
+		window.DriverPID := This.driver.PID
+		if window.Name = "geckodriver"
 		{
-			IniWrite, % k.SessionId, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
+			window.debuggerAddress := "http://" k.capabilities["moz:debuggerAddress"]
+			IniWrite, % window.debuggerAddress, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % k.SessionId
 		}
-
+		else
+			window.debuggerAddress := StrReplace(k.capabilities[This.driver.options].debuggerAddress,"localhost","http://127.0.0.1")
+		window.address := this.DriverUrl "/session/" k.SessionId
+		window.id := k.SessionId
+		if k.capabilities.websocketurl
+			window.websocketurl := k.capabilities.websocketurl
+		window.Build := this.Build
 		return new Session(window)
 	}
 
@@ -165,43 +188,53 @@ Class Rufaydium
 			return
 		}
 		this.Driver.Options := this.capabilities.options
-
+		i := 0
 		if This.driver.Name = "geckodriver"
 		{
 			IniRead, SessionList, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name
 			Windows := []
 			for k, se in StrSplit(SessionList,"`n")
 			{
-				se := RegExReplace(se, "(.*)=(.*)", "$1")
-				r :=  this.Send(this.DriverUrl "/session/" se "/url","GET")
-				if r.error
+				if !RegExMatch(se, "(.*)=(.*)", $)
+				{
 					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % se
+					continue
+				}	
+				r :=  this.Send(this.DriverUrl "/session/" $1 "/url","GET")
+				if r.error
+					IniDelete, % this.driver.dir "/ActiveSessions.ini", % This.driver.Name, % $1
 				else
 				{
 					s := []
-					s.id := Se
+					s.id := $1
+					s.DriverPID := This.driver.PID
 					s.Name := This.driver.Name
 					s.address := this.DriverUrl "/session/" s.id
-					windows[k] := new Session(s)
+					s.debuggerAddress := $2
+					windows[++i] := new Session(s)
 				}
 			}
 			return windows
 		}
-
 		windows := []
 		for k, se in this.Sessions()
 		{
 			chromeOptions := Se["capabilities",This.driver.options]
 			s := []
 			s.id := Se.id
+			s.DriverPID := This.driver.PID
 			s.Name := This.driver.Name
+			s.Build := this.Build
 			s.debuggerAddress := StrReplace(chromeOptions.debuggerAddress,"localhost","http://127.0.0.1")
 			s.address := this.DriverUrl "/session/" s.id
+			if se.capabilities.websocketurl
+				s.websocketurl := se.capabilities.websocketurl
 			windows[k] := new Session(s)
 		}
 		return windows
 	}
 
+	; Get existing Session by number 'i' and Tab 't'
 	getSession(i:=0,t:=0)
 	{
 		if i
@@ -217,6 +250,7 @@ Class Rufaydium
 		}
 	}
 
+	; get Existing Session by URL, it will look into all sessions and return with first match
 	getSessionByUrl(URL)
 	{
 		for k, w in this.getSessions()
@@ -227,6 +261,7 @@ Class Rufaydium
 		}
 	}
 
+	; get Existing Session by Title, will look for title in all sessions and return with first match
 	getSessionByTitle(Title)
 	{
 		for k, s in this.getSessions()
@@ -237,15 +272,28 @@ Class Rufaydium
 		}
 	}
 
+	; Get all session Quit one by one
 	QuitAllSessions()
 	{
 		for k, s in this.getSessions()
 			s.Quit()
 	}
 
+	; To verify driver is there working
 	Status()
 	{
 		return Rufaydium.Request( this.DriverUrl "/status","GET")
+	}
+
+	__Get(n)
+    {
+		return this.Send( this.DriverUrl "/status","GET")[n]
+    }
+
+	Version()
+	{
+		if RegExMatch(this.build.version,"(\d+\.\d+\.\d+.\d+)",d)
+			return d
 	}
 }
 
@@ -258,6 +306,10 @@ Class Session
 		this.id := i.id
 		this.Address := i.address
 		this.debuggerAddress := i.debuggerAddress
+		this.Build := i.Build
+		this.name := i.name
+		if i.websocketurl
+			this.websocketurl := i.websocketurl
 		this.currentTab := this.Send("window","GET")
 		switch i.name
 		{
@@ -265,10 +317,17 @@ Class Session
 				this.CDP := new CDP(this.Address)
 			case "msedgedriver" :
 				this.CDP := new CDP(this.Address)
-			case "geckodriver" :
-
 			case "operadriver" :
 				this.CDP := new CDP(this.Address)
+			case "geckodriver" :
+				for proc in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
+					if ( proc.ParentProcessId = i.DriverPID)
+						for proc2 in ComObjGet("winmgmts:").ExecQuery("Select * from Win32_Process WHERE Name = 'firefox.exe'")
+							if ( proc2.ParentProcessId = proc.processid)
+							{
+								this.BroswerPID := proc2.processid
+								break
+							} 
 		}
 	}
 
@@ -277,22 +336,16 @@ Class Session
 		;this.Quit()
 	}
 
+	; To quit Session
 	Quit()
 	{
 		this.Send(this.address ,"DELETE")
 	}
-
+	; To quit tab or window
 	close()
 	{
-		r := this.Send("window","DELETE")
-		if isobject(r)
-			This.currentTab := r[1]
-		else
-			This.currentTab := r
-		;if isobject(this.CDP)
-		;	this.CDP.Switch(StrReplace(This.currentTab, "CDwindow-"))	
-		;else
-		This.Switch(This.currentTab)
+		Tabs := this.Send("window","DELETE")
+		this.Switch(this.currentTab := tabs[tabs.Length()])
 	}
 
 	send(url,Method,Payload:= 0,WaitForResponse:=1)
@@ -308,6 +361,7 @@ Class Session
 			return r
 	}
 
+	; to create New tab, NewTab(0) will create new tab without switching
 	NewTab(i:=1)
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"tab"}).handle
@@ -315,6 +369,7 @@ Class Session
 			This.Switch(This.currentTab)
 	}
 
+	; To create New window, NewWindow(0) will create new window without switching
 	NewWindow(i:=1) ; by https://github.com/hotcheesesoup
 	{
 		This.currentTab := this.Send("window/new","POST",{"type":"window"}).handle
@@ -322,9 +377,10 @@ Class Session
 			This.Switch(This.currentTab)
 	}
 
+	; Traditional Browser Json/List 
 	Detail()
 	{
-		return Json.load(Rufaydium.Request(this.debuggerAddress "/json","GET"))
+		return Json.load(Rufaydium.Request(this.debuggerAddress "/json/list","GET"))
 	}
 
 	GetTabs()
@@ -346,102 +402,91 @@ Class Session
 		}
 	}
 
+	; Switch to active tab, incase manually switch tab, working good for chromium but not for firefox
 	ActiveTab()
 	{
-		if !this.debuggerAddress ; does not work for Firefox
-			return
-		this.Switch("CDwindow-" this.Detail()[1].id ) ; First id always Current Handle
+		if this.Build < 110.1
+			CDwindow := "CDwindow-"
+		if( this.name != "geckodriver" )
+			this.Switch(CDwindow this.Detail()[1].id ) ; First id always Current Handle
+		else
+		{
+			wingettitle, title, % "ahk_pid " this.BroswerPID
+			this.SwitchbyTitle(strreplace(title," — Mozilla Firefox"))
+		}	
 	}
 
+	; switch tab/window by number 'i'
 	SwitchTab(i:=0)
 	{
 		return this.Switch(This.currentTab := this.GetTabs()[i])
 	}
 
+	; Switch tab/window by Title
 	SwitchbyTitle(Title:="")
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
 		; Targets := this.CDP.GetTargets() 
+		handles := this.GetTabs()
 		try pages := this.Detail() ; if Browser closed by user this will closed the session
 		if !pages
 			this.quit()
-		handles := this.GetTabs()
-		if isobject(this.CDP) ;&& Targets
-		{	
-			for k , handle in handles
+		for k , handle in handles
+		{
+			for i, t in pages ;Targets.targetInfos
 			{
-				for i, t in pages ;Targets.targetInfos
+				if instr(Handle,t.id)
 				{
-					if instr(Handle,t.id)
+					if !t.HasKey("Title")
 					{
-						if instr(t.Title, Title)
-						{
-							This.currentTab := handle ; "CDwindow-" t.targetid
-							this.Switch(This.currentTab )
-							;this.CDP.Switch(t.targetid)
+						phandle := This.currentTab
+						this.Switch(handle)
+						if instr(this.title,Title)
 							return
-						}
+						else	
+							continue
+					}
+
+					if instr(t.Title, Title)
+					{
+						This.currentTab := handle ; "CDwindow-" t.targetid
+						this.Switch(This.currentTab )
+						;this.CDP.Switch(t.targetid)
+						return
 					}
 				}
 			}
-		}	
-		else
-		{
-			for k , handle in handles
-			{
-				this.switch(handle)
-				if instr(this.title(),Title)
-				{
-					This.currentTab := handle
-					break
-				}
-			}
-			this.Switch(This.currentTab )
 		}
+		if pHandle 
+			this.Switch(handle)
 	}
 
+	; Switch tab/window by URL
 	SwitchbyURL(url:="",Silent:=1)
 	{
 		; Rufaydium will soon use CDP Target's methods to re-access sessions and pages 
 		; might able to access pages even after restarting webdriver
 		;Targets := this.CDP.GetTargets() 
+		handles := this.GetTabs()
 		try pages := this.Detail() ; if Browser closed by user this will closed the session
 		if !pages
 			this.quit()
-		handles := this.GetTabs()
-
-		if isobject(this.CDP)
-		{	
-			for k , handle in handles
+		for k , handle in handles
+		{
+			for i, t in pages ;Targets.targetInfos
 			{
-				for i, t in pages ;Targets.targetInfos
+				if instr(Handle,t.id)
 				{
-					if instr(Handle,t.id)
+					if instr(t.url, url)
 					{
-						if instr(t.url, url)
-						{
-							This.currentTab := Handle ;"CDwindow-" t.targetid
-							this.Switch(This.currentTab )
-							;this.CDP.Switch(t.targetid)
-							return
-						}
+						This.currentTab := Handle ;"CDwindow-" t.targetid
+						this.Switch(This.currentTab )
+						;this.CDP.Switch(t.targetid)
+						return
 					}
 				}
 			}
-		}	
-		else
-		{
-			for k , handle in handles
-			{
-				this.switch(handle)
-				if instr(this.url,url)
-				{
-					This.currentTab := handle
-					break
-				}
-			}
-			this.Switch(This.currentTab )
 		}
 	}
 
@@ -458,6 +503,7 @@ Class Session
 		}
 	}
 
+	; to refresh active tab/window
 	Refresh()
 	{
 		return this.Send("refresh","POST")
@@ -476,9 +522,15 @@ Class Session
 		return this.Send("timeouts","GET")
 	}
 
-	Navigate(url)
+	; to navigate to 1 or multiple urls Navigate(url1,url2,url3)
+	Navigate(urls*)
 	{
-		this.url := url
+		for i, url in urls
+		{
+			if a_index != 1
+				this.NewTab(i:=1)
+			this.URL := url
+		}
 	}
 
 	Forward()
@@ -690,9 +742,9 @@ Class Session
 		return this.Send("execute/sync","POST", { "script":Script,"args":[Args*]},1)
 	}
 
-	ExecuteAsync(Script,Args*)
+	ExecuteAsync(Script,Callback,Args*)
 	{
-		return this.Send("execute/async","POST", { "script":Script,"args":Args*},1)
+		return this.Send("execute/async","POST", { "script":Script,"Callback":Callback,"args":[Args*]},1)
 	}
 
 	GetCookies()
@@ -738,6 +790,19 @@ Class Session
 		}
 	}
 
+	CaptureFullSizeScreenShot(location)
+	{
+		if !isobject(this.CDP)
+		{
+			msgbox, ,Rufaydium, Unable to Capture Full Size ScreenShot`nThis Chromium limited method
+			return
+		}
+		JSOP := {"width":this.Getrect().width,"height":this.ExecuteSync("return document.documentElement.scrollHeight")+0,"deviceScaleFactor":1,"mobile":json.false}
+		this.CDP.Call("Emulation.setDeviceMetricsOverride",JSOP)
+		this.Screenshot(location)
+		this.CDP.Call("Emulation.clearDeviceMetricsOverride")
+	}
+
 	Print(PDFLocation,Options:=0)
 	{
 		if !instr(PDFLocation,".pdf")
@@ -761,7 +826,7 @@ Class Session
 		}
 		else
 		{
-			if isProgInstalled("wkhtmltox")
+			if isProgInstalled("wkhtmltox") or isProgInstalled("wkhtmltopdf")
 			{
 				wkhtmltopdf(this.HtML,PDFLocation,options)
 			}
@@ -916,6 +981,11 @@ Class PrintOptions ; https://www.w3.org/TR/webdriver2/#print
 	)
 }
 
+Base64Str(byref bin, Text)
+{
+    VarSetCapacity(Bin, StrPut(Text, "UTF-8"))
+    return StrPut(Text, &Bin, "UTF-8")-1
+}
 
 ; https://www.autohotkey.com/boards/viewtopic.php?t=35964
 Base64Dec( ByRef B64, ByRef Bin ) {  ; By SKAN / 18-Aug-2017
@@ -969,6 +1039,23 @@ wkhtmltopdf(HtML,pdf,options)
 		sleep, 200
 
 	RegRead, wkhtmltopdf, HKLM, Software\wkhtmltopdf, PdfPath
+	if !fileexist(wkhtmltopdf)
+	{
+		wkhtmltopdf := "C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe"
+		if !fileexist(exe)
+		{
+			wkhtmltopdf := "C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+			if !fileexist(wkhtmltopdf)
+			{
+				msg := "Error:`tunable to print pdf using 'wkhtmltopdf'"
+				msg .= "`nReason:`tUnable to read registry or Default location for`n`t" wkhtmltopdf 
+				msg .= "`n`nPlease run program as administrator or at least with registry reading privilages,"
+				msg .= "`n`nPress OK to conitnue"
+				MsgBox,,Rufaydium, % msg
+				return
+			}
+		}
+	}
 
 	if IsObject(options)
 	{

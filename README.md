@@ -16,6 +16,9 @@ and also supports Chrome Devtools Protocols same as [chrome.ahk](https://github.
 
 No need to install / setup Selenium, Rufaydium is AHK's Selenium and is more flexible than selenium.
 
+
+## If you want to support my work just [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/Xeo786)
+
 ## How to use
 
 ```AutoHotkey
@@ -106,12 +109,63 @@ Chrome.Driver.visible := false ; will hide
 ```
 ## Script reloading
 
-We can reload the script as many times as we want, but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far. We can also close the Driver process, but this will cause issues as we can no longer access any session created through WebDriver. its better to use `Session.exit()` followed by `Chrome.Driver.Exit()`.
+We can reload the script as many times as we want, but the driver will be active in the process so we can have control over all the sessions created through WebDriver so far. We can also close the Driver process, but this will cause issues as we can no longer access any session created through WebDriver. its better to use `Session.exit()` then `Chrome.Driver.Exit()`.
 
 ```AutoHotkey
-Chrome := new Rufaydium("chromedriver.exe")
-; use this to close driver (after quiting all sessions) when you finished using Rufaydium
+; to download and Run chromeDriver.exe using port 10280
+Chrome := new Rufaydium("chromedriver.exe","--port=10280")
+; to close driver 
 Chrome.Driver.Exit() 
+; to close and Delete Driver.exe
+Chrome.Driver.Delete() 
+```
+
+## Driver Status
+```Autohotkey
+Chrome := new Rufaydium()
+msgbox, % " Chrome.Status()
+msgbox, % ".Build.Version : " Chrome.Build.Version
+.    "`n.OS Name : "	Chrome.OS.Name 
+.    "`n.OS.Arch : "	Chrome.OS.Arch
+.    "`n.OS.Version : " Chrome.OS.Version
+. 	 "`n.Message : "	Chrome.Message
+. 	 "`n.Ready : "		Chrome.Ready
+```
+
+## Driver Location
+if a Specific driver i.e. chromedriver is running already and occupying a specific port, Rufaydium will access that driver with driver i.e. chromedriver, while ignoring the given Location and Update the correction process location to Driver.Location
+
+```Autohotkey
+Chrome1 := new Rufaydium("D:\chromedriver.exe","--port=9555")
+Chrome2 := new Rufaydium("E:\chromedriver.exe","--port=9555") ;reaccess already running driver
+L1 := Chrome1.Driver.Location
+L2 := Chrome2.Driver.Location
+Msgbox, L1 "`n" L2 "both location are through 1 driver process and port"
+```
+## Handling Multiple Driver
+It is better to create multiple session over single driver process, Rufaydium can also handle multiple driver executables.
+In the Following example Chrome2 and chrome3 sharing same chromedriver.exe but chrome1 is run from different location and different port
+```Autohotkey
+Chrome1 := new Rufaydium(A_desktop "\chromedriver.exe","--port=9226")
+Chrome2 := new Rufaydium()
+Chrome3 := new Rufaydium() ; reaccess existing driver
+msgbox, % "Driver 1 Name :" Chrome1.Driver.Name
+.       "`nDriver 1 Port :" Chrome1.Driver.Port
+.       "`nDriver 1 Dest :" Chrome1.Driver.Location
+.       "`nDriver 2 Name :" Chrome2.Driver.Name
+.       "`nDriver 2 Port :" Chrome2.Driver.Port
+.       "`nDriver 2 Dest :" Chrome2.Driver.Location
+.       "`nDriver 3 Name :" Chrome2.Driver.Name
+.       "`nDriver 3 Port :" Chrome2.Driver.Port
+.       "`nDriver 3 Dest :" Chrome2.Driver.Location
+
+msgbox, % Chrome1.status() "`n`nPress Ok to close drive Drive from Chrome1"
+Chrome1.Driver.Exit() ; then exits driver
+msgbox, % Chrome2.status() "`n`nPress Ok to close drive Drive from Chrome2"
+Chrome2.Driver.Exit() ; then exits driver
+
+; Chrome3.status() "`n`nthis will cause error as Chrome2 and Chrome3 were same Diver executable"
+; Chrome3.Driver.Exit() ; already exited with chrome2
 ```
 
 # Capabilities Class 
@@ -122,7 +176,9 @@ Makes changes to capabilities before creating a session.
 ```AutoHotkey
 Chrome := new Rufaydium() ; will load Chrome driver with default Capabilities
 Chrome.capabilities.setUserProfile("Default") ; can use Default user 
-;Chrome.capabilities.setUserProfile("Profile 1") ; can change user profile
+
+; can change user profile Data Dir, but location: "D:\Profile Dir\Profile 1" must exist
+Chrome.capabilities.setUserProfile("Profile 1","D:\Profile Dir\") 
 
 ; New Session will be created according to above Capabilities settings
 Session := Chrome.NewSession()
@@ -184,6 +240,16 @@ Chrome.capabilities.AddexcludeSwitches("enable-automation") ; will load Chrome w
 Chrome.capabilities.DebugPort(9255) ; will change port for debuggerAddress
 ```
 
+## SetTimeouts
+Timeout can be define at any level/time/place, 
+
+```AutoHotkey
+Browser := new Rufaydium(driver,params)
+ResolveTimeout := ConnectTimeout := SendTimeout := ReceiveTimeout := 3 * 1000
+Broswer.SetTimeouts(ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout)
+```
+> read about [Settimeouts](https://learn.microsoft.com/en-us/windows/win32/winhttp/iwinhttprequest-settimeouts)
+
 # Rufaydium Sessions
 ## New Session
 Create a session after Setting up capabilities.  
@@ -242,6 +308,11 @@ Creates and switches to a new tab or New Window
 Session.NewTab()
 Session.NewWindow()
 ```
+Creates new tab and New Window without switching to it
+```AutoHotkey
+Session.NewTab(0)
+Session.NewWindow(0)
+```
 
 ## Session.Title
 returns Page title
@@ -278,6 +349,12 @@ MsgBox, % Session.IsLoading()
 Navigates to the requested URL
 ```AutoHotkey
 Session.Navigate("https://www.autohotkey.com/")
+```
+Multiple url can be navigated at once
+```AutoHotkey
+TabId := Session.currentTab
+Session.Navigate(url1,url2,url3,url4,url4)
+Session.Switch(TabId) ; returned to previous tab
 ```
 ## Session.Back() & Session.Forward()
 helps navigate to previous or from previous to recent the page acting like browser back and forward buttons. 
@@ -487,6 +564,7 @@ Session.Alert("Send","some text")  ; sending a Alert / pop up msg
 ```AutoHotkey
 Session.Screenshot("picture location.png") ; will save PNG to A_ScriptDir
 Session.Screenshot(a_desktop "\picture location.png") ; will save PNG to a_desktop
+Session.CaptureFullSizeScreenShot(a_desktop "\fullPage.png") ; will save full page screenshot
 ```
 
 # PDF printing 
@@ -597,9 +675,6 @@ Available web driver Elements methods.
 ```AutoHotkey
 Element.Name() ; will return tagname
 Element.Rect() ; will return position and size
-Element.Size() ; will return Size
-Element.Location() ; will return position
-Element.LocationInView() ; will return position in view
 Element.enabled() ; will return Boolean true for enabled or false disabled 
 Element.Selected() ; will return Boolean true for Selected or false not selected this will come handy for dropdown lists or combo list selecting options
 Element.Displayed() ; will return Boolean true for visible element / false for invisible element
@@ -1077,3 +1152,7 @@ ExtList := ["*.ttf","*.gif" , "*.png" , "*.jpg" , "*.jpeg" , "*.webp"]
 Session.CDP.call("Network.enable")
 Session.CDP.call("Network.setBlockedURLs",{"urls": ExtList })
 ```
+
+
+
+

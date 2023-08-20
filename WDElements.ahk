@@ -22,21 +22,6 @@ Class WDElement extends Session
 		return this.Send("rect","GET")
 	}
 	
-	Size()
-	{
-		return this.Send("Size","GET")
-	}
-	
-	Location()
-	{
-		return this.Send("location","GET")
-	}
-	
-	LocationInView()
-	{
-		return this.Send("location_in_view","GET")
-	}
-	
 	enabled()
 	{
 		return this.Send("enabled","GET")
@@ -314,6 +299,17 @@ Class WDElement extends Session
 		return r
 	}
 
+	Screenshot(location:=0)
+	{
+		Base64Canvas :=  this.Send("screenshot","GET")
+		if Base64Canvas
+		{
+			nBytes := Base64Dec( Base64Canvas, Bin ) ; thank you Skan :)
+			File := FileOpen(location, "w")
+			File.RawWrite(Bin, nBytes)
+			File.Close()
+		}
+	}
 }
 
 Class ShadowElement extends Session

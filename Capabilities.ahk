@@ -1,13 +1,14 @@
 class Capabilities
 {
     static Simple := {"cap":{"capabilities":{"":""}}}, olduser := {}
-    static _ucof := false, _hmode := false, _incog := false, _Uprompt := "dismiss"
+    static _ucof := false, _hmode := false, _incog := false, _Uprompt := "dismiss", _Bidi := false
     __new(browser,Options,platform:="windows",notify:=false)
     {
         this.options := Options
         this.cap := {}
         this.cap.capabilities := {}
         this.cap.capabilities.alwaysMatch := { this.options :{"w3c":json.true}}
+        this.cap.capabilities.alwaysMatch.webSocketUrl := json.false
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
         this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
@@ -16,6 +17,28 @@ class Capabilities
         this.cap.capabilities.firstMatch := [{}]
         this.cap.desiredCapabilities := {}
         this.cap.desiredCapabilities.browserName := browser
+    }
+
+    BiDi[]
+    {
+        Set
+        {
+            if value
+            {
+                capabilities._Bidi := true
+                this.cap.capabilities.alwaysMatch.webSocketUrl := json.true
+            }      
+            else
+            {
+                capabilities._Bidi := false
+                this.cap.capabilities.alwaysMatch.webSocketUrl := json.false    
+            }   
+        }
+
+        Get
+        {
+            return capabilities._Bidi
+        }
     }
 
     UserPrompt[]
@@ -59,13 +82,13 @@ class Capabilities
         {
             if value
             {
-                this.addArg("--headless")
+                this.addArg("--headless=new")
                 capabilities._hmode := true
             }
             else
             {
                 capabilities._hmode := false
-                this.RemoveArg("--headless")
+                this.RemoveArg("--headless=new")
 	        }	
         }
 
@@ -187,12 +210,18 @@ class ChromeCapabilities extends Capabilities
         this.cap.capabilities.alwaysMatch[this.Options].args.push(arg)
     }
 
+    AddCustomExtension(Folder)
+    {
+        this.addArg("--load-extension=" StrReplace(Folder, "\", "/"))
+    }
+
     Addextensions(crxlocation)
     {
-        if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
-            this.cap.capabilities.alwaysMatch[this.Options].extensions := []
-        crxlocation := StrReplace(crxlocation, "\", "/")
-        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(crxlocation)
+        ; following code is failing error := unable to unzip
+         if !IsObject(this.cap.capabilities.alwaysMatch[this.Options].extensions)
+             this.cap.capabilities.alwaysMatch[this.Options].extensions := []
+        nbytes := Base64Str(Bin,crxlocation)
+        this.cap.capabilities.alwaysMatch[this.Options].extensions.push(Base64 := Base64Enc( Bin, nbytes,40001)) ; base shoud be base64 encoded but
     }
 
     RemoveArg(arg,match="Exact")
@@ -232,7 +261,7 @@ class FireFoxCapabilities extends Capabilities
         this.options := Options
         this.cap := {}
         this.cap.capabilities := {}
-        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{"dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}}}
+        this.cap.capabilities.alwaysMatch := { this.options :{"prefs":{"dom.ipc.processCount": 8,"javascript.options.showInConsole": json.false()}},"webSocketUrl": json.true}
         this.cap.capabilities.alwaysMatch.browserName := browser
         this.cap.capabilities.alwaysMatch.platformName := platform
         this.cap.capabilities.log := {}
@@ -282,8 +311,20 @@ class FireFoxCapabilities extends Capabilities
         if this.IncognitoMode
             return
         if !userDataDir
-            userDataDir := A_AppData "\Mozilla\Firefox\Profiles\"
-        profileini := A_AppData "\Mozilla\Firefox\profiles.ini"
+            userDataDir := A_AppData "\Mozilla\Firefox\"
+        profileini := userDataDir "\Profiles.ini"
+        if !fileExist( userDataDir "\Profiles\" profileName )
+        {
+            Prompt := "Warning: Following Profile is Directory does not exist`n"
+            . chr(34) userDataDir "\" profileName  chr(34) "`n"
+            . "`n`nRufaydium is going to create profile directory Manually exitapp"
+            . "`nPress OK to continue / Manually exitapp"
+            msgbox,48,Rufaydium Capabilities, % Prompt
+            fileCreateDir, % userDataDir "\Profiles\" profileName
+            IniWrite, % "Profiles/" profileName , % profileini, % profileName, Path
+            IniWrite, % profileName , % profileini, % profileName, Name
+            IniWrite, % 1, % profileini, % profileName, IsRelative
+        }
         IniRead, profilePath , % profileini, % profileName, Path
         for i, argtbr in this.cap.capabilities.alwaysMatch[this.Options].args
         {
@@ -291,16 +332,7 @@ class FireFoxCapabilities extends Capabilities
                 this.cap.capabilities.alwaysMatch[this.Options].RemoveAt(i)
         }
         this.addArg("-profile")
-        this.addArg(StrReplace(A_AppData "\Mozilla\Firefox\" profilePath, "\", "/"))
-        if !fileExist( userDataDir "\" profileName )
-        {
-            Prompt := "Warning: Following Profile is Directory does not exist`n"
-            . chr(34) userDataDir "\" profileName  chr(34) "`n"
-            . "`n`nRufaydium is going to create profile directory Manually exitapp"
-            . "`nPress OK to continue / Manually exitapp"
-            msgbox,48,Rufaydium Capabilities, % Prompt
-            fileCreateDir, % userDataDir "\" profileName
-        }
+        this.addArg(StrReplace(userDataDir "\Profiles\" profileName, "\", "/"))
 	}
 
     Addextensions(crxlocation)
@@ -320,7 +352,7 @@ class EdgeCapabilities extends ChromeCapabilities
             return
 		if !userDataDir
 			userDataDir := StrReplace(A_AppData, "\Roaming") "\Local\Microsoft\Edge\User Data"
-        userDataDir := StrReplace(userDataDir, "\", "/")
+        userDataDir := StrReplace(userDataDir, "\", "\\")
         ; removing previous args if any
         this.RemoveArg("--user-data-dir=","in")
         this.RemoveArg("--profile-directory=","in")
@@ -337,6 +369,52 @@ class EdgeCapabilities extends ChromeCapabilities
             fileCreateDir, % userDataDir "\" profileName
         }
 	}
+
+    InPrivate[]
+    {
+        set
+        {
+            if value
+                this.IncognitoMode := true
+            else
+                this.IncognitoMode := false
+        }
+
+        get
+        {
+            return this.IncognitoMode
+        }
+    }
+
+    IncognitoMode[]
+    {
+        set 
+        {
+            if value
+            {
+                Capabilities.olduser.push(this.RemoveArg("--user-data-dir=","in"))
+                Capabilities.olduser.push(this.RemoveArg("--profile-directory=","in"))
+                this.addArg("--InPrivate")
+                capabilities._incog := true
+            }
+            else
+            {
+                capabilities._incog := false
+                for i, arg in this.cap.capabilities.alwaysMatch[this.Options].args
+                    if (arg = "--InPrivate")
+                        this.RemoveArg(arg)
+                for i, arg in Capabilities.olduser
+                    this.addArg(arg)
+                Capabilities.olduser := {}
+	        }	
+        }
+
+        get
+        {
+            return capabilities._incog
+        }
+    }
+
 
     Addextensions(crxlocation)
     {
