@@ -327,7 +327,7 @@ class CDP ;extends Rufaydium
 			}
 			else
 			{
-				msgbox, Wrong / missing subtype 
+				MsgBox 0x40010, , Wrong / missing subtype 
 			}
 		}
 		else if(Type = "Grid")
@@ -344,12 +344,12 @@ class CDP ;extends Rufaydium
 			}
 			else
 			{
-				msgbox, Wrong / missing subtype 
+				MsgBox 0x40010, , Wrong / missing subtype 
 			}
 		}
 		else
 		{
-			msgbox, Type Should be "Solid" or "Grid"
+			MsgBox 0x40040, , Type Should be "Solid" or "Grid"
 		}
 	}
 	
@@ -375,7 +375,7 @@ class CDP ;extends Rufaydium
 		if found ;GridHighlightConfig 
 			this.highlightConfig.GridHighlightConfig[Param] := Json.true
 		else
-			msgbox,  % "<" Param "> is wrong parameter"
+			MsgBox 0x40010, ,  % "<" Param "> is wrong parameter"
 	}
 	
 	; highlight element and parameters what should be visible while highlight
@@ -384,7 +384,7 @@ class CDP ;extends Rufaydium
 		;highlightConfig["contrastAlgorithm"] := "apca"
 		if !this.highlightConfig
 		{
-			msgbox, Please Set Highlight Configuration`nusing Element.highlightConfigurations()
+			MsgBox 0x40030, , Please Set Highlight Configuration`nusing Element.highlightConfigurations()
 			return
 		}
 		
