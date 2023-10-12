@@ -64,7 +64,7 @@ class Capabilities
                 . chr(34) "accept, and, notify" chr(34) "`n"
                 . chr(34) "ignore" chr(34) "`n"
                 . "`n`nPress OK to continue"
-                msgbox,48,Rufaydium Capabilities Error, % Prompt
+                MsgBox 0x40030, Rufaydium Capabilities Error, % Prompt
                 return
             }
             this.cap.capabilities.alwaysMatch.unhandledPromptBehavior := capabilities._Uprompt
@@ -174,7 +174,7 @@ class ChromeCapabilities extends Capabilities
             . chr(34) userDataDir "\" profileName  chr(34) "`n"
             . "`n`nRufaydium is going to create profile directory Manually exitapp"
             . "`nPress OK to continue / Manually exitapp"
-            msgbox,48,Rufaydium Capabilities, % Prompt
+            MsgBox 0x40030,Rufaydium Capabilities, % Prompt
             fileCreateDir, % userDataDir "\" profileName
         }	
 	}
@@ -277,7 +277,7 @@ class FireFoxCapabilities extends Capabilities
     DebugPort(Port:=9222)
     {
         ;this.cap.capabilities.alwaysMatch[this.Options].debuggerAddress := "http://127.0.0.1:" Port
-        msgbox, debuggerAddress is not support for FireFoxCapabilities
+        MsgBox 0x40010, ,debuggerAddress is not support for FireFoxCapabilities
     }
 
     addArg(arg) ; idk args list
@@ -319,7 +319,7 @@ class FireFoxCapabilities extends Capabilities
             . chr(34) userDataDir "\" profileName  chr(34) "`n"
             . "`n`nRufaydium is going to create profile directory Manually exitapp"
             . "`nPress OK to continue / Manually exitapp"
-            msgbox,48,Rufaydium Capabilities, % Prompt
+            MsgBox 0x40030,Rufaydium Capabilities, % Prompt
             fileCreateDir, % userDataDir "\Profiles\" profileName
             IniWrite, % "Profiles/" profileName , % profileini, % profileName, Path
             IniWrite, % profileName , % profileini, % profileName, Name
@@ -365,7 +365,7 @@ class EdgeCapabilities extends ChromeCapabilities
             . chr(34) userDataDir "\" profileName  chr(34) "`n"
             . "`n`nRufaydium is going to create profile directory Manually exitapp"
             . "`nPress OK to continue / Manually exitapp"
-            msgbox,48,Rufaydium Capabilities, % Prompt
+            MsgBox 0x40030,Rufaydium Capabilities, % Prompt
             fileCreateDir, % userDataDir "\" profileName
         }
 	}
@@ -446,7 +446,7 @@ class BraveCapabilities extends ChromeCapabilities
             . chr(34) userDataDir "\" profileName  chr(34) "`n"
             . "`n`nRufaydium is going to create profile directory Manually exitapp"
             . "`nPress OK to continue / Manually exitapp"
-            msgbox,48,Rufaydium Capabilities, % Prompt
+            MsgBox 0x40030,Rufaydium Capabilities, % Prompt
             fileCreateDir, % userDataDir "\" profileName
         }
 	}
@@ -474,7 +474,7 @@ class OperaCapabilities extends ChromeCapabilities
             . chr(34) userDataDir "\" profileName  chr(34) "`n"
             . "`n`nRufaydium is going to create profile directory Manually exitapp"
             . "`nPress OK to continue / Manually exitapp"
-            msgbox,48,Rufaydium Capabilities, % Prompt
+            MsgBox 0x40030,Rufaydium Capabilities, % Prompt
             fileCreateDir, % userDataDir "\" profileName
         }
 	}

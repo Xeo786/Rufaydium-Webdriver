@@ -59,7 +59,7 @@ Class RunDriver
 		This.Target := Location " " chr(34) this.param chr(34)
 		if !FileExist(Location)
 		{
-			Msgbox,64,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exiting
+			MsgBox 0x40040, ,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exiting
 			ExitApp
 		}
 
@@ -67,7 +67,7 @@ Class RunDriver
 			This.Port := Port1
 		else
 		{
-			Msgbox,64,"Rufaydium WebDriver Support,Unable to download driver from`nURL :" this.DriverUrl "`nRufaydium exiting"
+			MsgBox 0x40040, ,"Rufaydium WebDriver Support,Unable to download driver from`nURL :" this.DriverUrl "`nRufaydium exiting"
 			ExitApp
 		}
 	
@@ -253,7 +253,7 @@ Class RunDriver
 		} 
 
 		if InStr(this.DriverVersion, "NoSuchKey"){
-			MsgBox,16,Testing,Error`nDriverVersion
+			MsgBox 0x40010,Testing,Error`nDriverVersion
 			return false
 		}
 		
