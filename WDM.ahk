@@ -149,7 +149,7 @@ Class RunDriver
 				RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+)",Dver)
 				if RegExMatch(Version,"Chrome version ([\d.]+).*\n.*browser version is (\d+.\d+.\d+)",bver)
 				{
-					if Dver < 115 ; 
+					if Dver1 > 115 ; 
 					{
 						uri := "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
 						for k, obj in json.load(this.GetVersion(uri)).versions
