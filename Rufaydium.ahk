@@ -304,7 +304,8 @@ Class Rufaydium
 			case "chromedriver":
 				RegRead, BrowserVer, HKEY_CURRENT_USER\SOFTWARE\Google\Chrome\BLBeacon, version
 				RegExMatch(BrowserVer,"\d+",BrowserBuild)
-				if(BrowserBuild != this.Build)
+				if (BrowserBuild > 115)
+				&& (BrowserBuild != this.Build)
 				{
 					MsgBox 0x40034,Rufaydium WebDriver Support,% k.message "`n`nPlease press Yes to download latest driver"
 					IfMsgBox Yes
