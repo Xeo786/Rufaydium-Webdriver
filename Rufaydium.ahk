@@ -50,6 +50,7 @@ Class Rufaydium
 			this.capabilities := capabilities.Simple
 		RegExMatch(this.Driver.Version := this.Version(),"\d+",Build)
 		this.Build := Build
+		this.verifyDriver()
 	}
 
 	__Delete()
@@ -294,6 +295,31 @@ Class Rufaydium
 	{
 		if RegExMatch(this.build.version,"(\d+\.\d+\.\d+.\d+)",d)
 			return d
+	}
+
+	verifyDriver()
+	{
+		switch this.driver.Name, false
+		{
+			case "chromedriver":
+				RegRead, BrowserVer, HKEY_CURRENT_USER\SOFTWARE\Google\Chrome\BLBeacon, version
+				RegExMatch(BrowserVer,"\d+",BrowserBuild)
+				if(BrowserBuild != this.Build)
+				{
+					MsgBox 0x40034,Rufaydium WebDriver Support,% k.message "`n`nPlease press Yes to download latest driver"
+					IfMsgBox Yes
+					{
+						this.driver.exit()
+						i := this.driver.GetDriver("Chrome version " BrowserVer "`nbrowser version is " BrowserVer)
+						if !FileExist(i)
+						{
+							MsgBox 0x40040,Rufaydium WebDriver Support,Unable to download driver`nRufaydium exiting.
+							ExitApp
+						}
+						This.Driver := new RunDriver(i,This.Driver.Param)
+					}
+				}
+		}
 	}
 }
 
