@@ -179,7 +179,8 @@ Class RunDriver
 				{
 					uri := "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json"
 					DriverVersion := json.load(this.GetVersion(uri)).channels.Stable.version
-					this.DriverUrl := "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" DriverVersion "/win32/chromedriver-win32.zip"
+					this.DriverUrl := "https://storage.googleapis.com/chrome-for-testing-public/" DriverVersion "/win32/chromedriver-win32.zip"
+					; this.DriverUrl := "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/" DriverVersion "/win32/chromedriver-win32.zip"
 				}
 			case "BraveDriver" :
 				this.zip := "chromedriver_win32.zip"
